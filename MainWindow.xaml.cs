@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,12 @@ namespace VideoFileRenamer
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			FileVideoInfo file = new FileVideoInfo(new FileInfo(@"D:\Films\Эксперимент 2 Волна [Die Welle] (2008) [драма].avi"));
+			file.CalculateHash();
 		}
 	}
 }
