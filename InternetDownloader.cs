@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using HtmlAgilityPack;
 
 namespace VideoFileRenamer
@@ -12,10 +14,10 @@ namespace VideoFileRenamer
 	{
 		HttpWebResponse Response(string link)
 		{
+			
 			// создание запроса
 			HttpWebRequest myHttpWebRequest =
 				(HttpWebRequest)HttpWebRequest.Create(link);
-
 			// Инициализация
 			myHttpWebRequest.UserAgent = @"Mozila/4.0 (compatible; MSIE 6.0; 
 							  Windows NT 5.1; SV1; MyIE2;";
@@ -45,9 +47,9 @@ namespace VideoFileRenamer
 				var info = new FileVideoDetailShort();
 
 				//Original name
-				info.OriginalName = ss[i].SelectSingleNode(ss[i].XPath + @"/span").InnerText;
+				info.OriginalName = HttpUtility.HtmlDecode(ss[i].SelectSingleNode(ss[i].XPath + @"/span").InnerText);
 				//Name
-				info.Name = ss[i].SelectSingleNode(ss[i].XPath + @"/p/a").InnerText;
+				info.Name = HttpUtility.HtmlDecode(ss[i].SelectSingleNode(ss[i].XPath + @"/p/a").InnerText);
 				//Year
 				info.Year = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText;
 				//Link
@@ -70,8 +72,10 @@ namespace VideoFileRenamer
 
 			var ss = document.DocumentNode.SelectSingleNode(plugin.Link);
 
-			returnDetail.Name = ss.SelectSingleNode(ss.XPath + plugin.Name).InnerText;
-			returnDetail.OriginalName = ss.SelectSingleNode(ss.XPath + plugin.OriginalName).InnerText;
+			
+			
+			returnDetail.Name = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.Name).InnerText);
+			returnDetail.OriginalName = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.OriginalName).InnerText);
 			returnDetail.Year = ss.SelectSingleNode(ss.XPath + plugin.Year).InnerText;
 			returnDetail.Link = link;
 

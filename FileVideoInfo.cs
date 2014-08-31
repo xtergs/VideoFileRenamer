@@ -25,6 +25,12 @@ namespace VideoFileRenamer
 		private string sha;
 		private string md5;
 
+		public string Name
+		{
+			get { return name; }
+			private set { name = value; }
+		}
+
 		public override string ToString()
 		{
 			return name;

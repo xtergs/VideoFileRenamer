@@ -32,9 +32,15 @@ namespace VideoFileRenamer
 		{
 			var engine = AppEngine.Create();
 			var list = await engine.FindNewVideosAsync(path);
+			OutList.ItemsSource = list;
+		}
+
+		private void FindFilms_Click(object sender, RoutedEventArgs e)
+		{
+			var engine = new AppEngine();
 			PlugDownload plugin = new PlugDownload();
-			var maylist = engine.FindFilms(list[0], plugin);
-			OutList.ItemsSource = maylist;
+			var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
+			OutList_Copy.ItemsSource = listFilms;
 		}
 	}
 }
