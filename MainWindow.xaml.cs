@@ -26,10 +26,12 @@ namespace VideoFileRenamer
 			InitializeComponent();
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
-			FileVideoInfo file = new FileVideoInfo(new FileInfo(@"D:\Films\Эксперимент 2 Волна [Die Welle] (2008) [драма].avi"));
-			file.CalculateHash();
+			var engine = AppEngine.Create();
+			InternetDownloader downl = new InternetDownloader();
+			var list = downl.FindFilms(new FileVideoInfo(new FileInfo(@"D:\Films\Джек Райан Теория хаоса [Jack Ryan Shadow Recruit] (2013) [боевик].mkv")));
+			OutList.ItemsSource = list;
 		}
 	}
 }

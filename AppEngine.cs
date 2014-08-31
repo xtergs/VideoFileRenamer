@@ -18,7 +18,7 @@ namespace VideoFileRenamer
 		private List<string> ignoringFiles = new List<string>();
 		List<string> storedFiles = new List<string>(); //BD
 
-		public AppEngine Create()
+		public static AppEngine Create()
 		{
 			if (current == null)
 				current = new AppEngine();
@@ -29,13 +29,29 @@ namespace VideoFileRenamer
 		public List<FileVideoInfo> FindNewVideos(string path)
 		{
 			List<FileVideoInfo> list = new List<FileVideoInfo>();
-			foreach (var file in Directory.EnumerateFiles(path))
+			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
+			{
+				FileInfo infoFile = new FileInfo(file);
+				if (!ignoringFiles.Contains(infoFile.Name) || !storedFiles.Contains(infoFile.Name))
+					list.Add(new FileVideoInfo(infoFile));
+			}
+			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
 				if (!ignoringFiles.Contains(infoFile.Name) || !storedFiles.Contains(infoFile.Name))
 					list.Add(new FileVideoInfo(infoFile));
 			}
 			return list;
+		}
+
+		public Task<List<FileVideoInfo>> FindNewVideosAsync(string path)
+		{
+			var result = Task<List<FileVideoInfo>>.Factory.StartNew(() =>
+			{
+				return FindNewVideos(path); 
+				
+			});
+			return result;
 		}
 
 		//Подсчитывает хэши файлов
@@ -51,7 +67,7 @@ namespace VideoFileRenamer
 		}
 
 		//Поиск фильма на кинопоиске
-		public  FindFilms()
+		public void  FindFilms()
 		{
 			
 		}

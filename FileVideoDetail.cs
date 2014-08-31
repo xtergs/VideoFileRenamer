@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace VideoFileRenamer
 {
-	class FileVideoDetail
+	class FileVideoDetail : FileVideoDetailShort
 	{
+
 	}
 }

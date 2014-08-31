@@ -25,6 +25,11 @@ namespace VideoFileRenamer
 		private string sha;
 		private string md5;
 
+		public override string ToString()
+		{
+			return name;
+		}
+
 		public void CalculateHash()
 		{
 			using (FileStream fs = new FileStream(path, FileMode.Open))
