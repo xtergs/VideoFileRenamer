@@ -8,6 +8,7 @@ namespace VideoFileRenamer
 {
 	class PlugDownload
 	{
+		private string originalLink = @"http://www.kinopoisk.ru/";
 		private string link = @"//html//body//*//div[@id='photoInfoTable'";
 
 		private string name = @"/div[@id='headerFilm']/h1";

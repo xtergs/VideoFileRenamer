@@ -26,12 +26,15 @@ namespace VideoFileRenamer
 			InitializeComponent();
 		}
 
+		private string path = @"D:\films";
+
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			InternetDownloader downl = new InternetDownloader();
-			var list = downl.FindFilms(new FileVideoInfo(new FileInfo(@"D:\Films\Джек Райан Теория хаоса [Jack Ryan Shadow Recruit] (2013) [боевик].mkv")));
-			OutList.ItemsSource = list;
+			var list = await engine.FindNewVideosAsync(path);
+			PlugDownload plugin = new PlugDownload();
+			var maylist = engine.FindFilms(list[0], plugin);
+			OutList.ItemsSource = maylist;
 		}
 	}
 }

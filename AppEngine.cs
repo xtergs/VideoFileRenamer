@@ -67,13 +67,17 @@ namespace VideoFileRenamer
 		}
 
 		//Поиск фильма на кинопоиске
-		public void  FindFilms()
+		public List<FileVideoDetailShort> FindFilms(FileVideoInfo detail, PlugDownload plugin)
 		{
-			
+			InternetDownloader downloader = new InternetDownloader();
+			return downloader.FindFilms(detail);
 		}
 
 		//
-		public void DownloadInfoFilmsAsync(List<FileVideoInfo> list)
-		{ }
+		public FileVideoDetail DownloadInfoFilm(FileVideoDetailShort detail, PlugDownload plugin)
+		{
+			InternetDownloader downloader = new InternetDownloader();
+			return downloader.FullInfoFilm(detail.Link, plugin);
+		}
 	}
 }

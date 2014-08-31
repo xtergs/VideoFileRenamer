@@ -51,7 +51,7 @@ namespace VideoFileRenamer
 				//Year
 				info.Year = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText;
 				//Link
-				info.Link = ss[i].SelectSingleNode(ss[i].XPath + @"//p//a/@href").Attributes[0].Value;
+				info.Link = @"http://www.kinopoisk.ru/" + ss[i].SelectSingleNode(ss[i].XPath + @"//p//a/@href").Attributes[0].Value;
 
 				list.Add(info);
 			}
