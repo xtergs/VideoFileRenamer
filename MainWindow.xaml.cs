@@ -32,7 +32,17 @@ namespace VideoFileRenamer
 		{
 			var engine = AppEngine.Create();
 			var list = await engine.FindNewVideosAsync(path);
-			OutList.ItemsSource = list;
+			List<ListOfParsFilms> listOfFilms = new List<ListOfParsFilms>();
+			PlugDownload plugin = new PlugDownload();
+
+			Parallel.ForEach(list, info =>
+			{
+				var item = new ListOfParsFilms();
+				item.list = engine.FindFilms(info, plugin);
+				item.file = info;
+				listOfFilms.Add(item);
+			});
+			OutList.ItemsSource = listOfFilms[0].list;
 		}
 
 		private void FindFilms_Click(object sender, RoutedEventArgs e)

@@ -50,8 +50,12 @@ namespace VideoFileRenamer
 				info.OriginalName = HttpUtility.HtmlDecode(ss[i].SelectSingleNode(ss[i].XPath + @"/span").InnerText);
 				//Name
 				info.Name = HttpUtility.HtmlDecode(ss[i].SelectSingleNode(ss[i].XPath + @"/p/a").InnerText);
-				//Year
-				info.Year = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText;
+				var temp = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span");
+				if (temp != null)
+				{
+					//Year
+					info.Year = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText;
+				}
 				//Link
 				info.Link = @"http://www.kinopoisk.ru/" + ss[i].SelectSingleNode(ss[i].XPath + @"//p//a/@href").Attributes[0].Value;
 
@@ -72,8 +76,6 @@ namespace VideoFileRenamer
 
 			var ss = document.DocumentNode.SelectSingleNode(plugin.Link);
 
-			
-			
 			returnDetail.Name = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.Name).InnerText);
 			returnDetail.OriginalName = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.OriginalName).InnerText);
 			returnDetail.Year = ss.SelectSingleNode(ss.XPath + plugin.Year).InnerText;
