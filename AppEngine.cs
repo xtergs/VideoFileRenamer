@@ -16,8 +16,9 @@ namespace VideoFileRenamer
 		private static AppEngine current;
 
 		private List<string> ignoringFiles = new List<string>();
-		List<string> storedFiles = new List<string>(); //BD
+		private Queue<FileVideoInfo> newFiles = new Queue<FileVideoInfo>();
 
+		
 		public static AppEngine Create()
 		{
 			if (current == null)
@@ -26,32 +27,28 @@ namespace VideoFileRenamer
 		}
 
 		//Возвращает список новых фильмов и серий для сериалов
-		public List<FileVideoInfo> FindNewVideos(string path)
+		public Queue<FileVideoInfo> FindNewVideos(string path)
 		{
 			VideosEntities videosEntities = new VideosEntities();
-			List<FileVideoInfo> list = new List<FileVideoInfo>();
+			
 			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 			{
 				FileInfo infoFile = new FileInfo(file);
 				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
-					list.Add(new FileVideoInfo(infoFile));
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
 				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
-					list.Add(new FileVideoInfo(infoFile));
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
-			return list;
+			return newFiles;
 		}
 
-		public Task<List<FileVideoInfo>> FindNewVideosAsync(string path)
+		public Task<Queue<FileVideoInfo>> FindNewVideosAsync(string path)
 		{
-			var result = Task<List<FileVideoInfo>>.Factory.StartNew(() =>
-			{
-				return FindNewVideos(path); 
-				
-			});
+			var result = Task<Queue<FileVideoInfo>>.Factory.StartNew(() => FindNewVideos(path));
 			return result;
 		}
 
