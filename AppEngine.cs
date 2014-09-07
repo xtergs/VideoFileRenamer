@@ -18,6 +18,11 @@ namespace VideoFileRenamer
 		private List<string> ignoringFiles = new List<string>();
 		private Queue<FileVideoInfo> newFiles = new Queue<FileVideoInfo>();
 
+		public Queue<FileVideoInfo> NewFiles
+		{
+			get { return newFiles; }
+		}
+
 		
 		public static AppEngine Create()
 		{
