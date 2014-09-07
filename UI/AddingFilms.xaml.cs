@@ -27,7 +27,7 @@ namespace VideoFileRenamer.UI
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			MainGrid.DataContext = engine.NewFiles;
+			MainGrid.DataContext = engine.newf;
 		}
 	}
 }

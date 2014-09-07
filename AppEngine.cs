@@ -24,6 +24,11 @@ namespace VideoFileRenamer
 			get { return newFiles; }
 		}
 
+		public Queue<ListOfParsFilms> NewFilms
+		{
+			get { return newFilms; }
+		} 
+
 		
 		public static AppEngine Create()
 		{
