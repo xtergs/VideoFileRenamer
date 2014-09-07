@@ -17,6 +17,7 @@ namespace VideoFileRenamer
 
 		private List<string> ignoringFiles = new List<string>();
 		private Queue<FileVideoInfo> newFiles = new Queue<FileVideoInfo>();
+		private Queue<ListOfParsFilms> newFilms = new Queue<ListOfParsFilms>(); 
 
 		public Queue<FileVideoInfo> NewFiles
 		{
@@ -77,10 +78,25 @@ namespace VideoFileRenamer
 		}
 
 		//
-		public FileVideoDetail DownloadInfoFilm(FileVideoDetailShort detail, PlugDownload plugin)
+		private FileVideoDetail DownloadInfoFilm(FileVideoDetailShort detail, PlugDownload plugin)
 		{
 			InternetDownloader downloader = new InternetDownloader();
 			return downloader.FullInfoFilm(detail.Link, plugin);
+		}
+
+		private ListOfParsFilms FindFilmInternet(FileVideoInfo info)
+		{
+			InternetDownloader downloader = new InternetDownloader();
+			return new ListOfParsFilms(info, downloader.FindFilms(info));
+		}
+
+		public void FindFilmsForAllFiles()
+		{
+			InternetDownloader downloader = new InternetDownloader();
+			Parallel.ForEach(newFiles, (file) =>
+			{
+				newFilms.Enqueue(FindFilmInternet(file));
+			});
 		}
 	}
 }
