@@ -52,6 +52,7 @@ namespace VideoFileRenamer.Download
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			VideosEntities entities = new VideosEntities();
+			entities.Database.CreateIfNotExists();
 			entities.Directors.Load();
 			entities.Genres.Load();
 			entities.Films.Load();

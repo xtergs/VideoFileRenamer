@@ -34,7 +34,8 @@ namespace VideoFileRenamer.Download
 
 		private AppEngine()
 		{
-			
+			var entity = new VideosEntities();
+			entity.Films.Create();
 		}
 
 		
@@ -55,7 +56,7 @@ namespace VideoFileRenamer.Download
 			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
 					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
@@ -114,18 +115,22 @@ namespace VideoFileRenamer.Download
 			});
 		}
 
-		public void AddDirector(Person director)
+		public Director AddDirector(Person director)
 		{
 			VideosEntities entities = new VideosEntities();
-			entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName});
+			var dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName});
 			entities.SaveChanges();
+			return dir;
 		}
 
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
 			VideosEntities entities = new VideosEntities();
+			if (detail.DirectorId < 0)
+				throw new Exception("Haven't director for film");
 			var film = new Film()
 			{
+				Director_id = detail.DirectorId,
 				FileName = info.Name,
 				Name = detail.Name,
 				OriginalName = detail.OriginalName,

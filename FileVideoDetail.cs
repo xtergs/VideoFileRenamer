@@ -10,7 +10,13 @@ namespace VideoFileRenamer.Download
 	{
 		private string image;
 		private Person director;
+		private int directorId = -1;
 
+		public int DirectorId
+		{
+			get { return directorId; }
+			set { directorId = value; }
+		}
 		public Person Director
 		{
 			get { return director; }

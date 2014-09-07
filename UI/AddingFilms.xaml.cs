@@ -48,10 +48,17 @@ namespace VideoFileRenamer.UI
 			InternetDownloader downloader = new InternetDownloader();
 			var detail = downloader.FullInfoFilm(((FileVideoDetailShort) SelectionFilmBox.SelectedItem).Link, new PlugDownload());
 			var entity = new VideosEntities();
+			Director dir;
 			// Добавление режисера если нету в БД
 			if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && 
 												director.SecondName == detail.Director.LastName))
-				engine.AddDirector(detail.Director);
+			dir = engine.AddDirector(detail.Director);
+			else
+			{
+				dir = entity.Directors.First(director => director.FistName == detail.Director.FirstName &&
+				                                   director.SecondName == detail.Director.LastName);
+			}
+			detail.DirectorId = dir.IdDirector;
 			engine.AddNewFilm(current.File, detail);
 			if (engine.NewFilms.Count == 0)
 			{
