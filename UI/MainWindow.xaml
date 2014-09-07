@@ -1,0 +1,43 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:VideoFileRenamer" 
+        d:DataContext="{d:DesignInstance}"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="VideoFileRenamer.MainWindow"
+        Title="MainWindow" Height="415" Width="547" Loaded="Window_Loaded">
+    <Window.Resources>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="311*"/>
+            <RowDefinition Height="73*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.DataContext>
+            <local:VideosEntities/>
+        </Grid.DataContext>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="10,0,0,50" VerticalAlignment="Bottom" Width="75" Click="Button_Click" Grid.Row="1"/>
+        <Button x:Name="FindFilms" Content="FindFilms" HorizontalAlignment="Left" Margin="90,3,0,0" VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="1"/>
+        <Grid HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding ElementName=ListFilms, Path=SelectedItem}" >
+            <Image HorizontalAlignment="Left" Height="118" Margin="10,10,0,0" VerticalAlignment="Top" Width="109"/>
+            <TextBlock HorizontalAlignment="Left" Margin="124,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="206,10,0,0" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="124,31,0,0" TextWrapping="Wrap" Text="Original name" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="206,31,0,0" TextWrapping="Wrap" Text="{Binding OriginalName}" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="124,52,0,0" TextWrapping="Wrap" Text="Year" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="206,52,0,0" TextWrapping="Wrap" Text="{Binding Year}" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="124,73,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="206,73,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="124,94,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="206,94,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+
+        </Grid>
+            <GridSplitter Grid.ColumnSpan="1" Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="5"  Grid.RowSpan="1"/>
+        <ListBox x:Name="ListFilms" ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate1}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+    </Grid>
+</Window>

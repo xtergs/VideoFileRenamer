@@ -28,17 +28,18 @@ namespace VideoFileRenamer
 		//Возвращает список новых фильмов и серий для сериалов
 		public List<FileVideoInfo> FindNewVideos(string path)
 		{
+			VideosEntities videosEntities = new VideosEntities();
 			List<FileVideoInfo> list = new List<FileVideoInfo>();
 			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) || !storedFiles.Contains(infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
 					list.Add(new FileVideoInfo(infoFile));
 			}
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) || !storedFiles.Contains(infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
 					list.Add(new FileVideoInfo(infoFile));
 			}
 			return list;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,9 @@ namespace VideoFileRenamer
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
+			VideosEntities entities = new VideosEntities();
+			entities.Films.Add(new Film() {Name = "sdfsdf", OriginalName = "324234", Director = new Director(){FistName = "dfsdf", SecondName = "dsf"}, Director_id = 0, Year = 2014, FileName = "df32.mkv"});
+			entities.SaveChanges();
 			var engine = AppEngine.Create();
 			var list = await engine.FindNewVideosAsync(path);
 			List<ListOfParsFilms> listOfFilms = new List<ListOfParsFilms>();
@@ -42,15 +46,24 @@ namespace VideoFileRenamer
 				item.file = info;
 				listOfFilms.Add(item);
 			});
-			OutList.ItemsSource = listOfFilms[0].list;
+		//	OutList.ItemsSource = listOfFilms;
 		}
 
 		private void FindFilms_Click(object sender, RoutedEventArgs e)
 		{
 			var engine = new AppEngine();
 			PlugDownload plugin = new PlugDownload();
-			var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
-			OutList_Copy.ItemsSource = listFilms;
+			//var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
+			//OutList_Copy.ItemsSource = listFilms;
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			VideosEntities entities = new VideosEntities();
+			entities.Directors.Load();
+			entities.Genres.Load();
+			entities.Films.Load();
+			ListFilms.DataContext = entities.Films.ToList();
 		}
 	}
 }
