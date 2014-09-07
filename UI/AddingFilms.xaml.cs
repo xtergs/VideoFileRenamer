@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,10 +25,37 @@ namespace VideoFileRenamer.UI
 			InitializeComponent();
 		}
 
+		private ObservableCollection<ListOfParsFilms> obs;
+		private ListOfParsFilms current;
+
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			MainGrid.DataContext = engine.newf;
+			obs = new ObservableCollection<ListOfParsFilms>(engine.NewFilms);
+			if (engine.NewFilms.Count == 0)
+			{
+				this.Close();
+				return;
+			}
+			current = engine.NewFilms.Dequeue();
+			MainGrid.DataContext = current;
+		}
+
+		void SelectFilm()
+		{
+			AppEngine engine = AppEngine.Create();
+			if (engine.NewFilms.Count == 0)
+			{
+				this.Close();
+				return;
+			}
+			current = engine.NewFilms.Dequeue();
+			MainGrid.DataContext = current;
+		}
+
+		private void NextButton_Click(object sender, RoutedEventArgs e)
+		{
+			SelectFilm();
 		}
 	}
 }

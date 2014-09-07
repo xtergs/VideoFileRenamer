@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VideoFileRenamer.UI;
 
 namespace VideoFileRenamer
 {
@@ -27,26 +28,17 @@ namespace VideoFileRenamer
 			InitializeComponent();
 		}
 
-		private string path = @"D:\films";
+		private string path = @"D:\FilmsTest";
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
-			VideosEntities entities = new VideosEntities();
-			entities.Films.Add(new Film() {Name = "sdfsdf", OriginalName = "324565634", Director = new Director(){FistName = "dfsdf", SecondName = "dsf"}, Director_id = 0, Year = 2014, FileName = "df32.mkv"});
-			entities.SaveChanges();
 			var engine = AppEngine.Create();
-			var list = await engine.FindNewVideosAsync(path);
-			List<ListOfParsFilms> listOfFilms = new List<ListOfParsFilms>();
-			PlugDownload plugin = new PlugDownload();
-
-			Parallel.ForEach(list, info =>
-			{
-				var item = new ListOfParsFilms();
-				item.list = engine.FindFilms(info, plugin);
-				item.file = info;
-				listOfFilms.Add(item);
-			});
-		//	OutList.ItemsSource = listOfFilms;
+			engine.FindNewVideos(path);
+			engine.FindFilmsForAllFiles();
+			AddingFilms newWindow = new AddingFilms();
+			newWindow.Visibility = Visibility.Visible;
+			newWindow.Activate();
+			//	OutList.ItemsSource = listOfFilms;
 		}
 
 		private void FindFilms_Click(object sender, RoutedEventArgs e)
