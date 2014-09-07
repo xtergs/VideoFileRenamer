@@ -4,23 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VideoFileRenamer
+namespace VideoFileRenamer.Download
 {
 	class PlugDownload
 	{
 		private string originalLink = @"http://www.kinopoisk.ru/";
-		private string link = @"//html//body//*//div[@id='photoInfoTable'";
+		private string link = @"//html//body//*//div[@id='photoInfoTable']";
 
 		private string name = @"/div[@id='headerFilm']/h1";
 		private string originalName = @"/div[@id='headerFilm']/span";
-		private string year = @"/div[@id='infoTable']/table/tbody/tr/td/div/a";
+		private string year = @"/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[3]/table[1]/tr[1]/td[2]";
 		private string countryList = @"/div[@infoTable]/table/tbody/tr[2]/td/div/a";
-		private string director;
+		private string director = @"/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[3]/table[1]/tr[4]";
 		private string scenario;
 		private string Operator;
 		private string genreList = @"/div[@infoTable]/table/tbody/tr[11]/td/span/a";
 		private string rating;
-		private string image;
+		private string image = @"//*/a[@class='popupBigImage']/img";
 		private string trailer;
 		private string time;
 

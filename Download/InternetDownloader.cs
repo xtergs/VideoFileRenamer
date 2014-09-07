@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Controls.Primitives;
 using HtmlAgilityPack;
 
-namespace VideoFileRenamer
+namespace VideoFileRenamer.Download
 {
 	class InternetDownloader
 	{
@@ -78,9 +80,19 @@ namespace VideoFileRenamer
 
 			returnDetail.Name = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.Name).InnerText);
 			returnDetail.OriginalName = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.OriginalName).InnerText);
-			returnDetail.Year = ss.SelectSingleNode(ss.XPath + plugin.Year).InnerText;
+			var node = ss.SelectSingleNode( plugin.Year);
+			returnDetail.Year = node.InnerText;
 			returnDetail.Link = link;
+			node = document.DocumentNode.SelectSingleNode(plugin.Image);
+			 WebClient client = new WebClient();
+			string guid = "cach\\"+Guid.NewGuid().ToString() + ".jpeg";
+			returnDetail.Image = guid;
+			if (!Directory.Exists("cach"))
+				Directory.CreateDirectory("cach");
+			client.DownloadFile(link +"//"+ node.Attributes["src"].Value.ToString(), guid);
 
+			node = document.DocumentNode.SelectSingleNode(plugin.Director);
+			returnDetail.Director = new Person(node.InnerText);
 			return returnDetail;
 		}
 	}

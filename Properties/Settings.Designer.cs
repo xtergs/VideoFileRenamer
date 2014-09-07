@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoFileRenamer.Properties {
+namespace VideoFileRenamer.Download.Download.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

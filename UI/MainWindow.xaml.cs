@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VideoFileRenamer.UI;
 
-namespace VideoFileRenamer
+namespace VideoFileRenamer.Download
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

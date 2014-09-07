@@ -95,6 +95,8 @@
     <Compile Include="Genre.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
+    <Compile Include="Download\PersonDownload.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="sp_helpdiagramdefinition_Result.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
@@ -130,7 +132,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Films.edmx</DependentUpon>
     </Compile>
-    <Compile Include="InternetDownloader.cs" />
+    <Compile Include="Download\InternetDownloader.cs" />
     <Compile Include="ListOfParsFilms.cs" />
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -142,7 +144,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlugDownload.cs" />
+    <Compile Include="Download\FilmDownload.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

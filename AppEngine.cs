@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
-using VideoFileRenamer.Annotations;
+using VideoFileRenamer.Download;
 
-namespace VideoFileRenamer
+namespace VideoFileRenamer.Download
 {
 	class AppEngine
 	{

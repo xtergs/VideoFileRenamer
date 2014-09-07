@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using VideoFileRenamer.Download;
 
 namespace VideoFileRenamer.UI
 {
@@ -44,6 +45,17 @@ namespace VideoFileRenamer.UI
 		void SelectFilm()
 		{
 			AppEngine engine = AppEngine.Create();
+			InternetDownloader downloader = new InternetDownloader();
+			var detail = downloader.FullInfoFilm(((FileVideoDetailShort) SelectionFilmBox.SelectedItem).Link, new PlugDownload());
+			var entity = new VideosEntities();
+			// Добавление режисера если нету в БД
+			if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && director.SecondName == detail.Director.LastName))
+				entity.Directors.Add(new Director()
+				{
+					FistName = detail.Director.FirstName, 
+					SecondName = detail.Director.LastName
+				});
+			engine.AddNewFilm(current.File, detail);
 			if (engine.NewFilms.Count == 0)
 			{
 				this.Close();
