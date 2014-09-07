@@ -12,6 +12,13 @@ namespace VideoFileRenamer
 		private string originalName;
 		private string year;
 		private string link;
+		private bool isAdd = true;
+
+		public bool IsAdd
+		{
+			get { return isAdd; }
+			set { isAdd = value; }
+		}
 
 		public string Name {
 			get { return name; }

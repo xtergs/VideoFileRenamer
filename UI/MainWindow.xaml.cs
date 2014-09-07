@@ -32,7 +32,7 @@ namespace VideoFileRenamer
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
 			VideosEntities entities = new VideosEntities();
-			entities.Films.Add(new Film() {Name = "sdfsdf", OriginalName = "324234", Director = new Director(){FistName = "dfsdf", SecondName = "dsf"}, Director_id = 0, Year = 2014, FileName = "df32.mkv"});
+			entities.Films.Add(new Film() {Name = "sdfsdf", OriginalName = "324565634", Director = new Director(){FistName = "dfsdf", SecondName = "dsf"}, Director_id = 0, Year = 2014, FileName = "df32.mkv"});
 			entities.SaveChanges();
 			var engine = AppEngine.Create();
 			var list = await engine.FindNewVideosAsync(path);

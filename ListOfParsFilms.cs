@@ -10,5 +10,17 @@ namespace VideoFileRenamer
 	{
 	    public List<FileVideoDetailShort> list;
 		public FileVideoInfo file;
+
+		public List<FileVideoDetailShort> List
+		{
+			get { return list; }
+			set { list = value; }
+		}
+
+		public FileVideoInfo File
+		{
+			get { return file; }
+			set { file = value; }
+		}
 	}
 }
