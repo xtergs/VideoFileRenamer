@@ -43,7 +43,7 @@ namespace VideoFileRenamer
 
 		private void FindFilms_Click(object sender, RoutedEventArgs e)
 		{
-			var engine = new AppEngine();
+		//	var engine = new AppEngine();
 			PlugDownload plugin = new PlugDownload();
 			//var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
 			//OutList_Copy.ItemsSource = listFilms;

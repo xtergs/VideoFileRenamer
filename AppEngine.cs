@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using VideoFileRenamer.Annotations;
@@ -27,7 +28,14 @@ namespace VideoFileRenamer
 		public Queue<ListOfParsFilms> NewFilms
 		{
 			get { return newFilms; }
-		} 
+		}
+
+		#region Constructors
+
+		private AppEngine()
+		{
+			
+		}
 
 		
 		public static AppEngine Create()
@@ -36,6 +44,8 @@ namespace VideoFileRenamer
 				current = new AppEngine();
 			return current;
 		}
+
+		#endregion
 
 		//Возвращает список новых фильмов и серий для сериалов
 		public Queue<FileVideoInfo> FindNewVideos(string path)
@@ -102,6 +112,19 @@ namespace VideoFileRenamer
 			{
 				newFilms.Enqueue(FindFilmInternet(file));
 			});
+		}
+
+		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
+		{
+			VideosEntities entities = new VideosEntities();
+			entities.Films.Add(new Film()
+			{
+				FileName = info.Name,
+				Name = detail.Name,
+				OriginalName = detail.OriginalName,
+				Year = 2014
+			});
+			entities.SaveChanges();
 		}
 	}
 }
