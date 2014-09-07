@@ -114,16 +114,24 @@ namespace VideoFileRenamer.Download
 			});
 		}
 
+		public void AddDirector(Person director)
+		{
+			VideosEntities entities = new VideosEntities();
+			entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName});
+			entities.SaveChanges();
+		}
+
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
 			VideosEntities entities = new VideosEntities();
-			entities.Films.Add(new Film()
+			var film = new Film()
 			{
 				FileName = info.Name,
 				Name = detail.Name,
 				OriginalName = detail.OriginalName,
 				Year = 2014
-			});
+			};
+			entities.Films.Add(film);
 			entities.SaveChanges();
 		}
 	}

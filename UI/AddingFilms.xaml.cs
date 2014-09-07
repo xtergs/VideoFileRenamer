@@ -49,12 +49,9 @@ namespace VideoFileRenamer.UI
 			var detail = downloader.FullInfoFilm(((FileVideoDetailShort) SelectionFilmBox.SelectedItem).Link, new PlugDownload());
 			var entity = new VideosEntities();
 			// Добавление режисера если нету в БД
-			if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && director.SecondName == detail.Director.LastName))
-				entity.Directors.Add(new Director()
-				{
-					FistName = detail.Director.FirstName, 
-					SecondName = detail.Director.LastName
-				});
+			if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && 
+												director.SecondName == detail.Director.LastName))
+				engine.AddDirector(detail.Director);
 			engine.AddNewFilm(current.File, detail);
 			if (engine.NewFilms.Count == 0)
 			{
