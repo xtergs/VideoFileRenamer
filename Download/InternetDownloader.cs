@@ -33,6 +33,7 @@ namespace VideoFileRenamer.Download
 			return myHttpWebResponse;
 		}
 
+
 		public List<FileVideoDetailShort> FindFilms(FileVideoInfo videoInfo)
 		{
 			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
@@ -57,10 +58,17 @@ namespace VideoFileRenamer.Download
 				if (temp != null)
 				{
 					//Year
-					info.Year = ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText;
+					int result;
+					if (int.TryParse(ss[i].SelectSingleNode(ss[i].XPath + @"/p/span").InnerText, out result))
+						info.Year = result;
 				}
 				//Link
 				info.Link = @"http://www.kinopoisk.ru/" + ss[i].SelectSingleNode(ss[i].XPath + @"//p//a/@href").Attributes[0].Value;
+
+				//Image
+				var node = document.DocumentNode.SelectSingleNode(ss[i].XPath + @"/..//p[@class='pic']/a/img");
+				if (node != null)
+					info.Image = @"http://www.kinopoisk.ru/" + node.Attributes[2].Value;
 
 				list.Add(info);
 			}
@@ -87,7 +95,7 @@ namespace VideoFileRenamer.Download
 
 			//Yer
 			var node = ss.SelectSingleNode( plugin.Year);
-			returnDetail.Year = node.InnerText;
+			returnDetail.Year = int.Parse(node.InnerText.Trim(' ', '\n'));
 
 			//Link
 			returnDetail.Link = link;

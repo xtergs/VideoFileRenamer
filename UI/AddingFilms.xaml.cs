@@ -74,5 +74,10 @@ namespace VideoFileRenamer.UI
 		{
 			SelectFilm();
 		}
+
+		private void SelectionFilmBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			SelectFilm();
+		}
 	}
 }

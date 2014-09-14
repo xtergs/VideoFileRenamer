@@ -15,32 +15,65 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="311*"/>
-            <RowDefinition Height="73*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="10,0,0,50" VerticalAlignment="Bottom" Width="75" Click="Button_Click" Grid.Row="1"/>
-        <Button x:Name="FindFilms" Content="FindFilms" HorizontalAlignment="Left" Margin="90,3,0,0" VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="1"/>
-        <Grid HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding SelectedItem, ElementName=ListFilms}" >
-            <Image x:Name="image" HorizontalAlignment="Left" Height="118" Margin="10,10,0,0" VerticalAlignment="Top" Width="109" Source="{Binding Image, Converter={StaticResource StringToPath}, ElementName=image, Mode=TwoWay}"/>
-            <TextBlock HorizontalAlignment="Left" Margin="124,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="206,10,0,0" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="124,31,0,0" TextWrapping="Wrap" Text="Original name" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="206,31,0,0" TextWrapping="Wrap" Text="{Binding OriginalName}" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="124,52,0,0" TextWrapping="Wrap" Text="Year" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="206,52,0,0" TextWrapping="Wrap" Text="{Binding Year}" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="124,73,0,0" TextWrapping="Wrap" Text="Genre" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="206,73,0,0" TextWrapping="Wrap" Text="{Binding Genres, Converter={StaticResource GenreToString}}" VerticalAlignment="Top"  />
-            <TextBlock HorizontalAlignment="Left" Margin="124,94,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="206,94,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="82,205,0,0" TextWrapping="Wrap" Text="{Binding Description}" VerticalAlignment="Top"/>
-
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        <Button Content="Button" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="Button_Click" Grid.Row="1"/>
+        <Button x:Name="FindFilms" Content="FindFilms" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="0" Grid.Column="1"/>
+        </Grid>
+        <Grid x:Name="grid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding SelectedItem, ElementName=ListFilms}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.RowSpan="2" x:Name="image" HorizontalAlignment="Stretch" MaxWidth="200" MaxHeight="200" VerticalAlignment="Top" Source="{Binding Image, Converter={StaticResource StringToPath}}"/>
+            <Grid Grid.RowSpan="2" Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Original name" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding OriginalName}" VerticalAlignment="Stretch"/>
+                <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Year" VerticalAlignment="Stretch"/>
+                <TextBlock Grid.Column="2" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Year}" VerticalAlignment="Stretch"/>
+                <TextBlock Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="Genre" VerticalAlignment="Stretch"/>
+                <TextBlock Grid.Column="2" Grid.Row="3" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Genres, Converter={StaticResource GenreToString}}" VerticalAlignment="Stretch"  />
+                <TextBlock Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Stretch"/>
+                <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Stretch"/>
+            </Grid>
+            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Description}" MaxWidth="{Binding Width, ElementName=grid}" VerticalAlignment="Top" Width="{Binding Width, ElementName=grid}" />
         </Grid>
         <GridSplitter Grid.ColumnSpan="1" Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="5"  Grid.RowSpan="1"/>
-        <ListBox x:Name="ListFilms" ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate1}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+        <ListBox x:Name="ListFilms" ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate1}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" SelectedIndex="0" />
     </Grid>
 </Window>

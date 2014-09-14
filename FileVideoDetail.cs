@@ -9,7 +9,6 @@ namespace VideoFileRenamer.Download
 {
 	class FileVideoDetail : FileVideoDetailShort
 	{
-		private string image;
 		private Person director;
 		private int directorId = -1;
 		private List<string> countryList;
@@ -58,12 +57,6 @@ namespace VideoFileRenamer.Download
 		{
 			get { return director; }
 			set { director = value; }
-		}
-
-		public string Image
-		{
-			get { return image; }
-			set { image = value; }
 		}
 
 		public List<string> CountryList

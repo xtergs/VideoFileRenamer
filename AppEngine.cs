@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -111,7 +112,17 @@ namespace VideoFileRenamer.Download
 			InternetDownloader downloader = new InternetDownloader();
 			Parallel.ForEach(newFiles, (file) =>
 			{
-				newFilms.Enqueue(FindFilmInternet(file));
+				var temp = FindFilmInternet(file);
+				WebClient client = new WebClient();
+				foreach (var item in temp.List)
+				{
+					if (item.Image == null)
+						continue;
+					string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
+					client.DownloadFile(item.Image, imageName);
+					item.Image = imageName;
+				}
+				newFilms.Enqueue(temp);
 			});
 		}
 
@@ -135,7 +146,7 @@ namespace VideoFileRenamer.Download
 				FileName = info.NameFile,
 				Name = detail.Name,
 				OriginalName = detail.OriginalName,
-				Year = 2014,
+				Year = detail.Year,
 				Description = detail.Description,
 				MD5 = info.Md5,
 				Genres = AddGenres(detail.GenreList),
@@ -149,7 +160,7 @@ namespace VideoFileRenamer.Download
 			entities.SaveChanges();
 		}
 
-		private ICollection<Genre> AddGenres(List<string> genreList, bool save = false)
+		private ICollection<Genre> AddGenres(List<string> genreList, bool save = true)
 		{
 			VideosEntities entities = new VideosEntities();
 			var genres = new List<Genre>();
@@ -166,6 +177,7 @@ namespace VideoFileRenamer.Download
 			}
 			if (save)
 				entities.SaveChanges();
+			entities.Dispose();
 			return genres;
 		}
 
@@ -193,6 +205,7 @@ namespace VideoFileRenamer.Download
 			}
 			if (save)
 				entities.SaveChanges();
+			entities.Dispose();
 			return countrs;
 		}
 	}
