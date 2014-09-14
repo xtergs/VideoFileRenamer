@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Controls.Primitives;
@@ -78,21 +79,48 @@ namespace VideoFileRenamer.Download
 
 			var ss = document.DocumentNode.SelectSingleNode(plugin.Link);
 
+			//Name
 			returnDetail.Name = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.Name).InnerText);
+
+			//Original Name
 			returnDetail.OriginalName = HttpUtility.HtmlDecode(ss.SelectSingleNode(ss.XPath + plugin.OriginalName).InnerText);
+
+			//Yer
 			var node = ss.SelectSingleNode( plugin.Year);
 			returnDetail.Year = node.InnerText;
+
+			//Link
 			returnDetail.Link = link;
+
+			//image
 			node = document.DocumentNode.SelectSingleNode(plugin.Image);
 			 WebClient client = new WebClient();
 			string guid = "cach\\"+Guid.NewGuid().ToString() + ".jpeg";
 			returnDetail.Image = guid;
 			if (!Directory.Exists("cach"))
 				Directory.CreateDirectory("cach");
-			client.DownloadFile(link +"//"+ node.Attributes["src"].Value.ToString(), guid);
+			client.DownloadFile( node.Attributes["src"].Value.ToString(), guid);
 
+			//Director
 			node = document.DocumentNode.SelectSingleNode(plugin.Director);
 			returnDetail.Director = new Person(node.InnerText);
+
+			//Description
+			node = document.DocumentNode.SelectSingleNode(plugin.Description);
+			returnDetail.Description = HttpUtility.HtmlDecode(node.InnerText);
+
+			//Rate
+			node = document.DocumentNode.SelectSingleNode(plugin.Rating);
+			returnDetail.Rate = (int)double.Parse(node.InnerText.Replace('.',','));
+
+			//Countres
+			node = document.DocumentNode.SelectSingleNode(plugin.CountryList);
+			returnDetail.CountryList = node.InnerText.Split(',').ToList();
+
+			//Genres
+			node = document.DocumentNode.SelectSingleNode(plugin.GenreList);
+			returnDetail.GenreList = node.InnerText.Split(',').ToList();
+
 			return returnDetail;
 		}
 	}

@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoFileRenamer.Download
+namespace VideoFileRenamer
 {
     using System;
     using System.Data.Entity;
@@ -27,9 +27,13 @@ namespace VideoFileRenamer.Download
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Director> Directors { get; set; }
         public virtual DbSet<Film> Films { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<File> Files { get; set; }
+        public virtual DbSet<Director> Directors { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<Actor> Actors { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

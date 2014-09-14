@@ -10,13 +10,14 @@
 namespace VideoFileRenamer
 {
     using System;
+    using System.Collections.Generic;
     
-    public partial class sp_helpdiagrams_Result
+    public partial class File
     {
-        public string Database { get; set; }
-        public string Name { get; set; }
-        public int ID { get; set; }
-        public string Owner { get; set; }
-        public int OwnerID { get; set; }
+        public int IdFile { get; set; }
+        public string MD5 { get; set; }
+        public string FileName { get; set; }
+    
+        public virtual Film Film { get; set; }
     }
 }

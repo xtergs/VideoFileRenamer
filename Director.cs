@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoFileRenamer.Download
+namespace VideoFileRenamer
 {
     using System;
     using System.Collections.Generic;
@@ -22,6 +22,7 @@ namespace VideoFileRenamer.Download
         public int IdDirector { get; set; }
         public string FistName { get; set; }
         public string SecondName { get; set; }
+        public string Link { get; set; }
     
         public virtual ICollection<Film> Films { get; set; }
     }

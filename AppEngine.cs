@@ -62,7 +62,7 @@ namespace VideoFileRenamer.Download
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) || !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
 					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
 			return newFiles;
@@ -118,7 +118,7 @@ namespace VideoFileRenamer.Download
 		public Director AddDirector(Person director)
 		{
 			VideosEntities entities = new VideosEntities();
-			var dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName});
+			var dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName, Link = "213"});
 			entities.SaveChanges();
 			return dir;
 		}
@@ -126,18 +126,74 @@ namespace VideoFileRenamer.Download
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
 			VideosEntities entities = new VideosEntities();
+			//info.CalculateHash();
 			if (detail.DirectorId < 0)
 				throw new Exception("Haven't director for film");
 			var film = new Film()
 			{
 				Director_id = detail.DirectorId,
-				FileName = info.Name,
+				FileName = info.NameFile,
 				Name = detail.Name,
 				OriginalName = detail.OriginalName,
-				Year = 2014
+				Year = 2014,
+				Description = detail.Description,
+				MD5 = info.Md5,
+				Genres = AddGenres(detail.GenreList),
+				Link = detail.Link,
+				Countries = AddCountries(detail.CountryList),
+				Rate = detail.Rate,
+				Image = detail.Image
 			};
+		//	film.Countries = AddCountries(detail.CountryList, film);
 			entities.Films.Add(film);
 			entities.SaveChanges();
+		}
+
+		private ICollection<Genre> AddGenres(List<string> genreList, bool save = false)
+		{
+			VideosEntities entities = new VideosEntities();
+			var genres = new List<Genre>();
+			foreach (var genre in genreList)
+			{
+				if (entities.Genres.Any(gnr => gnr.Genre1 == genre))
+				{
+					genres.Add(entities.Genres.First(gnr => gnr.Genre1 == genre));
+				}
+				else
+				{
+					genres.Add(entities.Genres.Add(new Genre(){Genre1 = genre.Trim()}));
+				}
+			}
+			if (save)
+				entities.SaveChanges();
+			return genres;
+		}
+
+
+		private ICollection<Country> AddCountries(List<string> list, bool save = true)
+		{
+			VideosEntities entities = new VideosEntities();
+			var countrs = new List<Country>();
+			for (int i = 0; i < list.Count; i++)
+			{
+				list[i] = list[i].Trim('\n', ' ');
+				var temp = list[i];
+
+				//if (entities.Countries.Any(country => country.Name == temp))
+				//{
+				//	var d = entities.Countries.First(country => country.Name == temp);
+				//	if (d != null)
+				//		countrs.Add(d);
+				//}
+				//else
+				{
+					var country = new Country() {Name = list[i]};
+					countrs.Add(entities.Countries.Add(country));
+				}
+			}
+			if (save)
+				entities.SaveChanges();
+			return countrs;
 		}
 	}
 }

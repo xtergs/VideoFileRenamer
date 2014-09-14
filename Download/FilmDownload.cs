@@ -14,15 +14,17 @@ namespace VideoFileRenamer.Download
 		private string name = @"/div[@id='headerFilm']/h1";
 		private string originalName = @"/div[@id='headerFilm']/span";
 		private string year = @"/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[3]/table[1]/tr[1]/td[2]";
-		private string countryList = @"/div[@infoTable]/table/tbody/tr[2]/td/div/a";
-		private string director = @"/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[3]/table[1]/tr[4]";
-		private string scenario;
+		private string countryList = @"//*[@id='infoTable']/table/tr[2]/td[2]";
+		private string director = @"//*[@itemprop='director']";
+
+		private string description = @"//*[@itemprop='description']";
 		private string Operator;
-		private string genreList = @"/div[@infoTable]/table/tbody/tr[11]/td/span/a";
-		private string rating;
+		private string genreList = @"//*[@itemprop='genre']";
+		private string rating = @"//*[@class='rating_ball']";
 		private string image = @"//*/a[@class='popupBigImage']/img";
 		private string trailer;
 		private string time;
+		private string producerList = @"//*[@itemprop='producer']";
 
 		public string Link
 		{
@@ -60,10 +62,10 @@ namespace VideoFileRenamer.Download
 			set { director = value; }
 		}
 
-		public string Scenario
+		public string Description
 		{
-			get { return scenario; }
-			set { scenario = value; }
+			get { return description; }
+			set { description = value; }
 		}
 
 		public string Operator1

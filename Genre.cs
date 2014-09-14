@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoFileRenamer.Download
+namespace VideoFileRenamer
 {
     using System;
     using System.Collections.Generic;

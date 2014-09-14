@@ -12,28 +12,38 @@ namespace VideoFileRenamer.Download
 	{
 		public FileVideoInfo(FileInfo path)
 		{
-			name = path.Name;
+			nameFile = path.Name;
 			this.path = path.FullName;
 			isShow = false;
 			sha = "";
 			md5 = "";
 		}
 
-		private string name;
+		private string nameFile;
 		private string path;
 		private bool isShow;
 		private string sha;
 		private string md5;
 
-		public string Name
+		public string Md5
 		{
-			get { return name; }
-			private set { name = value; }
+			get { return md5; }
+		}
+
+		public string Sha
+		{
+			get { return sha; }
+		}
+
+		public string NameFile
+		{
+			get { return nameFile; }
+			private set { nameFile = value; }
 		}
 
 		public override string ToString()
 		{
-			return name;
+			return nameFile;
 		}
 
 		public void CalculateHash()

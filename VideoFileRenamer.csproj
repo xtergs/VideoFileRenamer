@@ -81,7 +81,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Actor.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Country.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
     <Compile Include="Director.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
+    <Compile Include="File.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
     <Compile Include="Film.cs">
@@ -92,15 +101,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
-    <Compile Include="Genre.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-    </Compile>
     <Compile Include="Download\PersonDownload.cs" />
-    <Compile Include="Person.cs" />
-    <Compile Include="sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-    </Compile>
-    <Compile Include="sp_helpdiagrams_Result.cs">
+    <Compile Include="Genre.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
     <Page Include="UI\AddingFilms.xaml">
@@ -111,6 +113,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Converters\GenreToString.cs" />
+    <Compile Include="Person.cs" />
+    <Compile Include="sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_helpdiagrams_Result.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\StringToPath.cs" />
+    <Compile Include="sysdiagram.cs">
+      <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
     <Compile Include="UI\AddingFilms.xaml.cs">
       <DependentUpon>AddingFilms.xaml</DependentUpon>
     </Compile>
@@ -211,6 +225,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Films.edmx.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

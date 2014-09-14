@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace VideoFileRenamer.Download
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private ObservableCollection<Film> collectionFilms;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -47,16 +50,18 @@ namespace VideoFileRenamer.Download
 			PlugDownload plugin = new PlugDownload();
 			//var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
 			//OutList_Copy.ItemsSource = listFilms;
+			VideosEntities entities = new VideosEntities();
+			collectionFilms = new ObservableCollection<Film>(entities.Films);
+			ListFilms.DataContext = collectionFilms;
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			VideosEntities entities = new VideosEntities();
+			//entities.Database.Delete();
 			entities.Database.CreateIfNotExists();
-			entities.Directors.Load();
-			entities.Genres.Load();
-			entities.Films.Load();
-			ListFilms.DataContext = entities.Films.ToList();
+			collectionFilms = new ObservableCollection<Film>(entities.Films);
+			ListFilms.DataContext = collectionFilms;
 		}
 	}
 }
