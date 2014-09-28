@@ -34,21 +34,21 @@ namespace VideoFileRenamer.Download
 		}
 
 
-		public List<FileVideoDetailShort> FindFilms(FileVideoInfo videoInfo)
+		public List<Film> FindFilms(File videoInfo)
 		{
-			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
+			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.FileName;
 			var myHttpWebResponse = Response(link);
 			HtmlDocument document = new HtmlDocument();
 			var stream = myHttpWebResponse.GetResponseStream();
 			document.Load(stream);
 
-			List<FileVideoDetailShort> list = new List<FileVideoDetailShort>();
+			var list = new List<Film>();
 			var ss = document.DocumentNode.SelectNodes(@"//html//body//*//div[@class='search_results']//div//div[@class='info']");
 
 			//Парсинг html
 			for (int i = 0; i < ss.Count; i++)
 			{
-				var info = new FileVideoDetailShort();
+				var info = new Film();
 
 				//Original name
 				info.OriginalName = HttpUtility.HtmlDecode(ss[i].SelectSingleNode(ss[i].XPath + @"/span").InnerText);
@@ -76,9 +76,9 @@ namespace VideoFileRenamer.Download
 			return list;
 		}
 
-		public FileVideoDetail FullInfoFilm(string link, PlugDownload plugin)
+		public Film FullInfoFilm(string link, PlugDownload plugin)
 		{
-			FileVideoDetail returnDetail = new FileVideoDetail();
+			var returnDetail = new Film();
 			var httpResponse = Response(link);
 
 			HtmlDocument document = new HtmlDocument();
@@ -109,9 +109,9 @@ namespace VideoFileRenamer.Download
 				Directory.CreateDirectory("cach");
 			client.DownloadFile( node.Attributes["src"].Value.ToString(), guid);
 
-			//Director
-			node = document.DocumentNode.SelectSingleNode(plugin.Director);
-			returnDetail.Director = new Person(node.InnerText);
+			////Director
+			//node = document.DocumentNode.SelectSingleNode(plugin.Director);
+			//returnDetail.Director = new Person(node.InnerText);
 
 			//Description
 			node = document.DocumentNode.SelectSingleNode(plugin.Description);
