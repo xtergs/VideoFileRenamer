@@ -29,15 +29,22 @@ namespace VideoFileRenamer.Download
 		public MainWindow()
 		{
 			InitializeComponent();
+			var appEngine = AppEngine.Create();
+			//appEngine.ChangedStatus += AppEngineOnChangedStatus;
 		}
 
-		private string path = @"D:\FilmsTest";
+		private void AppEngineOnChangedStatus(string message)
+		{
+			InfoStatusBarItem.Content = message;
+		}
+
+		private string path = @"D:\Films";
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			engine.FindNewVideos(path);
-			engine.FindFilmsForAllFiles();
+			await engine.FindNewVideosAsync(path);
+			await engine.FindFilmsForAllFilesAsync();
 			AddingFilms newWindow = new AddingFilms();
 			newWindow.Visibility = Visibility.Visible;
 			newWindow.Activate();

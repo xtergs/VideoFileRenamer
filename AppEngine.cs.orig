@@ -66,13 +66,21 @@ namespace VideoFileRenamer.Download
 			{
 				FileInfo infoFile = new FileInfo(file);
 				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+<<<<<<< Updated upstream
 					newFiles.Enqueue(new File(){FileName = infoFile.Name, Path = infoFile.DirectoryName, Size = infoFile.Length});
+=======
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
+>>>>>>> Stashed changes
 			}
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
 				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+<<<<<<< Updated upstream
 					newFiles.Enqueue(new File() { FileName = infoFile.Name, Path = infoFile.DirectoryName, Size = infoFile.Length });
+=======
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
+>>>>>>> Stashed changes
 			}
 			//ChangedStatus("Find " + newFiles.Count + " films");
 			return newFiles;
@@ -113,6 +121,10 @@ namespace VideoFileRenamer.Download
 		}
 
 		//Получает список фильмов подходящих для файла
+<<<<<<< Updated upstream
+=======
+		private ListOfParsFilms FindFilmInternet(FileVideoInfo info)
+>>>>>>> Stashed changes
 		{
 			InternetDownloader downloader = new InternetDownloader();
 			return new ListOfParsFilms(info, downloader.FindFilms(info));
@@ -204,7 +216,10 @@ namespace VideoFileRenamer.Download
 					Image = detail.Image,
 					Link = detail.Link,
 					Name = detail.Name,
+<<<<<<< Updated upstream
 				Path = info.Path,
+=======
+>>>>>>> Stashed changes
 					OriginalName = detail.OriginalName,
 					Year = detail.Year,
 					Rate = detail.Rate

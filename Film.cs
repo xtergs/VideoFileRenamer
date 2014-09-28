@@ -37,5 +37,6 @@ namespace VideoFileRenamer
         public virtual ICollection<File> Files { get; set; }
         public virtual Director Director { get; set; }
         public virtual ICollection<Actor> Actors { get; set; }
+        public virtual Director Director1 { get; set; }
     }
 }

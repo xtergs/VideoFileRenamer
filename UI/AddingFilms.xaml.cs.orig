@@ -47,7 +47,11 @@ namespace VideoFileRenamer.UI
 		{
 			AppEngine engine = AppEngine.Create();
 			InternetDownloader downloader = new InternetDownloader();
+<<<<<<< Updated upstream
 			var selectedItem = (Film) SelectionFilmBox.SelectedItem;
+=======
+			var selectedItem = (FileVideoDetailShort) SelectionFilmBox.SelectedItem;
+>>>>>>> Stashed changes
 			var temp = current;
 			if (engine.NewFilms.Count == 0)
 			{

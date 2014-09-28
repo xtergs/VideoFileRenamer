@@ -10,13 +10,14 @@
         <AssociationConnector Association="VideosModel.Genre_Film" ManuallyRouted="false" />
         <EntityTypeShape EntityType="VideosModel.Country" Width="1.5" PointX="7.875" PointY="6.75" />
         <AssociationConnector Association="VideosModel.Film_Country" />
-        <EntityTypeShape EntityType="VideosModel.File" Width="1.5" PointX="7.875" PointY="4.5" />
+        <EntityTypeShape EntityType="VideosModel.File" Width="1.5" PointX="7.75" PointY="3.625" />
         <AssociationConnector Association="VideosModel.Film_File" />
         <EntityTypeShape EntityType="VideosModel.Director" Width="1.5" PointX="9.75" PointY="1.625" />
-        <EntityTypeShape EntityType="VideosModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="VideosModel.sysdiagram" Width="1.5" PointX="5.125" PointY="2.875" />
         <AssociationConnector Association="VideosModel.FK_Films_Director" />
         <EntityTypeShape EntityType="VideosModel.Actor" Width="1.5" PointX="15" PointY="2.5" />
         <AssociationConnector Association="VideosModel.FilmActor" />
+        <AssociationConnector Association="VideosModel.FK_Films_Director1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

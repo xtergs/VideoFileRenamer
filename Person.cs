@@ -15,7 +15,7 @@ namespace VideoFileRenamer
 		{
 			var strings = FullName.Split(' ');
 			firstName = strings[0];
-			if (strings.Count() > 0)
+			if (strings.Count() > 1)
 				lastName = strings[1];
 		}
 

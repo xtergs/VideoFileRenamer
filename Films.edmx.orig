@@ -4,6 +4,240 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
+<<<<<<< Updated upstream
+    <Schema Namespace="VideosModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Actors">
+          <Key>
+            <PropertyRef Name="IdActor" />
+          </Key>
+          <Property Name="IdActor" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FistName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SecondName" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Countries">
+          <Key>
+            <PropertyRef Name="IdCountry" />
+          </Key>
+          <Property Name="IdCountry" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Directors">
+          <Key>
+            <PropertyRef Name="IdDirector" />
+          </Key>
+          <Property Name="IdDirector" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FistName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SecondName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Link" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Files">
+          <Key>
+            <PropertyRef Name="IdFile" />
+          </Key>
+          <Property Name="IdFile" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MD5" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Size" Type="bigint" Nullable="false" />
+          <Property Name="Path" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Film_IdFilm" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Film_Country">
+          <Key>
+            <PropertyRef Name="Film_IdFilm" />
+            <PropertyRef Name="Countries_IdCountry" />
+          </Key>
+          <Property Name="Film_IdFilm" Type="int" Nullable="false" />
+          <Property Name="Countries_IdCountry" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FilmActor">
+          <Key>
+            <PropertyRef Name="Film_IdFilm" />
+            <PropertyRef Name="Actors_IdActor" />
+          </Key>
+          <Property Name="Film_IdFilm" Type="int" Nullable="false" />
+          <Property Name="Actors_IdActor" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Films">
+          <Key>
+            <PropertyRef Name="IdFilm" />
+          </Key>
+          <Property Name="IdFilm" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="OriginalName" Type="varchar" MaxLength="50" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="Image" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Rate" Type="int" />
+          <Property Name="Link" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Director_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Genre_Film">
+          <Key>
+            <PropertyRef Name="Films_IdFilm" />
+            <PropertyRef Name="Genres_IdGenre" />
+          </Key>
+          <Property Name="Films_IdFilm" Type="int" Nullable="false" />
+          <Property Name="Genres_IdGenre" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Genres">
+          <Key>
+            <PropertyRef Name="IdGenre" />
+          </Key>
+          <Property Name="IdGenre" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Genre1" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_Film_Country_Country">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="Film_Country" Type="Self.Film_Country" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="IdCountry" />
+            </Principal>
+            <Dependent Role="Film_Country">
+              <PropertyRef Name="Countries_IdCountry" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Film_Country_Film">
+          <End Role="Films" Type="Self.Films" Multiplicity="1" />
+          <End Role="Film_Country" Type="Self.Film_Country" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Films">
+              <PropertyRef Name="IdFilm" />
+            </Principal>
+            <Dependent Role="Film_Country">
+              <PropertyRef Name="Film_IdFilm" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Film_File">
+          <End Role="Films" Type="Self.Films" Multiplicity="1" />
+          <End Role="Files" Type="Self.Files" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Films">
+              <PropertyRef Name="IdFilm" />
+            </Principal>
+            <Dependent Role="Files">
+              <PropertyRef Name="Film_IdFilm" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FilmActor_Actor">
+          <End Role="Actors" Type="Self.Actors" Multiplicity="1" />
+          <End Role="FilmActor" Type="Self.FilmActor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Actors">
+              <PropertyRef Name="IdActor" />
+            </Principal>
+            <Dependent Role="FilmActor">
+              <PropertyRef Name="Actors_IdActor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FilmActor_Film">
+          <End Role="Films" Type="Self.Films" Multiplicity="1" />
+          <End Role="FilmActor" Type="Self.FilmActor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Films">
+              <PropertyRef Name="IdFilm" />
+            </Principal>
+            <Dependent Role="FilmActor">
+              <PropertyRef Name="Film_IdFilm" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Films_Director">
+          <End Role="Directors" Type="Self.Directors" Multiplicity="1" />
+          <End Role="Films" Type="Self.Films" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Directors">
+              <PropertyRef Name="IdDirector" />
+            </Principal>
+            <Dependent Role="Films">
+              <PropertyRef Name="Director_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Genre_Film_Film">
+          <End Role="Films" Type="Self.Films" Multiplicity="1" />
+          <End Role="Genre_Film" Type="Self.Genre_Film" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Films">
+              <PropertyRef Name="IdFilm" />
+            </Principal>
+            <Dependent Role="Genre_Film">
+              <PropertyRef Name="Films_IdFilm" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Genre_Film_Genre">
+          <End Role="Genres" Type="Self.Genres" Multiplicity="1" />
+          <End Role="Genre_Film" Type="Self.Genre_Film" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Genres">
+              <PropertyRef Name="IdGenre" />
+            </Principal>
+            <Dependent Role="Genre_Film">
+              <PropertyRef Name="Genres_IdGenre" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="VideosModelStoreContainer">
+          <EntitySet Name="Actors" EntityType="Self.Actors" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Directors" EntityType="Self.Directors" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Files" EntityType="Self.Files" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Film_Country" EntityType="Self.Film_Country" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FilmActor" EntityType="Self.FilmActor" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Films" EntityType="Self.Films" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Genre_Film" EntityType="Self.Genre_Film" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Genres" EntityType="Self.Genres" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Film_Country_Country" Association="Self.FK_Film_Country_Country">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="Film_Country" EntitySet="Film_Country" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Film_Country_Film" Association="Self.FK_Film_Country_Film">
+            <End Role="Films" EntitySet="Films" />
+            <End Role="Film_Country" EntitySet="Film_Country" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Film_File" Association="Self.FK_Film_File">
+            <End Role="Films" EntitySet="Films" />
+            <End Role="Files" EntitySet="Files" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FilmActor_Actor" Association="Self.FK_FilmActor_Actor">
+            <End Role="Actors" EntitySet="Actors" />
+            <End Role="FilmActor" EntitySet="FilmActor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FilmActor_Film" Association="Self.FK_FilmActor_Film">
+            <End Role="Films" EntitySet="Films" />
+            <End Role="FilmActor" EntitySet="FilmActor" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Films_Director" Association="Self.FK_Films_Director">
+            <End Role="Directors" EntitySet="Directors" />
+            <End Role="Films" EntitySet="Films" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Genre_Film_Film" Association="Self.FK_Genre_Film_Film">
+            <End Role="Films" EntitySet="Films" />
+            <End Role="Genre_Film" EntitySet="Genre_Film" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Genre_Film_Genre" Association="Self.FK_Genre_Film_Genre">
+            <End Role="Genres" EntitySet="Genres" />
+            <End Role="Genre_Film" EntitySet="Genre_Film" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+=======
     <Schema Namespace="VideosModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
   <EntityContainer Name="VideosModelStoreContainer">
     <EntitySet Name="Films" EntityType="VideosModel.Store.Films" store:Type="Tables" Schema="dbo" />
@@ -254,6 +488,7 @@
     </ReferentialConstraint>
   </Association>
 </Schema></edmx:StorageModels>
+>>>>>>> Stashed changes
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="VideosModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -272,7 +507,11 @@
           <NavigationProperty Name="Countries" Relationship="VideosModel.Film_Country" FromRole="Film" ToRole="Country" />
           <Property Name="Link" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="Files" Relationship="VideosModel.Film_File" FromRole="Film" ToRole="File" />
+<<<<<<< Updated upstream
+          <Property Name="Director_id" Type="Int32" Nullable="false" />
+=======
           <Property Name="Director_id" Nullable="false" Type="Int32" />
+>>>>>>> Stashed changes
           <NavigationProperty Name="Director" Relationship="VideosModel.FK_Films_Director" FromRole="Film" ToRole="Director" />
           <NavigationProperty Name="Actors" Relationship="VideosModel.FilmActor" FromRole="Film" ToRole="Actor" />
           <NavigationProperty Name="Director1" Relationship="VideosModel.FK_Films_Director1" FromRole="Film" ToRole="Director" />
@@ -384,9 +623,13 @@
           <Property Name="MD5" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FileName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="Size" Type="Int64" Nullable="false" />
+<<<<<<< Updated upstream
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+=======
           <Property Name="Path" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Created" Type="Time" Nullable="false" Precision="7" />
           <Property Name="Modified" Type="Time" Nullable="false" Precision="7" />
+>>>>>>> Stashed changes
         </EntityType>
         <Association Name="Film_File">
           <End Type="VideosModel.Film" Role="Film" Multiplicity="1" />
@@ -495,8 +738,11 @@
           <ScalarProperty Name="FileName" ColumnName="FileName" />
           <ScalarProperty Name="Size" ColumnName="Size" />
           <ScalarProperty Name="Path" ColumnName="Path" />
+<<<<<<< Updated upstream
+=======
           <ScalarProperty Name="Created" ColumnName="Created" />
           <ScalarProperty Name="Modified" ColumnName="Modified" />
+>>>>>>> Stashed changes
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

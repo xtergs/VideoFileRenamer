@@ -19,8 +19,11 @@ namespace VideoFileRenamer
         public string FileName { get; set; }
         public long Size { get; set; }
         public string Path { get; set; }
+<<<<<<< Updated upstream
+=======
         public System.TimeSpan Created { get; set; }
         public System.TimeSpan Modified { get; set; }
+>>>>>>> Stashed changes
     
         public virtual Film Film { get; set; }
     }

@@ -2,7 +2,11 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
+<<<<<<< Updated upstream
+-- Date Created: 09/26/2014 19:46:02
+=======
 -- Date Created: 09/27/2014 22:53:51
+>>>>>>> Stashed changes
 -- Generated from EDMX file: C:\Programming\VideoFileRenamer\Code\Desktop Client\VideoFileRenamer\Films.edmx
 -- --------------------------------------------------
 
@@ -119,8 +123,11 @@ CREATE TABLE [dbo].[Files] (
     [FileName] nvarchar(500)  NOT NULL,
     [Size] bigint  NOT NULL,
     [Path] nvarchar(max)  NOT NULL,
+<<<<<<< Updated upstream
+=======
     [Created] time  NOT NULL,
     [Modified] time  NOT NULL,
+>>>>>>> Stashed changes
     [Film_IdFilm] int  NOT NULL
 );
 GO
