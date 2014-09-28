@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using Microsoft.SqlServer.Server;
 using VideoFileRenamer.Download;
 
 namespace VideoFileRenamer.Download
@@ -31,6 +33,10 @@ namespace VideoFileRenamer.Download
 			get { return newFilms; }
 		}
 
+		public delegate void statusMessage(string message);
+
+		public event statusMessage ChangedStatus;
+
 		#region Constructors
 
 		private AppEngine()
@@ -49,6 +55,8 @@ namespace VideoFileRenamer.Download
 
 		#endregion
 
+
+		#region FindNewVideos
 		//Возвращает список новых фильмов и серий для сериалов
 		public Queue<FileVideoInfo> FindNewVideos(string path)
 		{
@@ -57,15 +65,16 @@ namespace VideoFileRenamer.Download
 			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
 					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
 			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 			{
 				FileInfo infoFile = new FileInfo(file);
-				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Films.Any(film => film.FileName == infoFile.Name))
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
 					newFiles.Enqueue(new FileVideoInfo(infoFile));
 			}
+			//ChangedStatus("Find " + newFiles.Count + " films");
 			return newFiles;
 		}
 
@@ -74,6 +83,8 @@ namespace VideoFileRenamer.Download
 			var result = Task<Queue<FileVideoInfo>>.Factory.StartNew(() => FindNewVideos(path));
 			return result;
 		}
+
+		#endregion 
 
 		//Подсчитывает хэши файлов
 		public void CalculateHashFiles(List<FileVideoInfo> list)
@@ -88,28 +99,29 @@ namespace VideoFileRenamer.Download
 		}
 
 		//Поиск фильма на кинопоиске
-		public List<FileVideoDetailShort> FindFilms(FileVideoInfo detail, PlugDownload plugin)
-		{
-			InternetDownloader downloader = new InternetDownloader();
-			return downloader.FindFilms(detail);
-		}
+		//public List<FileVideoDetailShort> FindFilms(FileVideoInfo detail, PlugDownload plugin)
+		//{
+		//	InternetDownloader downloader = new InternetDownloader();
+		//	return downloader.FindFilms(detail);
+		//}
 
-		//
-		private FileVideoDetail DownloadInfoFilm(FileVideoDetailShort detail, PlugDownload plugin)
+		//Поиск фильма на кинопоиске
+		private FileVideoDetail DownloadInfoFilm(FileVideoDetailShort detail, FileVideoInfo info, PlugDownload plugin)
 		{
 			InternetDownloader downloader = new InternetDownloader();
 			return downloader.FullInfoFilm(detail.Link, plugin);
 		}
 
+		//Получает список фильмов подходящих для файла
 		private ListOfParsFilms FindFilmInternet(FileVideoInfo info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
 			return new ListOfParsFilms(info, downloader.FindFilms(info));
 		}
 
+		
 		public void FindFilmsForAllFiles()
 		{
-			InternetDownloader downloader = new InternetDownloader();
 			Parallel.ForEach(newFiles, (file) =>
 			{
 				var temp = FindFilmInternet(file);
@@ -126,11 +138,21 @@ namespace VideoFileRenamer.Download
 			});
 		}
 
-		public Director AddDirector(Person director)
+		public Task FindFilmsForAllFilesAsync()
 		{
-			VideosEntities entities = new VideosEntities();
-			var dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName, Link = "213"});
-			entities.SaveChanges();
+			var result = Task.Factory.StartNew(FindFilmsForAllFiles);
+			return result;
+		}
+
+		public Director AddDirector(Person director,VideosEntities entities)
+		{
+			var dir =
+				entities.Directors.FirstOrDefault(x => x.FistName == director.FirstName && x.SecondName == director.LastName);
+			if (dir == null)
+			{
+				dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName, Link = "213"});
+				entities.SaveChanges();
+			}
 			return dir;
 		}
 
@@ -138,31 +160,62 @@ namespace VideoFileRenamer.Download
 		{
 			VideosEntities entities = new VideosEntities();
 			//info.CalculateHash();
-			if (detail.DirectorId < 0)
-				throw new Exception("Haven't director for film");
-			var film = new Film()
-			{
-				Director_id = detail.DirectorId,
-				FileName = info.NameFile,
-				Name = detail.Name,
-				OriginalName = detail.OriginalName,
-				Year = detail.Year,
-				Description = detail.Description,
-				MD5 = info.Md5,
-				Genres = AddGenres(detail.GenreList),
-				Link = detail.Link,
-				Countries = AddCountries(detail.CountryList),
-				Rate = detail.Rate,
-				Image = detail.Image
-			};
-		//	film.Countries = AddCountries(detail.CountryList, film);
+			//if (detail.DirectorId < 0)
+			//	throw new Exception("Haven't director for film");
+			var film = AddFilm(detail, entities);
+			var file = AddFile(info, entities);
+
+			if (film.Files.FirstOrDefault(x => x == file) == null)
+				film.Files.Add(file);
 			entities.Films.Add(film);
 			entities.SaveChanges();
 		}
 
-		private ICollection<Genre> AddGenres(List<string> genreList, bool save = true)
+		File AddFile(FileVideoInfo info, VideosEntities entities)
 		{
-			VideosEntities entities = new VideosEntities();
+			var file = entities.Files.FirstOrDefault(x => x.FileName == info.NameFile && x.Size == info.Size);
+			if (file == null)
+			{
+				file = new File()
+				{
+					FileName = info.NameFile,
+					MD5 = info.Md5,
+					Path = info.Path,
+					Size = info.Size,
+					Created = info.Created,
+					Modified = info.Modified
+				};
+				entities.Files.Add(file);
+			}
+			return file;
+		}
+
+		Film AddFilm(FileVideoDetail detail, VideosEntities entities)
+		{
+			var film =
+				entities.Films.FirstOrDefault(x => x.Name == detail.Name && x.OriginalName == detail.OriginalName && x.Year == detail.Year);
+			if (film == null)
+			{
+				film = new Film()
+				{
+					Countries = AddCountries(detail.CountryList, entities),
+					Description = detail.Description,
+					Director = AddDirector(detail.Director,entities),
+					Genres = AddGenres(detail.GenreList, entities),
+					Image = detail.Image,
+					Link = detail.Link,
+					Name = detail.Name,
+					OriginalName = detail.OriginalName,
+					Year = detail.Year,
+					Rate = detail.Rate
+				};
+				entities.Films.Add(film);
+			}
+			return film;
+		}
+
+		private ICollection<Genre> AddGenres(List<string> genreList, VideosEntities entities, bool save = true)
+		{
 			var genres = new List<Genre>();
 			foreach (var genre in genreList)
 			{
@@ -177,14 +230,12 @@ namespace VideoFileRenamer.Download
 			}
 			if (save)
 				entities.SaveChanges();
-			entities.Dispose();
 			return genres;
 		}
 
 
-		private ICollection<Country> AddCountries(List<string> list, bool save = true)
+		private ICollection<Country> AddCountries(List<string> list, VideosEntities entities, bool save = true)
 		{
-			VideosEntities entities = new VideosEntities();
 			var countrs = new List<Country>();
 			for (int i = 0; i < list.Count; i++)
 			{
@@ -205,7 +256,6 @@ namespace VideoFileRenamer.Download
 			}
 			if (save)
 				entities.SaveChanges();
-			entities.Dispose();
 			return countrs;
 		}
 	}

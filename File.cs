@@ -17,6 +17,10 @@ namespace VideoFileRenamer
         public int IdFile { get; set; }
         public string MD5 { get; set; }
         public string FileName { get; set; }
+        public long Size { get; set; }
+        public string Path { get; set; }
+        public System.TimeSpan Created { get; set; }
+        public System.TimeSpan Modified { get; set; }
     
         public virtual Film Film { get; set; }
     }

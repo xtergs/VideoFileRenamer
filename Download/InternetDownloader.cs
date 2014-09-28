@@ -115,11 +115,13 @@ namespace VideoFileRenamer.Download
 
 			//Description
 			node = document.DocumentNode.SelectSingleNode(plugin.Description);
-			returnDetail.Description = HttpUtility.HtmlDecode(node.InnerText);
+			if (node != null)
+				returnDetail.Description = HttpUtility.HtmlDecode(node.InnerText);
 
 			//Rate
 			node = document.DocumentNode.SelectSingleNode(plugin.Rating);
-			returnDetail.Rate = (int)double.Parse(node.InnerText.Replace('.',','));
+			if (node != null)
+				returnDetail.Rate = (int)double.Parse(node.InnerText.Replace('.',','));
 
 			//Countres
 			node = document.DocumentNode.SelectSingleNode(plugin.CountryList);
@@ -130,6 +132,12 @@ namespace VideoFileRenamer.Download
 			returnDetail.GenreList = node.InnerText.Split(',').ToList();
 
 			return returnDetail;
+		}
+
+		public Task<FileVideoDetail> FullInfoFilmAsync(string link, PlugDownload plugin)
+		{
+			var task = Task.Factory.StartNew(()=> FullInfoFilm(link, plugin));
+			return task;
 		}
 	}
 }

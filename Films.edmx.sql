@@ -2,11 +2,9 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 09/14/2014 01:05:28
+-- Date Created: 09/27/2014 22:53:51
 -- Generated from EDMX file: C:\Programming\VideoFileRenamer\Code\Desktop Client\VideoFileRenamer\Films.edmx
 -- --------------------------------------------------
-Drop database videos;
-create database videos;
 
 SET QUOTED_IDENTIFIER OFF;
 GO
@@ -19,8 +17,11 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_Film_Country]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Countries] DROP CONSTRAINT [FK_Film_Country];
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Country]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Country];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Film]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Film];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Film_File]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Files] DROP CONSTRAINT [FK_Film_File];
@@ -33,6 +34,9 @@ IF OBJECT_ID(N'[dbo].[FK_FilmActor_Film]', 'F') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[FK_Films_Director]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Films_Director1]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director1];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Genre_Film_Film]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Genre_Film] DROP CONSTRAINT [FK_Genre_Film_Film];
@@ -56,6 +60,9 @@ IF OBJECT_ID(N'[dbo].[Directors]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[Files]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Files];
+GO
+IF OBJECT_ID(N'[dbo].[Film_Country]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Film_Country];
 GO
 IF OBJECT_ID(N'[dbo].[FilmActor]', 'U') IS NOT NULL
     DROP TABLE [dbo].[FilmActor];
@@ -84,12 +91,10 @@ CREATE TABLE [dbo].[Films] (
     [OriginalName] varchar(50)  NULL,
     [Year] int  NOT NULL,
     [Image] nvarchar(max)  NOT NULL,
-    [Description] nvarchar(max)  NOT NULL,
+    [Description] nvarchar(max)  NULL,
     [Rate] int  NULL,
     [Link] nvarchar(max)  NOT NULL,
-    [Director_id] int  NOT NULL,
-    [FileName] nvarchar(500)  NOT NULL,
-    [MD5] nvarchar(max)  NOT NULL
+    [Director_id] int  NOT NULL
 );
 GO
 
@@ -112,6 +117,10 @@ CREATE TABLE [dbo].[Files] (
     [IdFile] int IDENTITY(1,1) NOT NULL,
     [MD5] nvarchar(max)  NOT NULL,
     [FileName] nvarchar(500)  NOT NULL,
+    [Size] bigint  NOT NULL,
+    [Path] nvarchar(max)  NOT NULL,
+    [Created] time  NOT NULL,
+    [Modified] time  NOT NULL,
     [Film_IdFilm] int  NOT NULL
 );
 GO
@@ -120,7 +129,7 @@ GO
 CREATE TABLE [dbo].[Directors] (
     [IdDirector] int IDENTITY(1,1) NOT NULL,
     [FistName] varchar(50)  NOT NULL,
-    [SecondName] varchar(50)  NOT NULL,
+    [SecondName] varchar(50)  NULL,
     [Link] nvarchar(max)  NULL
 );
 GO
@@ -332,6 +341,21 @@ GO
 CREATE INDEX [IX_FK_FilmActor_Actor]
 ON [dbo].[FilmActor]
     ([Actors_IdActor]);
+GO
+
+-- Creating foreign key on [Director_id] in table 'Films'
+ALTER TABLE [dbo].[Films]
+ADD CONSTRAINT [FK_Films_Director1]
+    FOREIGN KEY ([Director_id])
+    REFERENCES [dbo].[Directors]
+        ([IdDirector])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_Films_Director1'
+CREATE INDEX [IX_FK_Films_Director1]
+ON [dbo].[Films]
+    ([Director_id]);
 GO
 
 -- --------------------------------------------------

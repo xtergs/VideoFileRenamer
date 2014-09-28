@@ -33,6 +33,13 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="{Binding File.NameFile}"/>
         <ListBox x:Name="SelectionFilmBox" Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding List}" SelectedIndex="0" MouseDoubleClick="SelectionFilmBox_MouseDoubleClick"/>
-        <Button Grid.Row="2" x:Name="NextButton" Click="NextButton_Click" Content="Next"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        <Button Grid.Row="0" x:Name="NextButton" Click="NextButton_Click" Content="Next"/>
+        <Button Grid.Row="0" Grid.Column="1" x:Name="SkipButton" Content="Skip" Click="SkipButton_Click"></Button>
+        </Grid>
     </Grid>
 </Window>

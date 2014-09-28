@@ -17,6 +17,7 @@ namespace VideoFileRenamer
         public Director()
         {
             this.Films = new HashSet<Film>();
+            this.Films1 = new HashSet<Film>();
         }
     
         public int IdDirector { get; set; }
@@ -25,5 +26,6 @@ namespace VideoFileRenamer
         public string Link { get; set; }
     
         public virtual ICollection<Film> Films { get; set; }
+        public virtual ICollection<Film> Films1 { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace VideoFileRenamer.UI
 
 		private ObservableCollection<ListOfParsFilms> obs;
 		private ListOfParsFilms current;
+		private ICollection<FileVideoDetailShort> agregated; 
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -42,32 +43,39 @@ namespace VideoFileRenamer.UI
 			MainGrid.DataContext = current;
 		}
 
-		void SelectFilm()
+		async void SelectFilm()
 		{
 			AppEngine engine = AppEngine.Create();
 			InternetDownloader downloader = new InternetDownloader();
 			var selectedItem = (FileVideoDetailShort) SelectionFilmBox.SelectedItem;
-			var detail = downloader.FullInfoFilm(selectedItem.Link, new PlugDownload());
-			var entity = new VideosEntities();
-			Director dir;
-			// Добавление режисера если нету в БД
-			if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && 
-												director.SecondName == detail.Director.LastName))
-			dir = engine.AddDirector(detail.Director);
-			else
-			{
-				dir = entity.Directors.First(director => director.FistName == detail.Director.FirstName &&
-				                                   director.SecondName == detail.Director.LastName);
-			}
-			detail.DirectorId = dir.IdDirector;
-			engine.AddNewFilm(current.File, detail);
+			var temp = current;
 			if (engine.NewFilms.Count == 0)
 			{
-				this.Close();
-				return;
+				Close();
+				//return;
 			}
-			current = engine.NewFilms.Dequeue();
-			MainGrid.DataContext = current;
+			else
+			{
+				current = engine.NewFilms.Dequeue();
+				MainGrid.DataContext = current;
+			}
+
+			var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
+			//var entity = new VideosEntities();
+			//Director dir;
+			//// Добавление режисера если нету в БД
+			//if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && 
+			//									director.SecondName == detail.Director.LastName))
+			//dir = engine.AddDirector(detail.Director);
+			//else
+			//{
+			//	dir = entity.Directors.First(director => director.FistName == detail.Director.FirstName &&
+			//									   director.SecondName == detail.Director.LastName);
+			//}
+			//detail.DirectorId = dir.IdDirector;
+			engine.AddNewFilm(temp.File, detail);
+			
+			
 		}
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)
@@ -78,6 +86,17 @@ namespace VideoFileRenamer.UI
 		private void SelectionFilmBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			SelectFilm();
+		}
+
+		void Skip()
+		{
+			current = AppEngine.Create().NewFilms.Dequeue();
+			MainGrid.DataContext = current;
+		}
+
+		private void SkipButton_Click(object sender, RoutedEventArgs e)
+		{
+			Skip();
 		}
 	}
 }
