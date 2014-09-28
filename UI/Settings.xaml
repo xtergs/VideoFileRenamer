@@ -1,0 +1,18 @@
+﻿<Window x:Name="SettingsWindow" x:Class="VideoFileRenamer.UI.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="318.5" Width="303" WindowStyle="ToolWindow">
+    <Grid Loaded="Grid_Loaded">
+        <ListBox x:Name="ListOfDirs" HorizontalAlignment="Left" Height="100" Margin="0,29,0,0" VerticalAlignment="Top" Width="100" SelectedIndex="0" ItemsSource="{Binding DirsList, ElementName=SettingsWindow, Mode=TwoWay}"/>
+        <TextBox x:Name="pathNew" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Content="..." HorizontalAlignment="Left" Margin="120,4,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_4"/>
+        <Button Content="Add" HorizontalAlignment="Left" Margin="100,29,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button Content="Delete" HorizontalAlignment="Left" Margin="100,54,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+        <TextBox HorizontalAlignment="Left" Height="22" Margin="54,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Pattern, ElementName=SettingsWindow, Mode=TwoWay}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="54,156,0,0" TextWrapping="Wrap" Text="Pattern" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="54,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="67" Width="132"><Run Text="%T - Name"/><LineBreak/><Run Text="%O - Original name"/><LineBreak/><Run Text="%G - Genries"/><LineBreak/><Run Text="%Y - Year"/></TextBlock>
+        <Button Content="Save" HorizontalAlignment="Left" Margin="73,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
+        <Button Content="Close" HorizontalAlignment="Left" Margin="153,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
+
+    </Grid>
+</Window>

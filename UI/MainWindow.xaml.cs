@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VideoFileRenamer.UI;
+using Settings = VideoFileRenamer.Download.Download.Properties;
 
 namespace VideoFileRenamer.Download
 {
@@ -38,12 +39,12 @@ namespace VideoFileRenamer.Download
 			InfoStatusBarItem.Content = message;
 		}
 
-		private string path = @"D:\Films";
+		//private string path = @"D:\Films";
 
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			await engine.FindNewVideosAsync(path);
+			await engine.FindNewVideosAsync();
 			await engine.FindFilmsForAllFilesAsync();
 			AddingFilms newWindow = new AddingFilms();
 			newWindow.Visibility = Visibility.Visible;
@@ -69,6 +70,20 @@ namespace VideoFileRenamer.Download
 			entities.Database.CreateIfNotExists();
 			collectionFilms = new ObservableCollection<Film>(entities.Films);
 			ListFilms.DataContext = collectionFilms;
+		}
+
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			UI.Settings	settings = new UI.Settings();
+			settings.Activate();
+			settings.Visibility = Visibility.Visible;
+//			settings.Show();
+		}
+
+		private void Button_Click_1(object sender, RoutedEventArgs e)
+		{
+			var engine = AppEngine.Create();
+			engine.RenameAllFiles();
 		}
 	}
 }

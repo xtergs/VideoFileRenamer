@@ -55,6 +55,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="FolderPickerLib">
+      <HintPath>..\..\..\Dependencies\FolderPickerLib.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
@@ -64,6 +67,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -93,6 +97,8 @@
     <Compile Include="File.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
+    <Compile Include="FileRenamer.cs" />
+    <Compile Include="FileVideoRenamer.cs" />
     <Compile Include="Film.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
@@ -104,6 +110,10 @@
     <Compile Include="Download\PersonDownload.cs" />
     <Compile Include="Genre.cs">
       <DependentUpon>Films.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Annotations1.cs" />
+    <Compile Include="UI\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Page Include="UI\AddingFilms.xaml">
       <SubType>Designer</SubType>
@@ -153,6 +163,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\Resource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

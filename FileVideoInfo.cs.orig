@@ -38,6 +38,15 @@ namespace VideoFileRenamer.Download
 			get { return modified; }
 			set { modified = value; }
 		}
+<<<<<<< Updated upstream
+
+		public string Path
+		{
+			get { return path; }
+			set { path = value; }
+		}
+=======
+>>>>>>> Stashed changes
 
 		public string Md5
 		{
@@ -61,8 +70,13 @@ namespace VideoFileRenamer.Download
 		}
 
 		public void CalculateHash()
-		{	
+<<<<<<< Updated upstream
+		{			using (FileStream fs = new FileStream(path + "\\" + nameFile, FileMode.Open))
 			using (FileStream fs = new FileStream(path + "\\" + nameFile, FileMode.Open))
+=======
+		{
+			using (FileStream fs = new FileStream(path + "\\" + NameFile, FileMode.Open))
+>>>>>>> Stashed changes
 			using (BufferedStream bs = new BufferedStream(fs))
 			{
 				SHA1Managed sha1 = new SHA1Managed();

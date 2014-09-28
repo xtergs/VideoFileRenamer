@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,8 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using Microsoft.SqlServer.Server;
 using VideoFileRenamer.Download;
-using VideoFileRenamer.Download.Download.Properties;
-using VideoFileRenamer.Properties;
 
 namespace VideoFileRenamer.Download
 {
@@ -23,10 +20,10 @@ namespace VideoFileRenamer.Download
 		private static AppEngine current;
 
 		private List<string> ignoringFiles = new List<string>();
-		private Queue<FileVideoInfo> newFiles = new Queue<FileVideoInfo>();
+		private Queue<File> newFiles = new Queue<File>();
 		private Queue<ListOfParsFilms> newFilms = new Queue<ListOfParsFilms>(); 
 
-		public Queue<FileVideoInfo> NewFiles
+		public Queue<File> NewFiles
 		{
 			get { return newFiles; }
 		}
@@ -39,12 +36,6 @@ namespace VideoFileRenamer.Download
 		public delegate void statusMessage(string message);
 
 		public event statusMessage ChangedStatus;
-
-		private const string pattern = "Pattern";
-		private const string dirs = "Dirs";
-
-		public string Pattern { get { return pattern; } }
-		public string Dirs { get { return dirs; } }
 
 		#region Constructors
 
@@ -67,34 +58,37 @@ namespace VideoFileRenamer.Download
 
 		#region FindNewVideos
 		//Возвращает список новых фильмов и серий для сериалов
-		public Queue<FileVideoInfo> FindNewVideos()
+		public Queue<File> FindNewVideos(string path)
 		{
 			VideosEntities videosEntities = new VideosEntities();
-			var paths = (StringCollection)Settings.Default[Dirs];
-			foreach (var path in paths)
+			
+			foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 			{
-
-				foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
-				{
-					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
-						newFiles.Enqueue(new FileVideoInfo(infoFile));
-				}
-				foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
-				{
-					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
-						newFiles.Enqueue(new FileVideoInfo(infoFile));
-				}
+				FileInfo infoFile = new FileInfo(file);
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+<<<<<<< Updated upstream
+					newFiles.Enqueue(new File(){FileName = infoFile.Name, Path = infoFile.DirectoryName, Size = infoFile.Length});
+=======
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
+>>>>>>> Stashed changes
 			}
-
+			foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
+			{
+				FileInfo infoFile = new FileInfo(file);
+				if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+<<<<<<< Updated upstream
+					newFiles.Enqueue(new File() { FileName = infoFile.Name, Path = infoFile.DirectoryName, Size = infoFile.Length });
+=======
+					newFiles.Enqueue(new FileVideoInfo(infoFile));
+>>>>>>> Stashed changes
+			}
 			//ChangedStatus("Find " + newFiles.Count + " films");
 			return newFiles;
 		}
 
-		public Task<Queue<FileVideoInfo>> FindNewVideosAsync()
+		public Task<Queue<File>> FindNewVideosAsync(string path)
 		{
-			var result = Task<Queue<FileVideoInfo>>.Factory.StartNew(() => FindNewVideos());
+			var result = Task<Queue<File>>.Factory.StartNew(() => FindNewVideos(path));
 			return result;
 		}
 
@@ -127,7 +121,10 @@ namespace VideoFileRenamer.Download
 		}
 
 		//Получает список фильмов подходящих для файла
+<<<<<<< Updated upstream
+=======
 		private ListOfParsFilms FindFilmInternet(FileVideoInfo info)
+>>>>>>> Stashed changes
 		{
 			InternetDownloader downloader = new InternetDownloader();
 			return new ListOfParsFilms(info, downloader.FindFilms(info));
@@ -136,7 +133,6 @@ namespace VideoFileRenamer.Download
 		
 		public void FindFilmsForAllFiles()
 		{
-			Directory.CreateDirectory(@"cach\");
 			Parallel.ForEach(newFiles, (file) =>
 			{
 				var temp = FindFilmInternet(file);
@@ -220,6 +216,10 @@ namespace VideoFileRenamer.Download
 					Image = detail.Image,
 					Link = detail.Link,
 					Name = detail.Name,
+<<<<<<< Updated upstream
+				Path = info.Path,
+=======
+>>>>>>> Stashed changes
 					OriginalName = detail.OriginalName,
 					Year = detail.Year,
 					Rate = detail.Rate
@@ -274,34 +274,17 @@ namespace VideoFileRenamer.Download
 			return countrs;
 		}
 
-		public void RenameAllFiles()
+		public string Rename(string pattern, File file)
 		{
-			VideosEntities entity = new VideosEntities();
-			foreach (var file in entity.Files)
-			{
-				var newName = Rename(file);
-				file.FileName = newName;
-			}
-			entity.SaveChanges();
-		}
+			var result = pattern.Replace("%T", file.Film.Name)
+				.Replace("%O", file.Film.OriginalName)
+				.Replace("%Y", file.Film.Year.ToString())
+				.Replace("%G", file.Film.Genres.ToString());
 
-		private string Rename(File file)
-		{
-			string pat = (string) Settings.Default[pattern];
-			StringBuilder builder = new StringBuilder(pat);
-			builder.Replace("%T", file.Film.Name);				//%T - name
-			builder.Replace("%O", file.Film.OriginalName);		//%O - original name
-			builder.Replace("%Y", file.Film.Year.ToString());	//%Y - Year
-			if (file.Film.Genres.FirstOrDefault() != null)
-			{
-				builder.Replace("%G", file.Film.Genres.First().Genre1); //%G - Genres
-			}
-
-			builder.Append(Path.GetExtension(file.FileName)).Replace(":","");
-			var newName = builder.ToString();
-			System.IO.File.Move(Path.Combine(file.Path,file.FileName), Path.Combine(file.Path,newName));
-
-			return newName;
+			
+			System.IO.File.Move(file.FileName, result);
+			
+			return result;
 		}
 	}
 }

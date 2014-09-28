@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoFileRenamer.Download.Download.Properties {
+namespace VideoFileRenamer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -30,6 +30,29 @@ namespace VideoFileRenamer.Download.Download.Properties {
         public string VideosConnectionString {
             get {
                 return ((string)(this["VideosConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Pattern {
+            get {
+                return ((string)(this["Pattern"]));
+            }
+            set {
+                this["Pattern"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection Dirs {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Dirs"]));
+            }
+            set {
+                this["Dirs"] = value;
             }
         }
     }
