@@ -9,22 +9,22 @@ namespace VideoFileRenamer.Download
 {
 	class ListOfParsFilms
 	{
-	    public List<FileVideoDetailShort> list = new List<FileVideoDetailShort>();
-		public FileVideoInfo file;
+	    public List<Film> list = new List<Film>();
+		public File file;
 
-		public ListOfParsFilms(FileVideoInfo fileInfo, List<FileVideoDetailShort> listFilms )
+		public ListOfParsFilms(File fileInfo, List<Film> listFilms )
 		{
 			file = fileInfo;
 			list = listFilms;
 		}
 
-		public List<FileVideoDetailShort> List
+		public List<Film> List
 		{
 			get { return list; }
 			set { list = value; }
 		}
 
-		public FileVideoInfo File
+		public File File
 		{
 			get { return file; }
 			set { file = value; }

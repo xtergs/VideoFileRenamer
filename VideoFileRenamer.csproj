@@ -93,6 +93,7 @@
     <Compile Include="File.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>
+    <Compile Include="FileVideoRenamer.cs" />
     <Compile Include="Film.cs">
       <DependentUpon>Films.tt</DependentUpon>
     </Compile>

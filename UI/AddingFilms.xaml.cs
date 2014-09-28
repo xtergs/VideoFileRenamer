@@ -46,7 +46,7 @@ namespace VideoFileRenamer.UI
 		{
 			AppEngine engine = AppEngine.Create();
 			InternetDownloader downloader = new InternetDownloader();
-			var selectedItem = (FileVideoDetailShort) SelectionFilmBox.SelectedItem;
+			var selectedItem = (Film) SelectionFilmBox.SelectedItem;
 			var detail = downloader.FullInfoFilm(selectedItem.Link, new PlugDownload());
 			var entity = new VideosEntities();
 			Director dir;

@@ -13,7 +13,7 @@ namespace VideoFileRenamer.Download
 		public FileVideoInfo(FileInfo path)
 		{
 			nameFile = path.Name;
-			this.path = path.FullName;
+			this.path = path.DirectoryName;
 			isShow = false;
 			sha = "";
 			md5 = "";
@@ -24,6 +24,12 @@ namespace VideoFileRenamer.Download
 		private bool isShow;
 		private string sha;
 		private string md5;
+
+		public string Path
+		{
+			get { return path; }
+			set { path = value; }
+		}
 
 		public string Md5
 		{
@@ -48,7 +54,7 @@ namespace VideoFileRenamer.Download
 
 		public void CalculateHash()
 		{
-			using (FileStream fs = new FileStream(path, FileMode.Open))
+			using (FileStream fs = new FileStream(path + "\\" + nameFile, FileMode.Open))
 			using (BufferedStream bs = new BufferedStream(fs))
 			{
 				SHA1Managed sha1 = new SHA1Managed();

@@ -2,11 +2,9 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 09/14/2014 01:05:28
+-- Date Created: 09/26/2014 19:46:02
 -- Generated from EDMX file: C:\Programming\VideoFileRenamer\Code\Desktop Client\VideoFileRenamer\Films.edmx
 -- --------------------------------------------------
-Drop database videos;
-create database videos;
 
 SET QUOTED_IDENTIFIER OFF;
 GO
@@ -19,8 +17,11 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_Film_Country]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Countries] DROP CONSTRAINT [FK_Film_Country];
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Country]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Country];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Film]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Film];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Film_File]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Files] DROP CONSTRAINT [FK_Film_File];
@@ -57,6 +58,9 @@ GO
 IF OBJECT_ID(N'[dbo].[Files]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Files];
 GO
+IF OBJECT_ID(N'[dbo].[Film_Country]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Film_Country];
+GO
 IF OBJECT_ID(N'[dbo].[FilmActor]', 'U') IS NOT NULL
     DROP TABLE [dbo].[FilmActor];
 GO
@@ -87,9 +91,7 @@ CREATE TABLE [dbo].[Films] (
     [Description] nvarchar(max)  NOT NULL,
     [Rate] int  NULL,
     [Link] nvarchar(max)  NOT NULL,
-    [Director_id] int  NOT NULL,
-    [FileName] nvarchar(500)  NOT NULL,
-    [MD5] nvarchar(max)  NOT NULL
+    [Director_id] int  NOT NULL
 );
 GO
 
@@ -112,6 +114,8 @@ CREATE TABLE [dbo].[Files] (
     [IdFile] int IDENTITY(1,1) NOT NULL,
     [MD5] nvarchar(max)  NOT NULL,
     [FileName] nvarchar(500)  NOT NULL,
+    [Size] bigint  NOT NULL,
+    [Path] nvarchar(max)  NOT NULL,
     [Film_IdFilm] int  NOT NULL
 );
 GO

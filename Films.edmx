@@ -36,6 +36,8 @@
           <Property Name="IdFile" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MD5" Type="nvarchar(max)" Nullable="false" />
           <Property Name="FileName" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Size" Type="bigint" Nullable="false" />
+          <Property Name="Path" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Film_IdFilm" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Film_Country">
@@ -67,8 +69,6 @@
           <Property Name="Rate" Type="int" />
           <Property Name="Link" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Director_id" Type="int" Nullable="false" />
-          <Property Name="FileName" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="MD5" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="Genre_Film">
           <Key>
@@ -255,8 +255,6 @@
           <Property Name="Link" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="Files" Relationship="VideosModel.Film_File" FromRole="Film" ToRole="File" />
           <Property Name="Director_id" Type="Int32" Nullable="false" />
-          <Property Name="FileName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="MD5" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Director" Relationship="VideosModel.FK_Films_Director" FromRole="Film" ToRole="Director" />
           <NavigationProperty Name="Actors" Relationship="VideosModel.FilmActor" FromRole="Film" ToRole="Actor" />
         </EntityType>
@@ -362,6 +360,8 @@
           <NavigationProperty Name="Film" Relationship="VideosModel.Film_File" FromRole="File" ToRole="Film" />
           <Property Name="MD5" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FileName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="Int64" Nullable="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
         </EntityType>
         <Association Name="Film_File">
           <End Type="VideosModel.Film" Role="Film" Multiplicity="1" />
@@ -430,8 +430,6 @@
           <ScalarProperty Name="Rate" ColumnName="Rate" />
           <ScalarProperty Name="Link" ColumnName="Link" />
           <ScalarProperty Name="Director_id" ColumnName="Director_id" />
-          <ScalarProperty Name="FileName" ColumnName="FileName" />
-          <ScalarProperty Name="MD5" ColumnName="MD5" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -457,6 +455,8 @@
           <ScalarProperty Name="IdFile" ColumnName="IdFile" />
           <ScalarProperty Name="MD5" ColumnName="MD5" />
           <ScalarProperty Name="FileName" ColumnName="FileName" />
+          <ScalarProperty Name="Size" ColumnName="Size" />
+          <ScalarProperty Name="Path" ColumnName="Path" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
