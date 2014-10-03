@@ -16,6 +16,7 @@ namespace VideoFileRenamer
     {
         public Film()
         {
+            this.Deleted = false;
             this.Genres = new HashSet<Genre>();
             this.Countries = new HashSet<Country>();
             this.Files = new HashSet<File>();
@@ -31,6 +32,7 @@ namespace VideoFileRenamer
         public Nullable<int> Rate { get; set; }
         public string Link { get; set; }
         public int Director_id { get; set; }
+        public bool Deleted { get; set; }
     
         public virtual ICollection<Genre> Genres { get; set; }
         public virtual ICollection<Country> Countries { get; set; }

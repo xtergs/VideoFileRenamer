@@ -35,6 +35,17 @@ namespace VideoFileRenamer.UI
 
 		private StringCollection dirsList;
 		private string pattern;
+		private bool isDeleteFile;
+
+		public bool IsDeleteFile
+		{
+			get { return isDeleteFile; }
+			set
+			{
+				isDeleteFile = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public string Pattern
 		{

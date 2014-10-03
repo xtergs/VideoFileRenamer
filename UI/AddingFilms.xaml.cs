@@ -60,22 +60,17 @@ namespace VideoFileRenamer.UI
 				MainGrid.DataContext = current;
 			}
 
-			var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
-			//var entity = new VideosEntities();
-			//Director dir;
-			//// Добавление режисера если нету в БД
-			//if (!entity.Directors.Any(director => director.FistName == detail.Director.FirstName && 
-			//									director.SecondName == detail.Director.LastName))
-			//dir = engine.AddDirector(detail.Director);
-			//else
+			//var film = engine.IsContainFilm(selectedItem.Link);
+			//if ( film == null)
 			//{
-			//	dir = entity.Directors.First(director => director.FistName == detail.Director.FirstName &&
-			//									   director.SecondName == detail.Director.LastName);
+				var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
+
+				engine.AddNewFilm(temp.File, detail);
 			//}
-			//detail.DirectorId = dir.IdDirector;
-			engine.AddNewFilm(temp.File, detail);
-			
-			
+			//else
+			//	film.Files.Add(engine.AddFile(temp.File));
+
+
 		}
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)

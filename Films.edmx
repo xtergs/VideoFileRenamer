@@ -66,6 +66,7 @@
     <Property Name="Rate" Type="int" Nullable="true" />
     <Property Name="Link" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Director_id" Type="int" Nullable="false" />
+    <Property Name="Deleted" Type="bit" Nullable="false" DefaultValue="false" />
   </EntityType>
   <EntityType Name="Genres">
     <Key>
@@ -276,6 +277,7 @@
           <NavigationProperty Name="Director" Relationship="VideosModel.FK_Films_Director" FromRole="Film" ToRole="Director" />
           <NavigationProperty Name="Actors" Relationship="VideosModel.FilmActor" FromRole="Film" ToRole="Actor" />
           <NavigationProperty Name="Director1" Relationship="VideosModel.FK_Films_Director1" FromRole="Film" ToRole="Director" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" DefaultValue="False" />
         </EntityType>
         <EntityType Name="Genre">
           <Key>
@@ -468,6 +470,7 @@
           <ScalarProperty Name="Rate" ColumnName="Rate" />
           <ScalarProperty Name="Link" ColumnName="Link" />
           <ScalarProperty Name="Director_id" ColumnName="Director_id" />
+          <ScalarProperty Name="Deleted" ColumnName="Deleted" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

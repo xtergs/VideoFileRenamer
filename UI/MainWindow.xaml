@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:VideoFileRenamer.Download"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:VideoFileRenamer="clr-namespace:VideoFileRenamer" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:VideoFileRenamer="clr-namespace:VideoFileRenamer" x:Name="window" 
         d:DataContext="{d:DesignInstance}"
     mc:Ignorable="d" x:Class="VideoFileRenamer.Download.MainWindow"
         Title="MainWindow" Height="415" Width="547" Loaded="Window_Loaded">
@@ -21,48 +21,33 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="Settings" Click="MenuItem_Click">
-                
+
             </MenuItem>
         </Menu>
         <StatusBar Grid.Row="2">
             <StatusBarItem x:Name="InfoStatusBarItem">hjhdjf</StatusBarItem>
         </StatusBar>
-    <Grid Grid.Row="1">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-        <Button Content="FindFilms" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="Button_Click" Grid.Row="1"/>
-        <Button x:Name="FindFilms" Content="Refresh" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="0" Grid.Column="1"/>
-        <Button Grid.Column="2" Content="Rename all" Click="Button_Click_1"></Button>
-        </Grid>
-        <Grid x:Name="grid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding SelectedItem, ElementName=ListFilms}" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <Image Grid.RowSpan="2" x:Name="image" HorizontalAlignment="Stretch" MaxWidth="200" MaxHeight="200" VerticalAlignment="Top" Source="{Binding Image, Converter={StaticResource StringToPath}}"/>
-            <Grid Grid.RowSpan="2" Grid.Row="0" Grid.Column="1">
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Content="FindFilms" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="Button_Click" Grid.Row="1"/>
+                <Button x:Name="FindFilms" Content="Refresh" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="0" Grid.Column="1"/>
+                <Button Grid.Column="2" Content="Rename all" Click="Button_Click_1"></Button>
+            </Grid>
+            <Grid x:Name="grid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding SelectedItem, ElementName=ListFilms}" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -73,24 +58,45 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
-                <TextBlock Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
-                <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Original name" VerticalAlignment="Top"/>
-                <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding OriginalName}" VerticalAlignment="Stretch"/>
-                <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Year" VerticalAlignment="Stretch"/>
-                <TextBlock Grid.Column="2" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Year}" VerticalAlignment="Stretch"/>
-                <TextBlock Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="Genre" VerticalAlignment="Stretch"/>
-                <TextBlock Grid.Column="2" Grid.Row="3" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Genres, Converter={StaticResource GenreToString}}" VerticalAlignment="Stretch"  />
-                <TextBlock Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Stretch"/>
-                <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Stretch"/>
+                <Image Grid.RowSpan="2" x:Name="image" HorizontalAlignment="Stretch" MaxWidth="200" MaxHeight="200" VerticalAlignment="Top" Source="{Binding Image, Converter={StaticResource StringToPath}}"/>
+                <Grid Grid.RowSpan="2" Grid.Row="0" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Original name" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding OriginalName}" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Year" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="2" Grid.Row="2" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Year}" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="Genre" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="2" Grid.Row="3" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Genres, Converter={StaticResource GenreToString}}" VerticalAlignment="Stretch"  />
+                    <TextBlock Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Name" VerticalAlignment="Stretch"/>
+                    <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Stretch"/>
+                </Grid>
+                <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Description}" MaxWidth="{Binding Width, ElementName=grid}" VerticalAlignment="Top" Width="{Binding Width, ElementName=grid}" />
             </Grid>
-            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Description}" MaxWidth="{Binding Width, ElementName=grid}" VerticalAlignment="Top" Width="{Binding Width, ElementName=grid}" />
+            <GridSplitter Grid.ColumnSpan="1" Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="5"  Grid.RowSpan="1"/>
+            <ListBox x:Name="ListFilms" ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate1}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" SelectedItem="{Binding SelectedItem, ElementName=window, Mode=TwoWay}" ContextMenuOpening="ListFilms_ContextMenuOpening" >
+                <ListBox.ContextMenu>
+                    <ContextMenu x:Name="ContextMenu">
+                        <MenuItem x:Name="DeleteItem" ></MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
         </Grid>
-        <GridSplitter Grid.ColumnSpan="1" Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="5"  Grid.RowSpan="1"/>
-        <ListBox x:Name="ListFilms" ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate1}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" SelectedIndex="0" />
-    </Grid>
     </Grid>
 </Window>

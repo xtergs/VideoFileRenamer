@@ -55,5 +55,17 @@ namespace VideoFileRenamer.Properties {
                 this["Dirs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RealFile {
+            get {
+                return ((bool)(this["RealFile"]));
+            }
+            set {
+                this["RealFile"] = value;
+            }
+        }
     }
 }

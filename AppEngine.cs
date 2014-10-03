@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -23,18 +24,10 @@ namespace VideoFileRenamer.Download
 		private static AppEngine current;
 
 		private List<string> ignoringFiles = new List<string>();
-		private Queue<FileVideoInfo> newFiles = new Queue<FileVideoInfo>();
-		private Queue<ListOfParsFilms> newFilms = new Queue<ListOfParsFilms>(); 
 
-		public Queue<FileVideoInfo> NewFiles
-		{
-			get { return newFiles; }
-		}
+		public Queue<FileVideoInfo> NewFiles { get; private set; }
 
-		public Queue<ListOfParsFilms> NewFilms
-		{
-			get { return newFilms; }
-		}
+		public Queue<ListOfParsFilms> NewFilms { get; private set; }
 
 		public delegate void statusMessage(string message);
 
@@ -50,8 +43,10 @@ namespace VideoFileRenamer.Download
 
 		private AppEngine()
 		{
-			var entity = new VideosEntities();
-			entity.Films.Create();
+			NewFilms = new Queue<ListOfParsFilms>();
+			NewFiles = new Queue<FileVideoInfo>();
+			//var entity = new VideosEntities();
+			//entity.Films.Create();
 		}
 
 		
@@ -78,18 +73,19 @@ namespace VideoFileRenamer.Download
 				{
 					FileInfo infoFile = new FileInfo(file);
 					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
-						newFiles.Enqueue(new FileVideoInfo(infoFile));
+						NewFiles.Enqueue(new FileVideoInfo(infoFile));
 				}
 				foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 				{
 					FileInfo infoFile = new FileInfo(file);
 					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
-						newFiles.Enqueue(new FileVideoInfo(infoFile));
+						NewFiles.Enqueue(new FileVideoInfo(infoFile));
 				}
 			}
 
 			//ChangedStatus("Find " + newFiles.Count + " films");
-			return newFiles;
+			videosEntities.Dispose();
+			return NewFiles;
 		}
 
 		public Task<Queue<FileVideoInfo>> FindNewVideosAsync()
@@ -104,7 +100,7 @@ namespace VideoFileRenamer.Download
 		public void CalculateHashFiles(List<FileVideoInfo> list)
 		{
 			if (list == null) 
-				throw new ArgumentNullException("list in AppEngine.CalculateHashFiles");
+				throw new ArgumentNullException("list");
 
 			foreach (var fileVideoInfo in list)
 			{
@@ -137,8 +133,10 @@ namespace VideoFileRenamer.Download
 		public void FindFilmsForAllFiles()
 		{
 			Directory.CreateDirectory(@"cach\");
-			Parallel.ForEach(newFiles, (file) =>
+
+			Parallel.ForEach(NewFiles, (file) =>
 			{
+				//Исчеет фильмы для файла и скачивает картинку
 				var temp = FindFilmInternet(file);
 				WebClient client = new WebClient();
 				foreach (var item in temp.List)
@@ -149,7 +147,7 @@ namespace VideoFileRenamer.Download
 					client.DownloadFile(item.Image, imageName);
 					item.Image = imageName;
 				}
-				newFilms.Enqueue(temp);
+				NewFilms.Enqueue(temp);
 			});
 		}
 
@@ -162,7 +160,8 @@ namespace VideoFileRenamer.Download
 		public Director AddDirector(Person director,VideosEntities entities)
 		{
 			var dir =
-				entities.Directors.FirstOrDefault(x => x.FistName == director.FirstName && x.SecondName == director.LastName);
+				entities.Directors.FirstOrDefault(x => x.FistName == director.FirstName
+				                                       && x.SecondName == director.LastName);
 			if (dir == null)
 			{
 				dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName, Link = "213"});
@@ -173,20 +172,19 @@ namespace VideoFileRenamer.Download
 
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
-			VideosEntities entities = new VideosEntities();
-			//info.CalculateHash();
-			//if (detail.DirectorId < 0)
-			//	throw new Exception("Haven't director for film");
-			var film = AddFilm(detail, entities);
-			var file = AddFile(info, entities);
+			using (VideosEntities entities = new VideosEntities())
+			{
+				var film = AddFilm(detail, entities);
+				var file = AddFile(info, entities);
 
-			if (film.Files.FirstOrDefault(x => x == file) == null)
-				film.Files.Add(file);
-			entities.Films.Add(film);
-			entities.SaveChanges();
+				if (film.Files.FirstOrDefault(x => x == file) == null)
+					film.Files.Add(file);
+				entities.Films.Add(film);
+				entities.SaveChanges();
+			}
 		}
 
-		File AddFile(FileVideoInfo info, VideosEntities entities)
+		private File AddFile(FileVideoInfo info, VideosEntities entities)
 		{
 			var file = entities.Files.FirstOrDefault(x => x.FileName == info.NameFile && x.Size == info.Size);
 			if (file == null)
@@ -202,6 +200,16 @@ namespace VideoFileRenamer.Download
 				};
 				entities.Files.Add(file);
 			}
+			return file;
+		}
+
+		public File AddFile(FileVideoInfo info)
+		{
+			VideosEntities entity = new VideosEntities();
+			var file = AddFile(info, entity);
+
+			entity.Dispose();
+
 			return file;
 		}
 
@@ -283,6 +291,7 @@ namespace VideoFileRenamer.Download
 				file.FileName = newName;
 			}
 			entity.SaveChanges();
+			entity.Dispose();
 		}
 
 		private string Rename(File file)
@@ -302,6 +311,37 @@ namespace VideoFileRenamer.Download
 			System.IO.File.Move(Path.Combine(file.Path,file.FileName), Path.Combine(file.Path,newName));
 
 			return newName;
+		}
+
+		public List<File> GetFiles(int indexFilm)
+		{
+			VideosEntities entity = new VideosEntities();
+			var d =  entity.Files.Where((file) => file.Film.IdFilm == indexFilm);
+			entity.Dispose();
+			return d.ToList();
+		}
+
+		public void DeleteFile(int idFile, bool isRealFile)
+		{
+			VideosEntities entity = new VideosEntities();
+
+			var file = entity.Files.First(x => x.IdFile == idFile);
+			if (file.Film.Files.Count == 1)
+				file.Film.Deleted = true;
+
+			if (isRealFile)
+				System.IO.File.Delete(Path.Combine(file.Path, file.FileName));
+			entity.Files.Remove(file);
+			entity.SaveChanges();
+			entity.Dispose();
+		}
+
+		public Film IsContainFilm(string link)
+		{
+			using (VideosEntities entity = new VideosEntities())
+			{
+				return entity.Films.FirstOrDefault(x => x.Link == link);
+			}
 		}
 	}
 }

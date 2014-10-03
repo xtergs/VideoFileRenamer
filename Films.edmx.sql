@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 09/27/2014 22:53:51
+-- Date Created: 09/30/2014 15:21:57
 -- Generated from EDMX file: C:\Programming\VideoFileRenamer\Code\Desktop Client\VideoFileRenamer\Films.edmx
 -- --------------------------------------------------
 
@@ -17,67 +17,67 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_Film_Country_Country]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Country];
-GO
-IF OBJECT_ID(N'[dbo].[FK_Film_Country_Film]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Film];
-GO
-IF OBJECT_ID(N'[dbo].[FK_Film_File]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Files] DROP CONSTRAINT [FK_Film_File];
-GO
-IF OBJECT_ID(N'[dbo].[FK_FilmActor_Actor]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[FilmActor] DROP CONSTRAINT [FK_FilmActor_Actor];
-GO
-IF OBJECT_ID(N'[dbo].[FK_FilmActor_Film]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[FilmActor] DROP CONSTRAINT [FK_FilmActor_Film];
-GO
-IF OBJECT_ID(N'[dbo].[FK_Films_Director]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director];
-GO
-IF OBJECT_ID(N'[dbo].[FK_Films_Director1]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director1];
-GO
 IF OBJECT_ID(N'[dbo].[FK_Genre_Film_Film]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Genre_Film] DROP CONSTRAINT [FK_Genre_Film_Film];
 GO
 IF OBJECT_ID(N'[dbo].[FK_Genre_Film_Genre]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Genre_Film] DROP CONSTRAINT [FK_Genre_Film_Genre];
 GO
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Film]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Film];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Film_Country_Country]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Film_Country] DROP CONSTRAINT [FK_Film_Country_Country];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Film_File]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Files] DROP CONSTRAINT [FK_Film_File];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Films_Director]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director];
+GO
+IF OBJECT_ID(N'[dbo].[FK_FilmActor_Film]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[FilmActor] DROP CONSTRAINT [FK_FilmActor_Film];
+GO
+IF OBJECT_ID(N'[dbo].[FK_FilmActor_Actor]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[FilmActor] DROP CONSTRAINT [FK_FilmActor_Actor];
+GO
+IF OBJECT_ID(N'[dbo].[FK_Films_Director1]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Films] DROP CONSTRAINT [FK_Films_Director1];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[Actors]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Actors];
+IF OBJECT_ID(N'[dbo].[Films]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Films];
+GO
+IF OBJECT_ID(N'[dbo].[Genres]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Genres];
 GO
 IF OBJECT_ID(N'[dbo].[Countries]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Countries];
 GO
+IF OBJECT_ID(N'[dbo].[Files]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Files];
+GO
 IF OBJECT_ID(N'[dbo].[Directors]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Directors];
 GO
-IF OBJECT_ID(N'[dbo].[Files]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Files];
+IF OBJECT_ID(N'[dbo].[sysdiagrams]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[sysdiagrams];
+GO
+IF OBJECT_ID(N'[dbo].[Actors]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Actors];
+GO
+IF OBJECT_ID(N'[dbo].[Genre_Film]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Genre_Film];
 GO
 IF OBJECT_ID(N'[dbo].[Film_Country]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Film_Country];
 GO
 IF OBJECT_ID(N'[dbo].[FilmActor]', 'U') IS NOT NULL
     DROP TABLE [dbo].[FilmActor];
-GO
-IF OBJECT_ID(N'[dbo].[Films]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Films];
-GO
-IF OBJECT_ID(N'[dbo].[Genre_Film]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Genre_Film];
-GO
-IF OBJECT_ID(N'[dbo].[Genres]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Genres];
-GO
-IF OBJECT_ID(N'[dbo].[sysdiagrams]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[sysdiagrams];
 GO
 
 -- --------------------------------------------------
@@ -94,7 +94,8 @@ CREATE TABLE [dbo].[Films] (
     [Description] nvarchar(max)  NULL,
     [Rate] int  NULL,
     [Link] nvarchar(max)  NOT NULL,
-    [Director_id] int  NOT NULL
+    [Director_id] int  NOT NULL,
+    [Deleted] bit  NOT NULL
 );
 GO
 

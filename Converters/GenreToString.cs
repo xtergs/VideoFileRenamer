@@ -12,12 +12,12 @@ namespace VideoFileRenamer
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			string result = "";
+			var result = new StringBuilder();
 			foreach (var str in ((HashSet<Genre>)value))
 			{
-				result += str.Genre1 + ", ";
+				result.Append(str.Genre1).Append(", ");
 			}
-			return result.Substring(0, result.Length - 1);
+			return result.Remove(result.Length - 1, 1).ToString();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

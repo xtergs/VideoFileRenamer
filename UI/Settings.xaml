@@ -13,6 +13,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="54,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="67" Width="132"><Run Text="%T - Name"/><LineBreak/><Run Text="%O - Original name"/><LineBreak/><Run Text="%G - Genries"/><LineBreak/><Run Text="%Y - Year"/></TextBlock>
         <Button Content="Save" HorizontalAlignment="Left" Margin="73,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
         <Button Content="Close" HorizontalAlignment="Left" Margin="153,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
+        <CheckBox Content="Delete real file" HorizontalAlignment="Left" Margin="196,144,0,0" VerticalAlignment="Top" IsChecked="{Binding IsDeleteFile, ElementName=SettingsWindow}"/>
 
     </Grid>
 </Window>

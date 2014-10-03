@@ -12,57 +12,40 @@ namespace VideoFileRenamer.Download
 	{
 		public FileVideoInfo(FileInfo path)
 		{
-			nameFile = path.Name;
-			this.path = path.DirectoryName;
+			NameFile = path.Name;
+			Path = path.DirectoryName;
 			isShow = false;
-			sha = "";
-			md5 = "";
+			Sha = "";
+			Md5 = "";
+			Size = path.Length;
+			//Created = path.CreationTime;
+			//Modified = path.LastWriteTime;
 		}
 
-		private string nameFile;
-		private string path;
 		private bool isShow;
-		private string sha;
-		private string md5;
-		private TimeSpan created;
-		private TimeSpan modified;
 
-		public TimeSpan Created
-		{
-			get { return created; }
-			set { created = value; }
-		}
+		public TimeSpan Created { get; set; }
 
-		public TimeSpan Modified
-		{
-			get { return modified; }
-			set { modified = value; }
-		}
+		public TimeSpan Modified { get; set; }
 
-		public string Md5
-		{
-			get { return md5; }
-		}
+		public string Md5 { get; private set; }
 
-		public string Sha
-		{
-			get { return sha; }
-		}
+		public string Sha { get; private set; }
 
-		public string NameFile
-		{
-			get { return nameFile; }
-			private set { nameFile = value; }
-		}
+		public string NameFile { get; private set; }
+
+		public long Size { get; set; }
+
+		public string Path { get; set; }
 
 		public override string ToString()
 		{
-			return nameFile;
+			return NameFile;
 		}
 
 		public void CalculateHash()
 		{	
-			using (FileStream fs = new FileStream(path + "\\" + nameFile, FileMode.Open))
+			using (FileStream fs = new FileStream(Path + "\\" + NameFile, FileMode.Open))
 			using (BufferedStream bs = new BufferedStream(fs))
 			{
 				SHA1Managed sha1 = new SHA1Managed();
@@ -72,7 +55,7 @@ namespace VideoFileRenamer.Download
 					{
 						formatted.AppendFormat("{0:X2}", b);
 					}
-				sha = formatted.ToString();
+				Sha = formatted.ToString();
 				bs.Position = 0;
 				MD5 md5 = new MD5CryptoServiceProvider();
 				hash = md5.ComputeHash(bs);
@@ -81,7 +64,7 @@ namespace VideoFileRenamer.Download
 				{
 					formatted.AppendFormat("{0:X2}", b);
 				}
-				this.md5 = formatted.ToString();
+				this.Md5 = formatted.ToString();
 			}
 
 		}
@@ -98,8 +81,5 @@ namespace VideoFileRenamer.Download
 			return str;
 		}
 
-		public long Size { get; set; }
-
-		public string Path { get { return path; } set { path = value; } }
 	}
 }

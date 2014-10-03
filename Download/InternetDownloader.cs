@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,22 +17,34 @@ namespace VideoFileRenamer.Download
 {
 	class InternetDownloader
 	{
-		HttpWebResponse Response(string link)
+		Stream Response(string link)
 		{
+			System.Net.Http.HttpClient client = new HttpClient();
+			//var response = new HttpRequestMessage(HttpMethod.Get, link);
+			client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(@"Chrome", @"35.0.1916.114"));
+			client.DefaultRequestHeaders.Accept.Add( new MediaTypeWithQualityHeaderValue(@"text/html"));
+			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
 			
-			// создание запроса
-			HttpWebRequest myHttpWebRequest =
-				(HttpWebRequest)HttpWebRequest.Create(link);
-			// Инициализация
-			myHttpWebRequest.UserAgent = @"Mozila/4.0 (compatible; MSIE 6.0; 
-							  Windows NT 5.1; SV1; MyIE2;";
-			myHttpWebRequest.Accept = @"text/html";
-			myHttpWebRequest.Headers.Add("Accept-Language", "ru");
+			//client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue());
 
-			// Ответ
-			HttpWebResponse myHttpWebResponse =
-				(HttpWebResponse)myHttpWebRequest.GetResponse();
-			return myHttpWebResponse;
+			var responseStream = client.GetStreamAsync(link);
+			responseStream.Wait();
+			client.Dispose();
+			return responseStream.Result;
+			//return responseStream;
+			// создание запроса
+//			HttpWebRequest myHttpWebRequest =
+//				(HttpWebRequest)HttpWebRequest.Create(link);
+//			// Инициализация
+//			myHttpWebRequest.UserAgent = @"Mozila/4.0 (compatible; MSIE 6.0; 
+//							  Windows NT 5.1; SV1; MyIE2;";
+//			myHttpWebRequest.Accept = @"text/html";
+//			myHttpWebRequest.Headers.Add("Accept-Language", "ru");
+
+//			// Ответ
+//			HttpWebResponse myHttpWebResponse =
+//				(HttpWebResponse)myHttpWebRequest.GetResponse();
+//			return myHttpWebResponse;
 		}
 
 
@@ -39,8 +53,8 @@ namespace VideoFileRenamer.Download
 			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
 			var myHttpWebResponse = Response(link);
 			HtmlDocument document = new HtmlDocument();
-			var stream = myHttpWebResponse.GetResponseStream();
-			document.Load(stream);
+			//var stream = myHttpWebResponse.GetResponseStream();
+			document.Load(Response(link));
 
 			List<FileVideoDetailShort> list = new List<FileVideoDetailShort>();
 			var ss = document.DocumentNode.SelectNodes(@"//html//body//*//div[@class='search_results']//div//div[@class='info']");
@@ -82,8 +96,8 @@ namespace VideoFileRenamer.Download
 			var httpResponse = Response(link);
 
 			HtmlDocument document = new HtmlDocument();
-			var stream = httpResponse.GetResponseStream();
-			document.Load(stream);
+			//var stream = httpResponse.GetResponseStream();
+			document.Load(Response(link));
 
 			var ss = document.DocumentNode.SelectSingleNode(plugin.Link);
 
