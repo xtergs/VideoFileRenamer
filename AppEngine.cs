@@ -139,7 +139,7 @@ namespace VideoFileRenamer.Download
 				//Исчеет фильмы для файла и скачивает картинку
 				var temp = FindFilmInternet(file);
 				WebClient client = new WebClient();
-				foreach (var item in temp.List)
+				foreach (var item in temp)
 				{
 					if (item.Image == null)
 						continue;
