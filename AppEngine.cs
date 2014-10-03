@@ -27,7 +27,7 @@ namespace VideoFileRenamer.Download
 
 		public Queue<FileVideoInfo> NewFiles { get; private set; }
 
-		public Queue<ListOfParsFilms> NewFilms { get; private set; }
+		public Queue<ParsFilmList> NewFilms { get; private set; }
 
 		public delegate void statusMessage(string message);
 
@@ -43,7 +43,7 @@ namespace VideoFileRenamer.Download
 
 		private AppEngine()
 		{
-			NewFilms = new Queue<ListOfParsFilms>();
+			NewFilms = new Queue<ParsFilmList>();
 			NewFiles = new Queue<FileVideoInfo>();
 			//var entity = new VideosEntities();
 			//entity.Films.Create();
@@ -123,10 +123,10 @@ namespace VideoFileRenamer.Download
 		}
 
 		//Получает список фильмов подходящих для файла
-		private ListOfParsFilms FindFilmInternet(FileVideoInfo info)
+		private ParsFilmList FindFilmInternet(FileVideoInfo info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
-			return new ListOfParsFilms(info, downloader.FindFilms(info));
+			return new ParsFilmList(info, downloader.FindFilms(info));
 		}
 
 		

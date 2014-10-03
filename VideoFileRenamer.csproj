@@ -170,7 +170,7 @@
       <DependentUpon>Films.edmx</DependentUpon>
     </Compile>
     <Compile Include="Download\InternetDownloader.cs" />
-    <Compile Include="ListOfParsFilms.cs" />
+    <Compile Include="ParsFilmList.cs" />
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

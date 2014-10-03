@@ -26,14 +26,14 @@ namespace VideoFileRenamer.UI
 			InitializeComponent();
 		}
 
-		private ObservableCollection<ListOfParsFilms> obs;
-		private ListOfParsFilms current;
+		private ObservableCollection<ParsFilmList> obs;
+		private ParsFilmList current;
 		private ICollection<FileVideoDetailShort> agregated; 
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			var engine = AppEngine.Create();
-			obs = new ObservableCollection<ListOfParsFilms>(engine.NewFilms);
+			obs = new ObservableCollection<ParsFilmList>(engine.NewFilms);
 			if (engine.NewFilms.Count == 0)
 			{
 				this.Close();
@@ -65,10 +65,10 @@ namespace VideoFileRenamer.UI
 			//{
 				var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
 
-				engine.AddNewFilm(temp.File, detail);
+				engine.AddNewFilm(temp.FileInfo, detail);
 			//}
 			//else
-			//	film.Files.Add(engine.AddFile(temp.File));
+			//	film.Files.Add(engine.AddFile(temp.FileInfo));
 
 
 		}
