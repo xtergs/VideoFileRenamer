@@ -148,6 +148,7 @@ namespace VideoFileRenamer.Download
 					item.Image = imageName;
 				}
 				NewFilms.Enqueue(temp);
+				client.Dispose();
 			});
 		}
 
