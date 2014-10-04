@@ -31,8 +31,8 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding File.NameFile}"/>
-        <ListBox x:Name="SelectionFilmBox" Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding List}" SelectedIndex="0" MouseDoubleClick="SelectionFilmBox_MouseDoubleClick"/>
+        <TextBlock Grid.Row="0" Text="{Binding FileInfo.NameFile}"/>
+        <ListBox x:Name="SelectionFilmBox" Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding }" SelectedIndex="0" MouseDoubleClick="SelectionFilmBox_MouseDoubleClick"/>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

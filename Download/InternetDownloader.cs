@@ -122,6 +122,7 @@ namespace VideoFileRenamer.Download
 			if (!Directory.Exists("cach"))
 				Directory.CreateDirectory("cach");
 			client.DownloadFile( node.Attributes["src"].Value.ToString(), guid);
+			client.Dispose();
 
 			//Director
 			node = document.DocumentNode.SelectSingleNode(plugin.Director);
