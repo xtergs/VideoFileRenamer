@@ -23,16 +23,6 @@ namespace VideoFileRenamer.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ARTEM-PC;Initial Catalog=Videos;Integrated Security=True")]
-        public string VideosConnectionString {
-            get {
-                return ((string)(this["VideosConnectionString"]));
-            }
-        }
-        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -65,6 +55,17 @@ namespace VideoFileRenamer.Properties {
             }
             set {
                 this["RealFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\v11.0;Initial Catalog=ContosoUniversity1;Integrated Securit" +
+            "y=SSPI;")]
+        public string VideosConnectionString {
+            get {
+                return ((string)(this["VideosConnectionString"]));
             }
         }
     }

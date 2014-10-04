@@ -18,6 +18,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VideoFileRenamer.Annotations;
+using VideoFileRenamer.DAL;
+using VideoFileRenamer.Models;
 using VideoFileRenamer.UI;
 using Settings = VideoFileRenamer.Download.Download.Properties;
 
@@ -64,17 +66,17 @@ namespace VideoFileRenamer.Download
 			PlugDownload plugin = new PlugDownload();
 			//var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
 			//OutList_Copy.ItemsSource = listFilms;
-			VideosEntities entities = new VideosEntities();
-			collectionFilms = new ObservableCollection<Film>(entities.Films);
+			UnitOfWork entities = new UnitOfWork();
+			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
 			ListFilms.ItemsSource = collectionFilms;
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			VideosEntities entities = new VideosEntities();
+			UnitOfWork entities = new UnitOfWork();
 			//entities.Database.Delete();
-			entities.Database.CreateIfNotExists();
-			collectionFilms = new ObservableCollection<Film>(entities.Films);
+			//entities.Database.CreateIfNotExists();
+			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
 			ListFilms.ItemsSource = collectionFilms;
 		}
 
@@ -95,7 +97,7 @@ namespace VideoFileRenamer.Download
 		void DeleteFilm(int index, bool realFile)
 		{
 			AppEngine entity = AppEngine.Create();
-			var files = entity.GetFiles(((Film)ListFilms.SelectedItem).IdFilm);
+			var files = entity.GetFiles(((Film)ListFilms.SelectedItem).FilmID);
 			if (files.Count <= 0)
 				return;
 			if (files.Count > 1)
@@ -103,7 +105,7 @@ namespace VideoFileRenamer.Download
 
 			}
 			else
-				DeleteFile(files[0].IdFile);
+				DeleteFile(files[0].FileID);
 		}
 
 		void DeleteFile(int idFile)
@@ -133,7 +135,7 @@ namespace VideoFileRenamer.Download
 			DeleteItem.Items.Clear();
 
 			var engine = AppEngine.Create();
-			var files = engine.GetFiles(((Film) ListFilms.SelectedItem).IdFilm);
+			var files = engine.GetFiles(((Film) ListFilms.SelectedItem).FilmID);
 			if (files == null)
 				return;
 			
@@ -141,7 +143,7 @@ namespace VideoFileRenamer.Download
 			{
 				var item = new MenuItem()
 				{
-					Header = file.FileName + " - " + file.Size.ToString(), Tag = file.IdFile
+					Header = file.FileName + " - " + file.Size.ToString(), Tag = file.FileID
 				
 				};
 				item.Click += MenuItem_Click_1;

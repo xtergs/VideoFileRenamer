@@ -93,65 +93,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Actor.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Country.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Director.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="DAL\FilmContext.cs" />
+    <Compile Include="DAL\FileRepository.cs" />
+    <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="Download\PersonDownload.cs" />
-    <Compile Include="File.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Film.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Films.Context.cs">
-      <DependentUpon>Films.Context.tt</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="Films.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="Films.Designer.cs">
-      <DependentUpon>Films.edmx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="Genre.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Models\Actor.cs" />
     <Compile Include="Models\Country.cs" />
     <Compile Include="Models\Director.cs" />
+    <Compile Include="Models\File.cs" />
     <Compile Include="Models\Film.cs" />
     <Compile Include="Models\Genre.cs" />
     <Compile Include="Properties\Annotations1.cs" />
-    <Compile Include="sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="sp_helpdiagrams_Result.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="sysdiagram.cs">
-      <DependentUpon>Films.tt</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="UI\DeleteDialog.xaml.cs">
       <DependentUpon>DeleteDialog.xaml</DependentUpon>
     </Compile>
@@ -220,19 +173,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Films.Context.tt">
-      <DependentUpon>Films.edmx</DependentUpon>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Films.Context.cs</LastGenOutput>
-    </None>
-    <None Include="Films.edmx.diagram">
-      <DependentUpon>Films.edmx</DependentUpon>
-    </None>
-    <None Include="Films.tt">
-      <DependentUpon>Films.edmx</DependentUpon>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Films.cs</LastGenOutput>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\DataSources\VideosEntities.datasource" />
     <None Include="Properties\Settings.settings">
@@ -266,12 +206,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Films.edmx.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <EntityDeploy Include="Films.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Films.Designer.cs</LastGenOutput>
-    </EntityDeploy>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

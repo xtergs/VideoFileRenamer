@@ -8,7 +8,7 @@ namespace VideoFileRenamer.Models
 {
 	class Film
 	{
-		Film()
+		public Film()
 		 {
             this.Deleted = false;
             this.Genres = new HashSet<Genre>();
@@ -17,7 +17,7 @@ namespace VideoFileRenamer.Models
             this.Actors = new HashSet<Actor>();
         }
     
-        public int IdFilm { get; set; }
+        public int FilmID { get; set; }
         public string Name { get; set; }
         public string OriginalName { get; set; }
         public int Year { get; set; }
@@ -32,6 +32,5 @@ namespace VideoFileRenamer.Models
         public virtual ICollection<File> Files { get; set; }
         public virtual Director Director { get; set; }
         public virtual ICollection<Actor> Actors { get; set; }
-        public virtual Director Director1 { get; set; }
 	}
 }

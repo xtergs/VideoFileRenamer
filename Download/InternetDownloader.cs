@@ -51,7 +51,7 @@ namespace VideoFileRenamer.Download
 		public List<FileVideoDetailShort> FindFilms(FileVideoInfo videoInfo)
 		{
 			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
-			var myHttpWebResponse = Response(link);
+			//var myHttpWebResponse = Response(link);
 			HtmlDocument document = new HtmlDocument();
 			//var stream = myHttpWebResponse.GetResponseStream();
 			document.Load(Response(link));
@@ -93,7 +93,7 @@ namespace VideoFileRenamer.Download
 		public FileVideoDetail FullInfoFilm(string link, PlugDownload plugin)
 		{
 			FileVideoDetail returnDetail = new FileVideoDetail();
-			var httpResponse = Response(link);
+			//var httpResponse = Response(link);
 
 			HtmlDocument document = new HtmlDocument();
 			//var stream = httpResponse.GetResponseStream();

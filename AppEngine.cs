@@ -11,9 +11,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using Microsoft.SqlServer.Server;
+using VideoFileRenamer.Annotations;
 using VideoFileRenamer.Download;
 using VideoFileRenamer.Download.Download.Properties;
+using VideoFileRenamer.Models;
 using VideoFileRenamer.Properties;
+using VideoFileRenamer.DAL;
+using File = VideoFileRenamer.Models.File;
 
 namespace VideoFileRenamer.Download
 {
@@ -53,7 +57,10 @@ namespace VideoFileRenamer.Download
 		public static AppEngine Create()
 		{
 			if (current == null)
+			{
 				current = new AppEngine();
+				UnitOfWork.ConnectionString = Settings.Default.VideosConnectionString;
+			}
 			return current;
 		}
 
@@ -64,7 +71,7 @@ namespace VideoFileRenamer.Download
 		//Возвращает список новых фильмов и серий для сериалов
 		public Queue<FileVideoInfo> FindNewVideos()
 		{
-			VideosEntities videosEntities = new VideosEntities();
+			UnitOfWork videosEntities = new UnitOfWork();
 			var paths = (StringCollection)Settings.Default[Dirs];
 			foreach (var path in paths)
 			{
@@ -72,13 +79,13 @@ namespace VideoFileRenamer.Download
 				foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 				{
 					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
 						NewFiles.Enqueue(new FileVideoInfo(infoFile));
 				}
 				foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 				{
 					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.Files.Any(film => film.FileName == infoFile.Name))
+					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
 						NewFiles.Enqueue(new FileVideoInfo(infoFile));
 				}
 			}
@@ -136,7 +143,7 @@ namespace VideoFileRenamer.Download
 
 			Parallel.ForEach(NewFiles, (file) =>
 			{
-				//Исчеет фильмы для файла и скачивает картинку
+				//Исчет фильмы для файла и скачивает картинку
 				var temp = FindFilmInternet(file);
 				WebClient client = new WebClient();
 				foreach (var item in temp)
@@ -158,144 +165,27 @@ namespace VideoFileRenamer.Download
 			return result;
 		}
 
-		public Director AddDirector(Person director,VideosEntities entities)
-		{
-			var dir =
-				entities.Directors.FirstOrDefault(x => x.FistName == director.FirstName
-				                                       && x.SecondName == director.LastName);
-			if (dir == null)
-			{
-				dir = entities.Directors.Add(new Director() {FistName = director.FirstName, SecondName = director.LastName, Link = "213"});
-				entities.SaveChanges();
-			}
-			return dir;
-		}
-
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
-			using (VideosEntities entities = new VideosEntities())
+			using (UnitOfWork entities = new UnitOfWork())
 			{
-				var film = AddFilm(detail, entities);
-				var file = AddFile(info, entities);
-
-				if (film.Files.FirstOrDefault(x => x == file) == null)
-					film.Files.Add(file);
-				entities.Films.Add(film);
-				entities.SaveChanges();
+				entities.AddNewFilm(info, detail);
 			}
-		}
-
-		private File AddFile(FileVideoInfo info, VideosEntities entities)
-		{
-			var file = entities.Files.FirstOrDefault(x => x.FileName == info.NameFile && x.Size == info.Size);
-			if (file == null)
-			{
-				file = new File()
-				{
-					FileName = info.NameFile,
-					MD5 = info.Md5,
-					Path = info.Path,
-					Size = info.Size,
-					Created = info.Created,
-					Modified = info.Modified
-				};
-				entities.Files.Add(file);
-			}
-			return file;
-		}
-
-		public File AddFile(FileVideoInfo info)
-		{
-			VideosEntities entity = new VideosEntities();
-			var file = AddFile(info, entity);
-
-			entity.Dispose();
-
-			return file;
-		}
-
-		Film AddFilm(FileVideoDetail detail, VideosEntities entities)
-		{
-			var film =
-				entities.Films.FirstOrDefault(x => x.Name == detail.Name && x.OriginalName == detail.OriginalName && x.Year == detail.Year);
-			if (film == null)
-			{
-				film = new Film()
-				{
-					Countries = AddCountries(detail.CountryList, entities),
-					Description = detail.Description,
-					Director = AddDirector(detail.Director,entities),
-					Genres = AddGenres(detail.GenreList, entities),
-					Image = detail.Image,
-					Link = detail.Link,
-					Name = detail.Name,
-					OriginalName = detail.OriginalName,
-					Year = detail.Year,
-					Rate = detail.Rate
-				};
-				entities.Films.Add(film);
-			}
-			return film;
-		}
-
-		private ICollection<Genre> AddGenres(List<string> genreList, VideosEntities entities, bool save = true)
-		{
-			var genres = new List<Genre>();
-			foreach (var genre in genreList)
-			{
-				if (entities.Genres.Any(gnr => gnr.Genre1 == genre))
-				{
-					genres.Add(entities.Genres.First(gnr => gnr.Genre1 == genre));
-				}
-				else
-				{
-					genres.Add(entities.Genres.Add(new Genre(){Genre1 = genre.Trim()}));
-				}
-			}
-			if (save)
-				entities.SaveChanges();
-			return genres;
-		}
-
-
-		private ICollection<Country> AddCountries(List<string> list, VideosEntities entities, bool save = true)
-		{
-			var countrs = new List<Country>();
-			for (int i = 0; i < list.Count; i++)
-			{
-				list[i] = list[i].Trim('\n', ' ');
-				var temp = list[i];
-
-				//if (entities.Countries.Any(country => country.Name == temp))
-				//{
-				//	var d = entities.Countries.First(country => country.Name == temp);
-				//	if (d != null)
-				//		countrs.Add(d);
-				//}
-				//else
-				{
-					var country = new Country() {Name = list[i]};
-					countrs.Add(entities.Countries.Add(country));
-				}
-			}
-			if (save)
-				entities.SaveChanges();
-			return countrs;
 		}
 
 		public void RenameAllFiles()
 		{
-			VideosEntities entity = new VideosEntities();
-			foreach (var file in entity.Files)
+			UnitOfWork entity = new UnitOfWork();
+			foreach (var file in entity.FileRepository.dbSet)
 			{
 				var newName = Rename(file);
 				file.FileName = newName;
 			}
-			entity.SaveChanges();
+			entity.Save();
 			entity.Dispose();
 		}
 
-		private string Rename(File file)
+		private string Rename([NotNull] File file)
 		{
 			string pat = (string) Settings.Default[pattern];
 			StringBuilder builder = new StringBuilder(pat);
@@ -316,33 +206,25 @@ namespace VideoFileRenamer.Download
 
 		public List<File> GetFiles(int indexFilm)
 		{
-			VideosEntities entity = new VideosEntities();
-			var d =  entity.Files.Where((file) => file.Film.IdFilm == indexFilm);
+			UnitOfWork entity = new UnitOfWork();
+			var d =  entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm);
 			entity.Dispose();
 			return d.ToList();
 		}
 
 		public void DeleteFile(int idFile, bool isRealFile)
 		{
-			VideosEntities entity = new VideosEntities();
+			UnitOfWork entity = new UnitOfWork();
 
-			var file = entity.Files.First(x => x.IdFile == idFile);
+			var file = entity.FileRepository.Get(x => x.FileID == idFile).First();
 			if (file.Film.Files.Count == 1)
 				file.Film.Deleted = true;
 
 			if (isRealFile)
 				System.IO.File.Delete(Path.Combine(file.Path, file.FileName));
-			entity.Files.Remove(file);
-			entity.SaveChanges();
+			entity.FileRepository.Delete(file);
+			entity.Save();
 			entity.Dispose();
-		}
-
-		public Film IsContainFilm(string link)
-		{
-			using (VideosEntities entity = new VideosEntities())
-			{
-				return entity.Films.FirstOrDefault(x => x.Link == link);
-			}
 		}
 	}
 }

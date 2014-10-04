@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using File = VideoFileRenamer.Models.File;
+
+namespace VideoFileRenamer.DAL
+{
+	class FileRepository : GenericRepository<File>
+	{
+		public FileRepository(FilmContext context) : base(context)
+		{
+		}
+
+		public bool IsContain(File file)
+		{
+			return dbSet.Any(x => x.FileName == file.FileName && x.Size == file.Size);
+		}
+
+		public bool IsContain(FileInfo file)
+		{
+			return dbSet.Any(x => x.FileName == file.FullName && x.Size == file.Length);
+		}
+	}
+}
