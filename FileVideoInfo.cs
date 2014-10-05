@@ -32,7 +32,7 @@ namespace VideoFileRenamer.Download
 
 		public string Sha { get; private set; }
 
-		public string NameFile { get; private set; }
+		public string NameFile { get;  set; }
 
 		public long Size { get; set; }
 

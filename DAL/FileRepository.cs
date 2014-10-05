@@ -22,7 +22,8 @@ namespace VideoFileRenamer.DAL
 
 		public bool IsContain(FileInfo file)
 		{
-			return dbSet.Any(x => x.FileName == file.FullName && x.Size == file.Length);
+			bool b = dbSet.Any(x => x.FileName == file.Name && x.Size == file.Length);
+			return b;
 		}
 
 	}

@@ -16,7 +16,7 @@ namespace VideoFileRenamer
 			var result = new StringBuilder();
 			foreach (var str in ((HashSet<Genre>)value))
 			{
-				result.Append(str.Genre1).Append(", ");
+				result.Append(str.Name).Append(", ");
 			}
 			return result.Remove(result.Length - 1, 1).ToString();
 		}

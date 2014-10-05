@@ -39,12 +39,33 @@ namespace VideoFileRenamer.Download
 			
 			InitializeComponent();
 			var appEngine = AppEngine.Create();
-			//appEngine.ChangedStatus += AppEngineOnChangedStatus;
+			appEngine.ChangedStatus += AppEngineOnChangedStatus;
+			appEngine.UpdatedData += AppEngineOnUpdatedData;
+		}
+
+		private void AppEngineOnUpdatedData()
+		{
+			Dispatcher.Invoke(() => 
+			{
+				RefreshListFilms();
+			});
+		}
+
+		private void RefreshListFilms()
+		{
+			UnitOfWork entities = new UnitOfWork();
+			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
+			ListFilms.ItemsSource = collectionFilms;
+			entities.Dispose();
 		}
 
 		private void AppEngineOnChangedStatus(string message)
 		{
-			InfoStatusBarItem.Content = message;
+			Dispatcher.Invoke(() =>
+			{
+				InfoStatusBarItem.Content = message;
+			});
+			
 		}
 
 		//private string path = @"D:\Films";
@@ -63,21 +84,12 @@ namespace VideoFileRenamer.Download
 		private void FindFilms_Click(object sender, RoutedEventArgs e)
 		{
 		//	var engine = new AppEngine();
-			PlugDownload plugin = new PlugDownload();
-			//var listFilms = engine.FindFilms((FileVideoInfo) OutList.SelectedItem, plugin);
-			//OutList_Copy.ItemsSource = listFilms;
-			UnitOfWork entities = new UnitOfWork();
-			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
-			ListFilms.ItemsSource = collectionFilms;
+			RefreshListFilms();
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			UnitOfWork entities = new UnitOfWork();
-			//entities.Database.Delete();
-			//entities.Database.CreateIfNotExists();
-			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
-			ListFilms.ItemsSource = collectionFilms;
+			RefreshListFilms();
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -149,6 +161,11 @@ namespace VideoFileRenamer.Download
 				item.Click += MenuItem_Click_1;
 				DeleteItem.Items.Add(item);
 			}
+		}
+
+		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+
 		}
 	}
 }

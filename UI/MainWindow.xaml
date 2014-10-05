@@ -21,8 +21,8 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="Settings" Click="MenuItem_Click">
-
             </MenuItem>
+            <TextBox Width="200" TextChanged="TextBox_TextChanged"></TextBox>
         </Menu>
         <StatusBar Grid.Row="2">
             <StatusBarItem x:Name="InfoStatusBarItem">hjhdjf</StatusBarItem>
@@ -44,7 +44,6 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button Content="FindFilms" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="Button_Click" Grid.Row="1"/>
-                <Button x:Name="FindFilms" Content="Refresh" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="75" Click="FindFilms_Click" Grid.Row="0" Grid.Column="1"/>
                 <Button Grid.Column="2" Content="Rename all" Click="Button_Click_1"></Button>
             </Grid>
             <Grid x:Name="grid" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  Grid.Column="2" Grid.ColumnSpan="1" DataContext="{Binding SelectedItem, ElementName=ListFilms}" >

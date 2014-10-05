@@ -35,7 +35,22 @@ namespace VideoFileRenamer.Download
 
 		public delegate void statusMessage(string message);
 
+		public delegate void updatedData();
+
 		public event statusMessage ChangedStatus;
+		public event updatedData UpdatedData;
+
+		protected virtual void OnUpdatedData()
+		{
+			updatedData handler = UpdatedData;
+			if (handler != null) handler();
+		}
+
+		protected virtual void OnChangedStatus(string message)
+		{
+			statusMessage handler = ChangedStatus;
+			if (handler != null) handler(message);
+		}
 
 		private const string pattern = "Pattern";
 		private const string dirs = "Dirs";
@@ -90,7 +105,7 @@ namespace VideoFileRenamer.Download
 				}
 			}
 
-			//ChangedStatus("Find " + newFiles.Count + " films");
+			ChangedStatus("Find " + NewFiles.Count + " films");
 			videosEntities.Dispose();
 			return NewFiles;
 		}
@@ -157,6 +172,7 @@ namespace VideoFileRenamer.Download
 				NewFilms.Enqueue(temp);
 				client.Dispose();
 			});
+			ChangedStatus("Found films for all files");
 		}
 
 		public Task FindFilmsForAllFilesAsync()
@@ -171,6 +187,8 @@ namespace VideoFileRenamer.Download
 			{
 				entities.AddNewFilm(info, detail);
 			}
+			ChangedStatus(detail.Name + " is added");
+			UpdatedData();
 		}
 
 		public void RenameAllFiles()
@@ -183,6 +201,7 @@ namespace VideoFileRenamer.Download
 			}
 			entity.Save();
 			entity.Dispose();
+			ChangedStatus("All files were renamed");
 		}
 
 		private string Rename([NotNull] File file)
@@ -207,9 +226,9 @@ namespace VideoFileRenamer.Download
 		public List<File> GetFiles(int indexFilm)
 		{
 			UnitOfWork entity = new UnitOfWork();
-			var d =  entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm);
+			var d =  entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm).ToList();
 			entity.Dispose();
-			return d.ToList();
+			return d;
 		}
 
 		public void DeleteFile(int idFile, bool isRealFile)
@@ -225,6 +244,7 @@ namespace VideoFileRenamer.Download
 			entity.FileRepository.Delete(file);
 			entity.Save();
 			entity.Dispose();
+			ChangedStatus("The file was deleted");
 		}
 	}
 }
