@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace VideoFileRenamer.Models
 {
-	class Country
-	{
-		public Country()
-		{
-			this.Film = new HashSet<Film>();
-		}
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
-		public int CountryID { get; set; }
-		public string Name { get; set; }
+    public partial class Country
+    {
+        public Country()
+        {
+            Films = new HashSet<Film>();
+        }
 
-		public virtual ICollection<Film> Film { get; set; }
-	}
+        public int CountryID { get; set; }
+
+        public string Name { get; set; }
+
+        public virtual ICollection<Film> Films { get; set; }
+    }
 }

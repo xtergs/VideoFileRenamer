@@ -194,7 +194,7 @@ namespace VideoFileRenamer.Download
 			builder.Replace("%Y", file.Film.Year.ToString());	//%Y - Year
 			if (file.Film.Genres.FirstOrDefault() != null)
 			{
-				builder.Replace("%G", file.Film.Genres.First().Genre1); //%G - Genres
+				builder.Replace("%G", file.Film.Genres.First().Name); //%G - Genres
 			}
 
 			builder.Append(Path.GetExtension(file.FileName)).Replace(":","");

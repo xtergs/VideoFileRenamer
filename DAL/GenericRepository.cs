@@ -10,7 +10,7 @@ using VideoFileRenamer.UI;
 
 namespace VideoFileRenamer.DAL
 {
-	internal class GenericRepository<T> where T : class
+	internal class GenericRepository<T> : IRepository<T> where T : class
 	{
 		internal FilmContext context;
 		internal DbSet<T> dbSet;
@@ -28,7 +28,8 @@ namespace VideoFileRenamer.DAL
 
 		public virtual void Add(T entity)
 		{
-			dbSet.Add(entity);
+			if (!IsContain(entity))
+				dbSet.Add(entity);
 		}
 
 		public virtual void Delete(object id)
@@ -50,6 +51,11 @@ namespace VideoFileRenamer.DAL
 		{
 			dbSet.Attach(entityToUpdate);
 			context.Entry(entityToUpdate).State = EntityState.Modified;
+		}
+
+		public virtual bool IsContain(T entity)
+		{
+			return dbSet.Any(x => x == entity);
 		}
 	}
 }

@@ -143,13 +143,13 @@ namespace VideoFileRenamer.DAL
 			var genres = new List<Genre>();
 			foreach (var genre in genreList)
 			{
-				if (context.Genres.Any(gnr => gnr.Genre1 == genre))
+				if (context.Genres.Any(gnr => gnr.Name == genre))
 				{
-					genres.Add(context.Genres.First(gnr => gnr.Genre1 == genre));
+					genres.Add(context.Genres.First(gnr => gnr.Name == genre));
 				}
 				else
 				{
-					genres.Add(context.Genres.Add(new Genre() { Genre1 = genre.Trim() }));
+					genres.Add(context.Genres.Add(new Genre() { Name = genre.Trim() }));
 				}
 			}
 			if (save)

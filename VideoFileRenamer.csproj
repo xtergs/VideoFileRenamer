@@ -93,9 +93,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DAL\FilmContext.cs" />
     <Compile Include="DAL\FileRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\IRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="Download\PersonDownload.cs" />
     <Compile Include="Models\Actor.cs" />
@@ -103,6 +103,7 @@
     <Compile Include="Models\Director.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\Film.cs" />
+    <Compile Include="DAL\FilmContext.cs" />
     <Compile Include="Models\Genre.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="UI\DeleteDialog.xaml.cs">

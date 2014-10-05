@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace VideoFileRenamer.Models
 {
-	class Genre
-	{
-		public Genre()
-		{
-			this.Films = new HashSet<Film>();
-		}
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
-		public int GenreID { get; set; }
-		public string Genre1 { get; set; }
+    public class Genre
+    {
+        public Genre()
+        {
+            Films = new HashSet<Film>();
+        }
 
-		public virtual ICollection<Film> Films { get; set; }
-	}
+        public int GenreID { get; set; }
+
+        public string Name { get; set; }
+
+        public virtual ICollection<Film> Films { get; set; }
+    }
 }
