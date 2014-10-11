@@ -50,11 +50,26 @@ namespace VideoFileRenamer.Download
 
 		public List<FileVideoDetailShort> FindFilms(FileVideoInfo videoInfo)
 		{
+
 			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
 			//var myHttpWebResponse = Response(link);
 			HtmlDocument document = new HtmlDocument();
 			//var stream = myHttpWebResponse.GetResponseStream();
-			document.Load(Response(link));
+			try
+			{
+
+				var stream = Response(link);
+				//if (!(stream.CanRead && stream.CanSeek))
+				//{
+				//	AppEngine.Create().NewFiles.Enqueue(videoInfo);
+				//	return null;
+				//}
+				document.Load(stream);
+			}
+			finally
+			{
+
+			}
 
 			List<FileVideoDetailShort> list = new List<FileVideoDetailShort>();
 			var ss = document.DocumentNode.SelectNodes(@"//html//body//*//div[@class='search_results']//div//div[@class='info']");

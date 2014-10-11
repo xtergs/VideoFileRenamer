@@ -33,6 +33,7 @@ namespace VideoFileRenamer.Download
 		private ObservableCollection<Film> collectionFilms;
 
 		Film SelectedItem { get; set;  }
+		public string Filter { get; set; }
 
 		public MainWindow()
 		{
@@ -54,7 +55,7 @@ namespace VideoFileRenamer.Download
 		private void RefreshListFilms()
 		{
 			UnitOfWork entities = new UnitOfWork();
-			collectionFilms = new ObservableCollection<Film>(entities.FilmRepository.dbSet);
+			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter));
 			ListFilms.ItemsSource = collectionFilms;
 			entities.Dispose();
 		}
@@ -165,7 +166,8 @@ namespace VideoFileRenamer.Download
 
 		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-
+			Filter = ((TextBox) sender).Text;
+			RefreshListFilms();
 		}
 	}
 }

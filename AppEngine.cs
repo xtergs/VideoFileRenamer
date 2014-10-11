@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows.Documents;
 using Microsoft.SqlServer.Server;
 using VideoFileRenamer.Annotations;
@@ -90,7 +91,8 @@ namespace VideoFileRenamer.Download
 			var paths = (StringCollection)Settings.Default[Dirs];
 			foreach (var path in paths)
 			{
-
+				if(!Directory.Exists(path))
+					continue;
 				foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 				{
 					FileInfo infoFile = new FileInfo(file);
@@ -148,7 +150,10 @@ namespace VideoFileRenamer.Download
 		private ParsFilmList FindFilmInternet(FileVideoInfo info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
-			return new ParsFilmList(info, downloader.FindFilms(info));
+			var list = downloader.FindFilms(info);
+			if (list == null)
+				return null;
+			return new ParsFilmList(info, list);
 		}
 
 		
@@ -160,6 +165,8 @@ namespace VideoFileRenamer.Download
 			{
 				//Исчет фильмы для файла и скачивает картинку
 				var temp = FindFilmInternet(file);
+				if (temp == null)
+					return;
 				WebClient client = new WebClient();
 				foreach (var item in temp)
 				{
@@ -229,6 +236,16 @@ namespace VideoFileRenamer.Download
 			var d =  entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm).ToList();
 			entity.Dispose();
 			return d;
+		}
+
+		public ICollection<Film> FindFilm(string filter)
+		{
+			using (UnitOfWork unitOfWork = new UnitOfWork())
+			{
+				if (filter == "")
+					return unitOfWork.FilmRepository.dbSet.ToList();
+				return unitOfWork.FilmRepository.dbSet.Where(x => x.Name.Contains(filter) || x.OriginalName.Contains(filter)).ToList();
+			}
 		}
 
 		public void DeleteFile(int idFile, bool isRealFile)
