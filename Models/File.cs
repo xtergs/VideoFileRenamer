@@ -15,6 +15,8 @@ namespace VideoFileRenamer.Models
 		    FileName = info.Name;
 		    Size = info.Length;
 		    Path = info.FullName;
+			Created = info.CreationTimeUtc;
+			Modified = info.LastWriteTimeUtc;
 	    }
 
 	    public File()
@@ -38,9 +40,9 @@ namespace VideoFileRenamer.Models
 		    get { return Path + System.IO.Path.DirectorySeparatorChar + FileName; }
 	    }
 
-	    public TimeSpan Created { get; set; }
+	    public DateTime Created { get; set; }
 
-        public TimeSpan Modified { get; set; }
+		public DateTime Modified { get; set; }
 
         public int? Film_FilmID { get; set; }
 

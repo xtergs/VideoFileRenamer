@@ -13,7 +13,12 @@ namespace VideoFileRenamer.Models
             Films = new HashSet<Film>();
         }
 
-        public int DirectorID { get; set; }
+	    public override string ToString()
+	    {
+		    return FistName + " " + SecondName;
+	    }
+
+	    public int DirectorID { get; set; }
 
         public string FistName { get; set; }
 

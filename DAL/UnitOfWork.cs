@@ -14,6 +14,7 @@ namespace VideoFileRenamer.DAL
 		private GenericRepository<Film> filmsRepository;
 		private GenericRepository<Director> directoryRepository;
 		private FileRepository fileRepository;
+		private GenericRepository<Genre> genresRepository; 
 
 		public static string ConnectionString { get; set; }
 
@@ -22,6 +23,19 @@ namespace VideoFileRenamer.DAL
 		public UnitOfWork()
 		{
 			context = new FilmContext(ConnectionString);
+		}
+
+
+		public GenericRepository<Genre> GenresRepository
+		{
+			get
+			{
+				if (this.genresRepository == null)
+				{
+					genresRepository = new GenericRepository<Genre>(context);
+				}
+				return genresRepository;
+			}
 		}
 
 		public GenericRepository<Film> FilmRepository
@@ -135,21 +149,26 @@ namespace VideoFileRenamer.DAL
 				};
 				context.Films.Add(film);
 			}
+			else
+			{
+				film.Deleted = false;
+			}
 			return film;
 		}
 
 		private ICollection<Genre> AddGenres(List<string> genreList, bool save = false)
 		{
 			var genres = new List<Genre>();
-			foreach (var genre in genreList)
+			foreach (var gnre in genreList)
 			{
+				var genre = gnre.Trim();
 				if (context.Genres.Any(gnr => gnr.Name == genre))
 				{
 					genres.Add(context.Genres.First(gnr => gnr.Name == genre));
 				}
 				else
 				{
-					genres.Add(context.Genres.Add(new Genre() { Name = genre.Trim() }));
+					genres.Add(context.Genres.Add(new Genre() { Name = genre }));
 				}
 			}
 			if (save)
@@ -165,14 +184,12 @@ namespace VideoFileRenamer.DAL
 			{
 				list[i] = list[i].Trim('\n', ' ');
 				var temp = list[i];
-
-				//if (entities.Countries.Any(country => country.Name == temp))
-				//{
-				//	var d = entities.Countries.First(country => country.Name == temp);
-				//	if (d != null)
-				//		countrs.Add(d);
-				//}
-				//else
+				var dd = context.Countries.FirstOrDefault(country => country.Name == temp);
+				if (dd != null)
+				{
+					countrs.Add(dd);
+				}
+				else
 				{
 					var country = new Country() { Name = list[i] };
 					countrs.Add(context.Countries.Add(country));

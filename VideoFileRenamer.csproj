@@ -94,10 +94,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DAL\FileRepository.cs" />
+    <Compile Include="DAL\FilmRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\IRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="Download\PersonDownload.cs" />
+    <Compile Include="FilmInfo.xaml.cs">
+      <DependentUpon>FilmInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\Actor.cs" />
     <Compile Include="Models\Country.cs" />
     <Compile Include="Models\Director.cs" />
@@ -112,6 +116,10 @@
     <Compile Include="UI\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Page Include="FilmInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\AddingFilms.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

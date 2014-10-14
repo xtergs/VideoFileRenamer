@@ -1,3 +1,5 @@
+using System.Windows.Controls.Primitives;
+
 namespace VideoFileRenamer.Models
 {
     using System;
@@ -14,9 +16,13 @@ namespace VideoFileRenamer.Models
             Countries = new HashSet<Country>();
             Actors = new HashSet<Actor>();
             Genres = new HashSet<Genre>();
+	        Deleted = false;
+	        Added = DateTime.UtcNow;
         }
 
         public int FilmID { get; set; }
+
+		public DateTime Added { get; set; }
 
         public string Name { get; set; }
 

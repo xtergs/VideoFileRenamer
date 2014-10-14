@@ -18,15 +18,15 @@ namespace VideoFileRenamer.Download
 			Sha = "";
 			Md5 = "";
 			Size = path.Length;
-			//Created = path.CreationTime;
-			//Modified = path.LastWriteTime;
+			Created = path.CreationTime;
+			Modified = path.LastWriteTime;
 		}
 
 		private bool isShow;
 
-		public TimeSpan Created { get; set; }
+		public DateTime Created { get; set; }
 
-		public TimeSpan Modified { get; set; }
+		public DateTime Modified { get; set; }
 
 		public string Md5 { get; private set; }
 

@@ -238,14 +238,13 @@ namespace VideoFileRenamer.Download
 			return d;
 		}
 
-		public ICollection<Film> FindFilm(string filter)
+		public ICollection<Film> FindFilm(string filter, UnitOfWork unitOfWork)
 		{
-			using (UnitOfWork unitOfWork = new UnitOfWork())
-			{
+			
 				if (filter == "")
-					return unitOfWork.FilmRepository.dbSet.ToList();
-				return unitOfWork.FilmRepository.dbSet.Where(x => x.Name.Contains(filter) || x.OriginalName.Contains(filter)).ToList();
-			}
+					return unitOfWork.FilmRepository.dbSet.Where(x=>x.Deleted==false).ToList();
+				return unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false && (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
+			
 		}
 
 		public void DeleteFile(int idFile, bool isRealFile)
@@ -262,6 +261,23 @@ namespace VideoFileRenamer.Download
 			entity.Save();
 			entity.Dispose();
 			ChangedStatus("The file was deleted");
+		}
+
+		public void CleanDeletedFilms()
+		{
+			UnitOfWork unit = new UnitOfWork();
+			foreach (var file in unit.FileRepository.dbSet.AsParallel())
+			{
+				if (!System.IO.File.Exists(file.FullPath))
+					unit.FileRepository.Delete(file);
+			}
+			foreach (var film in unit.FilmRepository.dbSet.AsParallel().Where(x=>x.Files.Count == 0 && x.Deleted == false))
+			{
+				//if (film.Files.Count == 0)
+					film.Deleted = true;
+			}
+			unit.Save();
+			unit.Dispose();
 		}
 	}
 }

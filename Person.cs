@@ -14,21 +14,21 @@ namespace VideoFileRenamer
 		public Person(string FullName)
 		{
 			var strings = FullName.Split(' ');
-			firstName = strings[0];
+			FirstName = strings[0];
 			if (strings.Count() > 1)
-				lastName = strings[1];
+				LastName = strings[1];
 		}
 
 		public string FirstName
 		{
 			get { return firstName; }
-			set { firstName = value; }
+			set { firstName = value.Trim(); }
 		}
 
 		public string LastName
 		{
 			get { return lastName; }
-			set { lastName = value; }
+			set { lastName = value.Trim(); }
 		}
 	}
 }

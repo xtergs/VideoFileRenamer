@@ -10,16 +10,10 @@ namespace VideoFileRenamer.Download
 	{
 		private string name;
 		private string originalName;
-		private int year;
-		private string link;
-		private string image;
 		private bool isAdd = true;
 
-		public string Image
-		{
-			get { return image; }
-			set { image = value; }
-		}
+		public string Image { get; set; }
+
 		public bool IsAdd
 		{
 			get { return isAdd; }
@@ -28,26 +22,18 @@ namespace VideoFileRenamer.Download
 
 		public string Name {
 			get { return name; }
-			set { name = value; }
+			set { name = value.Trim(); }
 		} 
 
 		public string OriginalName
 		{
 			get { return originalName; }
-			set { originalName = value; }
+			set { originalName = value.Trim(); }
 		}
 
-		public int Year
-		{
-			get { return year; }
-			set { year = value; }
-		}
+		public int Year { get; set; }
 
-		public string Link
-		{
-			get { return link; }
-			set { link = value; }
-		}
+		public string Link { get; set; }
 
 		public override string ToString()
 		{

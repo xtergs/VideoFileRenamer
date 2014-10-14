@@ -8,6 +8,7 @@ namespace VideoFileRenamer.DAL
 		public FilmContext(string connectinString)
 			: base(connectinString)
 		{
+			
 		}
 		public virtual DbSet<Actor> Actors { get; set; }
 		public virtual DbSet<Country> Countries { get; set; }

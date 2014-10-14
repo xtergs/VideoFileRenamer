@@ -13,7 +13,22 @@ namespace VideoFileRenamer.Models
             Films = new HashSet<Film>();
         }
 
-        public int GenreID { get; set; }
+	    public override bool Equals(object obj)
+	    {
+		    if (obj.GetType() != typeof (Genre))
+			    return false;
+		    var temp = (Genre) obj;
+		    if (temp.Name == Name)
+			    return true;
+			return false;
+	    }
+
+	    public override string ToString()
+	    {
+		    return Name;
+	    }
+
+	    public int GenreID { get; set; }
 
         public string Name { get; set; }
 

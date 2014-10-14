@@ -35,6 +35,17 @@ namespace VideoFileRenamer.Download
 		Film SelectedItem { get; set;  }
 		public string Filter { get; set; }
 
+		public List<Genre> Genres
+		{
+			get
+			{
+				using (UnitOfWork unit = new UnitOfWork())
+				{
+					return unit.GenresRepository.dbSet.Distinct().ToList();
+				}
+			}
+		}
+
 		public MainWindow()
 		{
 			
@@ -42,6 +53,7 @@ namespace VideoFileRenamer.Download
 			var appEngine = AppEngine.Create();
 			appEngine.ChangedStatus += AppEngineOnChangedStatus;
 			appEngine.UpdatedData += AppEngineOnUpdatedData;
+			Filter = "";
 		}
 
 		private void AppEngineOnUpdatedData()
@@ -55,8 +67,9 @@ namespace VideoFileRenamer.Download
 		private void RefreshListFilms()
 		{
 			UnitOfWork entities = new UnitOfWork();
-			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter));
+			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities).ToList());
 			ListFilms.ItemsSource = collectionFilms;
+			GenresComboBox.ItemsSource = Genres;
 			entities.Dispose();
 		}
 
@@ -168,6 +181,32 @@ namespace VideoFileRenamer.Download
 		{
 			Filter = ((TextBox) sender).Text;
 			RefreshListFilms();
+		}
+
+		private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().CleanDeletedFilms();
+			RefreshListFilms();
+		}
+
+		void AditionFilter()
+		{
+			UnitOfWork de = new UnitOfWork();
+			var query = de.FilmRepository.dbSet.Where(x=>x.Deleted == false);
+			query.Load();
+
+			if (GenresComboBox.SelectedIndex >= 0)
+			{
+				var genre = (Genre) GenresComboBox.SelectedItem;
+				query = query.Where(x => x.Genres.Contains(genre));
+			}
+			var list = query.ToList();
+			de.Dispose();
+		}
+
+		private void Button_Click_2(object sender, RoutedEventArgs e)
+		{
+			AditionFilter();
 		}
 	}
 }

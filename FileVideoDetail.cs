@@ -9,60 +9,44 @@ namespace VideoFileRenamer.Download
 {
 	class FileVideoDetail : FileVideoDetailShort
 	{
-		private Person director;
 		private int directorId = -1;
 		private List<string> countryList;
-		private List<string> genreList; 
-		private string description;
-		private MD5 md5;
-		private SHA1 sha;
-		private int rate;
+		private List<string> genreList;
 
 		public List<string> GenreList
 		{
 			get { return genreList; }
-			set { genreList = value; }
+			set
+			{
+				value.ForEach(x=>x.Trim());
+				genreList = value;
+			}
 		}
 
-		public int Rate
-		{
-			get { return rate; }
-			set { rate = value; }
-		}
+		public int Rate { get; set; }
 
-		public SHA1 Sha
-		{
-			get { return sha; }
-			set { sha = value; }
-		}
+		public SHA1 Sha { get; set; }
 
-		public MD5 Md5
-		{
-			get { return md5; }
-			set { md5 = value; }
-		}
+		public MD5 Md5 { get; set; }
 
-		public string Description
-		{
-			get { return description; }
-			set { description = value; }
-		}
+		public string Description { get; set; }
 
 		public int DirectorId
 		{
 			get { return directorId; }
 			set { directorId = value; }
 		}
-		public Person Director
-		{
-			get { return director; }
-			set { director = value; }
-		}
+
+		public Person Director { get; set; }
 
 		public List<string> CountryList
 		{
 			get { return countryList; }
-			set { countryList = value; }
+			set
+			{
+				value.ForEach(x => x.Trim());
+				countryList = value;
+			}
 		}
 	}
 }

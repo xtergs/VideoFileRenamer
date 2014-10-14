@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Controls.Primitives;
@@ -17,7 +18,7 @@ namespace VideoFileRenamer.Download
 {
 	class InternetDownloader
 	{
-		Stream Response(string link)
+		async Task<Stream> Response(string link)
 		{
 			System.Net.Http.HttpClient client = new HttpClient();
 			//var response = new HttpRequestMessage(HttpMethod.Get, link);
@@ -26,11 +27,16 @@ namespace VideoFileRenamer.Download
 			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
 			
 			//client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue());
-
-			var responseStream = client.GetStreamAsync(link);
-			responseStream.Wait();
-			client.Dispose();
-			return responseStream.Result;
+			Stream responseStream;
+			//do
+			//{
+				responseStream = await client.GetStreamAsync(link);
+				//responseStream.Wait();
+			//	if (responseStream.CanRead != true || responseStream.CanSeek != true)
+			//		Thread.Sleep(6000);
+			//} while (responseStream.CanRead != true || responseStream.CanSeek != true);
+			//client.Dispose();
+			return responseStream;
 			//return responseStream;
 			// создание запроса
 //			HttpWebRequest myHttpWebRequest =
@@ -64,7 +70,7 @@ namespace VideoFileRenamer.Download
 				//	AppEngine.Create().NewFiles.Enqueue(videoInfo);
 				//	return null;
 				//}
-				document.Load(stream);
+				document.Load(stream.Result);
 			}
 			finally
 			{
@@ -112,7 +118,8 @@ namespace VideoFileRenamer.Download
 
 			HtmlDocument document = new HtmlDocument();
 			//var stream = httpResponse.GetResponseStream();
-			document.Load(Response(link));
+			var stream = Response(link);
+			document.Load(stream.Result);
 
 			var ss = document.DocumentNode.SelectSingleNode(plugin.Link);
 

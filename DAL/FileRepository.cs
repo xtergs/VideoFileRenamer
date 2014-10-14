@@ -26,5 +26,11 @@ namespace VideoFileRenamer.DAL
 			return b;
 		}
 
+		public override void Delete(File entityToDelete)
+		{
+			if (entityToDelete.Film.Files.Count <= 1)
+				entityToDelete.Film.Deleted = true;
+			base.Delete(entityToDelete);
+		}
 	}
 }
