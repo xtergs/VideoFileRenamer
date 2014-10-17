@@ -240,10 +240,10 @@ namespace VideoFileRenamer.Download
 
 		public ICollection<Film> FindFilm(string filter, UnitOfWork unitOfWork)
 		{
-			
+			var query = unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false).Include(x=>x.Genres).Include(x=>x.Countries).Include(x=>x.Files).Include(x=>x.Actors);
 				if (filter == "")
-					return unitOfWork.FilmRepository.dbSet.Where(x=>x.Deleted==false).ToList();
-				return unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false && (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
+					return query.ToList();
+				return query.Where(x=> (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
 			
 		}
 

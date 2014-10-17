@@ -67,7 +67,7 @@ namespace VideoFileRenamer.Download
 		private void RefreshListFilms()
 		{
 			UnitOfWork entities = new UnitOfWork();
-			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities).ToList());
+			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities));
 			ListFilms.ItemsSource = collectionFilms;
 			GenresComboBox.ItemsSource = Genres;
 			entities.Dispose();
