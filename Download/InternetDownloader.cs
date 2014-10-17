@@ -138,13 +138,14 @@ namespace VideoFileRenamer.Download
 
 			//image
 			node = document.DocumentNode.SelectSingleNode(plugin.Image);
-			 WebClient client = new WebClient();
-			string guid = "cach\\"+Guid.NewGuid().ToString() + ".jpeg";
-			returnDetail.Image = guid;
-			if (!Directory.Exists("cach"))
-				Directory.CreateDirectory("cach");
-			client.DownloadFile( node.Attributes["src"].Value.ToString(), guid);
-			client.Dispose();
+			using (WebClient client = new WebClient())
+			{
+				string guid = "cach\\" + Guid.NewGuid().ToString() + ".jpeg";
+				returnDetail.Image = guid;
+				if (!Directory.Exists("cach"))
+					Directory.CreateDirectory("cach");
+				client.DownloadFile(node.Attributes["src"].Value.ToString(), guid);
+			}
 
 			//Director
 			node = document.DocumentNode.SelectSingleNode(plugin.Director);

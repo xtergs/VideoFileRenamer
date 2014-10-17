@@ -23,6 +23,11 @@ namespace VideoFileRenamer.Models
 			return false;
 	    }
 
+	    public bool Equals(Genre s2)
+	    {
+		    return true;
+	    }
+
 	    public override string ToString()
 	    {
 		    return Name;

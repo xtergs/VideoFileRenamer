@@ -66,11 +66,12 @@ namespace VideoFileRenamer.Download
 
 		private void RefreshListFilms()
 		{
-			UnitOfWork entities = new UnitOfWork();
-			collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities));
-			ListFilms.ItemsSource = collectionFilms;
-			GenresComboBox.ItemsSource = Genres;
-			entities.Dispose();
+			using (UnitOfWork entities = new UnitOfWork())
+			{
+				collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities));
+				ListFilms.ItemsSource = collectionFilms;
+				GenresComboBox.ItemsSource = Genres;
+			}
 		}
 
 		private void AppEngineOnChangedStatus(string message)
@@ -191,17 +192,23 @@ namespace VideoFileRenamer.Download
 
 		void AditionFilter()
 		{
-			UnitOfWork de = new UnitOfWork();
-			var query = de.FilmRepository.dbSet.Where(x=>x.Deleted == false);
-			query.Load();
-
-			if (GenresComboBox.SelectedIndex >= 0)
+			using (UnitOfWork de = new UnitOfWork())
 			{
-				var genre = (Genre) GenresComboBox.SelectedItem;
-				query = query.Where(x => x.Genres.Contains(genre));
+				var query = de.FilmRepository.dbSet.Where(x => x.Deleted == false);
+				var list = query.ToList();
+
+				if (GenresComboBox.SelectedIndex >= 0)
+				{
+					var genre = (Genre) GenresComboBox.SelectedItem;
+					list = list.Where(x => x.Genres.Any(y=>y.Name == genre.Name)).ToList();
+				}
+
+				int result;
+				if (int.TryParse(YearTextBox.Text, out result))
+				{
+					list = list.Where(x => x.Year == result).ToList();
+				}
 			}
-			var list = query.ToList();
-			de.Dispose();
 		}
 
 		private void Button_Click_2(object sender, RoutedEventArgs e)

@@ -87,29 +87,30 @@ namespace VideoFileRenamer.Download
 		//Возвращает список новых фильмов и серий для сериалов
 		public Queue<FileVideoInfo> FindNewVideos()
 		{
-			UnitOfWork videosEntities = new UnitOfWork();
-			var paths = (StringCollection)Settings.Default[Dirs];
-			foreach (var path in paths)
+			using (UnitOfWork videosEntities = new UnitOfWork())
 			{
-				if(!Directory.Exists(path))
-					continue;
-				foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
+				var paths = (StringCollection) Settings.Default[Dirs];
+				foreach (var path in paths)
 				{
-					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
-						NewFiles.Enqueue(new FileVideoInfo(infoFile));
+					if (!Directory.Exists(path))
+						continue;
+					foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
+					{
+						FileInfo infoFile = new FileInfo(file);
+						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
+							NewFiles.Enqueue(new FileVideoInfo(infoFile));
+					}
+					foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
+					{
+						FileInfo infoFile = new FileInfo(file);
+						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
+							NewFiles.Enqueue(new FileVideoInfo(infoFile));
+					}
 				}
-				foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
-				{
-					FileInfo infoFile = new FileInfo(file);
-					if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
-						NewFiles.Enqueue(new FileVideoInfo(infoFile));
-				}
-			}
 
-			ChangedStatus("Find " + NewFiles.Count + " films");
-			videosEntities.Dispose();
-			return NewFiles;
+				ChangedStatus("Find " + NewFiles.Count + " films");
+				return NewFiles;
+			}
 		}
 
 		public Task<Queue<FileVideoInfo>> FindNewVideosAsync()
@@ -167,17 +168,18 @@ namespace VideoFileRenamer.Download
 				var temp = FindFilmInternet(file);
 				if (temp == null)
 					return;
-				WebClient client = new WebClient();
-				foreach (var item in temp)
+				using (WebClient client = new WebClient())
 				{
-					if (item.Image == null)
-						continue;
-					string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
-					client.DownloadFile(item.Image, imageName);
-					item.Image = imageName;
+					foreach (var item in temp)
+					{
+						if (item.Image == null)
+							continue;
+						string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
+						client.DownloadFile(item.Image, imageName);
+						item.Image = imageName;
+					}
+					NewFilms.Enqueue(temp);
 				}
-				NewFilms.Enqueue(temp);
-				client.Dispose();
 			});
 			ChangedStatus("Found films for all files");
 		}
@@ -200,14 +202,15 @@ namespace VideoFileRenamer.Download
 
 		public void RenameAllFiles()
 		{
-			UnitOfWork entity = new UnitOfWork();
-			foreach (var file in entity.FileRepository.dbSet)
+			using (UnitOfWork entity = new UnitOfWork())
 			{
-				var newName = Rename(file);
-				file.FileName = newName;
+				foreach (var file in entity.FileRepository.dbSet)
+				{
+					var newName = Rename(file);
+					file.FileName = newName;
+				}
+				entity.Save();
 			}
-			entity.Save();
-			entity.Dispose();
 			ChangedStatus("All files were renamed");
 		}
 
@@ -232,10 +235,11 @@ namespace VideoFileRenamer.Download
 
 		public List<File> GetFiles(int indexFilm)
 		{
-			UnitOfWork entity = new UnitOfWork();
-			var d =  entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm).ToList();
-			entity.Dispose();
-			return d;
+			using (UnitOfWork entity = new UnitOfWork())
+			{
+				var d = entity.FileRepository.Get((file) => file.Film.FilmID == indexFilm).ToList();
+				return d;
+			}
 		}
 
 		public ICollection<Film> FindFilm(string filter, UnitOfWork unitOfWork)
@@ -249,35 +253,37 @@ namespace VideoFileRenamer.Download
 
 		public void DeleteFile(int idFile, bool isRealFile)
 		{
-			UnitOfWork entity = new UnitOfWork();
+			using (UnitOfWork entity = new UnitOfWork())
+			{
 
-			var file = entity.FileRepository.Get(x => x.FileID == idFile).First();
-			if (file.Film.Files.Count == 1)
-				file.Film.Deleted = true;
+				var file = entity.FileRepository.Get(x => x.FileID == idFile).First();
+				if (file.Film.Files.Count == 1)
+					file.Film.Deleted = true;
 
-			if (isRealFile)
-				System.IO.File.Delete(Path.Combine(file.Path, file.FileName));
-			entity.FileRepository.Delete(file);
-			entity.Save();
-			entity.Dispose();
-			ChangedStatus("The file was deleted");
+				if (isRealFile)
+					System.IO.File.Delete(Path.Combine(file.Path, file.FileName));
+				entity.FileRepository.Delete(file);
+				entity.Save();
+				ChangedStatus("The file was deleted");
+			}
 		}
 
 		public void CleanDeletedFilms()
 		{
-			UnitOfWork unit = new UnitOfWork();
-			foreach (var file in unit.FileRepository.dbSet.AsParallel())
+			using (UnitOfWork unit = new UnitOfWork())
 			{
-				if (!System.IO.File.Exists(file.FullPath))
-					unit.FileRepository.Delete(file);
-			}
-			foreach (var film in unit.FilmRepository.dbSet.AsParallel().Where(x=>x.Files.Count == 0 && x.Deleted == false))
-			{
-				//if (film.Files.Count == 0)
+				foreach (var file in unit.FileRepository.dbSet.AsParallel())
+				{
+					if (!System.IO.File.Exists(file.FullPath))
+						unit.FileRepository.Delete(file);
+				}
+				foreach (var film in unit.FilmRepository.dbSet.AsParallel().Where(x => x.Files.Count == 0 && x.Deleted == false))
+				{
+					//if (film.Files.Count == 0)
 					film.Deleted = true;
+				}
+				unit.Save();
 			}
-			unit.Save();
-			unit.Dispose();
 		}
 	}
 }
