@@ -61,8 +61,8 @@ namespace VideoFileRenamer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\v11.0;Initial Catalog=ContosoUniversity1;Integrated Securit" +
-            "y=SSPI;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAS-PC;initial catalog=Videos;Persist Security Info=True;User ID=NAS;" +
+            "Password=1")]
         public string VideosConnectionString {
             get {
                 return ((string)(this["VideosConnectionString"]));

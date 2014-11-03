@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using File = VideoFileRenamer.Models.File;
 
 namespace VideoFileRenamer.DAL
 {
 	class FileRepository : GenericRepository<File>
 	{
+
+
 		public FileRepository(FilmContext context) : base(context)
 		{
+		}
+
+		public IQueryable<File> GetAllData()
+		{
+			var d = dbSet.Include(x=>x.Film);
+			return d;
 		}
 
 		public override bool IsContain(File file)

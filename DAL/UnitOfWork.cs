@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VideoFileRenamer.Download;
 using VideoFileRenamer.Models;
 
@@ -23,6 +21,13 @@ namespace VideoFileRenamer.DAL
 		public UnitOfWork()
 		{
 			context = new FilmContext(ConnectionString);
+		}
+
+		public void ClearDB()
+		{
+			if (context.Database.Exists())
+				context.Database.Delete();
+			context.Database.Create();
 		}
 
 

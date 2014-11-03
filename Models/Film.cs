@@ -1,14 +1,11 @@
-using System.Windows.Controls.Primitives;
+using System.IO;
 
 namespace VideoFileRenamer.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
-    public partial class Film
+	public partial class Film
     {
         public Film()
         {
@@ -19,6 +16,14 @@ namespace VideoFileRenamer.Models
 	        Deleted = false;
 	        Added = DateTime.UtcNow;
         }
+
+		public ~Film()
+		{
+			if (System.IO.File.Exists(Image))
+			{
+				System.IO.File.Delete(Image);
+			}
+		}
 
         public int FilmID { get; set; }
 

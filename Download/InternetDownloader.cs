@@ -5,13 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Policy;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Windows.Controls.Primitives;
 using HtmlAgilityPack;
 
 namespace VideoFileRenamer.Download

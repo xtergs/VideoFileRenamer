@@ -5,16 +5,9 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
-using System.Windows.Documents;
-using Microsoft.SqlServer.Server;
 using VideoFileRenamer.Annotations;
-using VideoFileRenamer.Download;
-using VideoFileRenamer.Download.Download.Properties;
 using VideoFileRenamer.Models;
 using VideoFileRenamer.Properties;
 using VideoFileRenamer.DAL;
@@ -38,7 +31,17 @@ namespace VideoFileRenamer.Download
 
 		public delegate void updatedData();
 
+		public delegate void progressMessage(int n, int count, string message);
+
 		public event statusMessage ChangedStatus;
+		public event progressMessage ProgressStatus;
+
+		protected virtual void OnProgressStatus(int n, int count, string message)
+		{
+			progressMessage handler = ProgressStatus;
+			if (handler != null) handler(n, count, message);
+		}
+
 		public event updatedData UpdatedData;
 
 		protected virtual void OnUpdatedData()
@@ -180,7 +183,9 @@ namespace VideoFileRenamer.Download
 					}
 					NewFilms.Enqueue(temp);
 				}
+				OnProgressStatus(NewFilms.Count, NewFiles.Count, "Found films for " + temp.FileInfo.NameFile);
 			});
+			NewFiles.Clear();
 			ChangedStatus("Found films for all files");
 		}
 
@@ -202,14 +207,21 @@ namespace VideoFileRenamer.Download
 
 		public void RenameAllFiles()
 		{
-			using (UnitOfWork entity = new UnitOfWork())
+			UnitOfWork entity = new UnitOfWork();
+			try
 			{
-				foreach (var file in entity.FileRepository.dbSet)
+
+				entity.FilmRepository.dbSet.Load();
+				foreach (var file in entity.FileRepository.GetAllData().Include(x=>x.Film.Genres))
 				{
 					var newName = Rename(file);
 					file.FileName = newName;
 				}
 				entity.Save();
+			}
+			finally
+			{
+				entity.Dispose();
 			}
 			ChangedStatus("All files were renamed");
 		}
@@ -244,7 +256,12 @@ namespace VideoFileRenamer.Download
 
 		public ICollection<Film> FindFilm(string filter, UnitOfWork unitOfWork)
 		{
-			var query = unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false).Include(x=>x.Genres).Include(x=>x.Countries).Include(x=>x.Files).Include(x=>x.Actors);
+			var query = unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false)
+				.Include(x=>x.Genres)
+				.Include(x=>x.Countries)
+				.Include(x=>x.Files)
+				.Include(x=>x.Actors)
+				.Include(x=>x.Director);
 				if (filter == "")
 					return query.ToList();
 				return query.Where(x=> (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
@@ -264,26 +281,33 @@ namespace VideoFileRenamer.Download
 					System.IO.File.Delete(Path.Combine(file.Path, file.FileName));
 				entity.FileRepository.Delete(file);
 				entity.Save();
-				ChangedStatus("The file was deleted");
 			}
+			ChangedStatus("The file was deleted");
 		}
 
 		public void CleanDeletedFilms()
 		{
+			int deletedCount = 0;
 			using (UnitOfWork unit = new UnitOfWork())
 			{
 				foreach (var file in unit.FileRepository.dbSet.AsParallel())
 				{
 					if (!System.IO.File.Exists(file.FullPath))
+					{
 						unit.FileRepository.Delete(file);
+						deletedCount++;
+					}
 				}
-				foreach (var film in unit.FilmRepository.dbSet.AsParallel().Where(x => x.Files.Count == 0 && x.Deleted == false))
+				var temp = unit.FilmRepository.dbSet.AsParallel().Where(x => x.Files.Count == 0 && x.Deleted == false);
+				foreach (var film in temp)
 				{
 					//if (film.Files.Count == 0)
 					film.Deleted = true;
+					deletedCount++;
 				}
 				unit.Save();
 			}
+			ChangedStatus(deletedCount + "films were deleted");
 		}
 	}
 }

@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.Entity;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using VideoFileRenamer.Annotations;
 using VideoFileRenamer.DAL;
 using VideoFileRenamer.Models;
 using VideoFileRenamer.UI;
-using Settings = VideoFileRenamer.Download.Download.Properties;
 
 namespace VideoFileRenamer.Download
 {
@@ -53,7 +40,16 @@ namespace VideoFileRenamer.Download
 			var appEngine = AppEngine.Create();
 			appEngine.ChangedStatus += AppEngineOnChangedStatus;
 			appEngine.UpdatedData += AppEngineOnUpdatedData;
+			appEngine.ProgressStatus += appEngine_ProgressStatus;
 			Filter = "";
+		}
+
+		void appEngine_ProgressStatus(int n, int count, string message)
+		{
+			Dispatcher.Invoke(() =>
+			{
+				InfoStatusBarItem.Content = n + " of " + count + " " + message;
+			});
 		}
 
 		private void AppEngineOnUpdatedData()
@@ -160,6 +156,7 @@ namespace VideoFileRenamer.Download
 		private void ListFilms_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			DeleteItem.Items.Clear();
+			DeleteItem.Header = "Delete";
 
 			var engine = AppEngine.Create();
 			var files = engine.GetFiles(((Film) ListFilms.SelectedItem).FilmID);
@@ -192,6 +189,7 @@ namespace VideoFileRenamer.Download
 
 		void AditionFilter()
 		{
+			
 			using (UnitOfWork de = new UnitOfWork())
 			{
 				var query = de.FilmRepository.dbSet.Where(x => x.Deleted == false);
@@ -214,6 +212,20 @@ namespace VideoFileRenamer.Download
 		private void Button_Click_2(object sender, RoutedEventArgs e)
 		{
 			AditionFilter();
+		}
+
+		void ClearDB()
+		{
+			using (UnitOfWork unit = new UnitOfWork())
+			{
+				unit.ClearDB();
+			}
+		}
+
+		private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+		{
+			ClearDB();
+			RefreshListFilms();
 		}
 	}
 }

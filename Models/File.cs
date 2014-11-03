@@ -1,14 +1,12 @@
 using System.IO;
+using System.Windows.Forms;
 
 namespace VideoFileRenamer.Models
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
-    public partial class File
+	public partial class File
     {
 		public File(FileInfo info)
 	    {
@@ -29,6 +27,8 @@ namespace VideoFileRenamer.Models
         public string MD5 { get; set; }
 
         public string FileName { get; set; }
+
+		public string PrevFileName { get; set; }
 
         public long Size { get; set; }
 

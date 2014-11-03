@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using VideoFileRenamer.UI;
 
 namespace VideoFileRenamer.DAL
 {
@@ -21,9 +17,11 @@ namespace VideoFileRenamer.DAL
 			this.dbSet = context.Set<T>();
 		}
 
-		public virtual IEnumerable<T> Get(Expression<Func<T, bool>> filter)
+		public virtual IEnumerable<T> Get(Expression<Func<T, bool>> filter )
 		{
-			return dbSet.Where(filter);
+			var result = dbSet.Where(filter);
+			result.Load();
+			return result;
 		}
 
 		public virtual void Add(T entity)

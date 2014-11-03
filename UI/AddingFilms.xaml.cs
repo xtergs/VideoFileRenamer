@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using VideoFileRenamer.Annotations;
 using VideoFileRenamer.Download;
 
 namespace VideoFileRenamer.UI
@@ -19,11 +12,34 @@ namespace VideoFileRenamer.UI
 	/// <summary>
 	/// Interaction logic for AddingFilms.xaml
 	/// </summary>
-	public partial class AddingFilms : Window
+	public partial class AddingFilms : Window, INotifyPropertyChanged
 	{
 		public AddingFilms()
 		{
 			InitializeComponent();
+		}
+
+		private int foundCount;
+		private int allCount;
+
+		public int FoundCount
+		{
+			get { return foundCount; }
+			private set
+			{
+				foundCount = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public int AllCount
+		{
+			get { return allCount; }
+			private set
+			{
+				allCount = value;
+				OnPropertyChanged();
+			}
 		}
 
 		private ObservableCollection<ParsFilmList> obs;
@@ -36,11 +52,13 @@ namespace VideoFileRenamer.UI
 			obs = new ObservableCollection<ParsFilmList>(engine.NewFilms);
 			if (engine.NewFilms.Count == 0)
 			{
-				this.Close();
+				Close();
 				return;
 			}
 			current = engine.NewFilms.Dequeue();
 			MainGrid.DataContext = current;
+			AllCount = engine.NewFilms.Count + 1;
+			FoundCount = 1;
 		}
 
 		async void SelectFilm()
@@ -58,6 +76,7 @@ namespace VideoFileRenamer.UI
 			{
 				current = engine.NewFilms.Dequeue();
 				MainGrid.DataContext = current;
+				FoundCount++;
 			}
 
 			//var film = engine.IsContainFilm(selectedItem.Link);
@@ -87,11 +106,21 @@ namespace VideoFileRenamer.UI
 		{
 			current = AppEngine.Create().NewFilms.Dequeue();
 			MainGrid.DataContext = current;
+			FoundCount++;
 		}
 
 		private void SkipButton_Click(object sender, RoutedEventArgs e)
 		{
 			Skip();
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }
