@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using VideoFileRenamer.Annotations;
 using VideoFileRenamer.Download;
@@ -61,7 +64,7 @@ namespace VideoFileRenamer.UI
 			FoundCount = 1;
 		}
 
-		async void SelectFilm()
+		private async void SelectFilm()
 		{
 			AppEngine engine = AppEngine.Create();
 			InternetDownloader downloader = new InternetDownloader();
@@ -70,26 +73,23 @@ namespace VideoFileRenamer.UI
 			if (engine.NewFilms.Count == 0)
 			{
 				Close();
-				//return;
 			}
 			else
 			{
 				current = engine.NewFilms.Dequeue();
 				MainGrid.DataContext = current;
 				FoundCount++;
+				AllCount = engine.NewFilms.Count + 1;
 			}
 
-			//var film = engine.IsContainFilm(selectedItem.Link);
-			//if ( film == null)
-			//{
-				var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
-
-				engine.AddNewFilm(temp.FileInfo, detail);
-			//}
-			//else
-			//	film.Files.Add(engine.AddFile(temp.FileInfo));
-
-
+			var detail = await downloader.FullInfoFilmAsync(selectedItem.Link, new PlugDownload());
+			engine.AddNewFilm(temp.FileInfo, detail);
+			Thread.Sleep(1000);
+			foreach (var item in temp)
+			{
+				if (File.Exists(item.Image)) ;
+					//File.Delete(item.Image);
+			}
 		}
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)

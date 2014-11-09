@@ -5,21 +5,32 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents.Serialization;
+using System.Xml;
+using System.Xml.Serialization;
 using VideoFileRenamer.Annotations;
 using VideoFileRenamer.Models;
 using VideoFileRenamer.Properties;
 using VideoFileRenamer.DAL;
+using System.Runtime.Serialization.Formatters;
 using File = VideoFileRenamer.Models.File;
+using Timer = System.Timers.Timer;
 
 namespace VideoFileRenamer.Download
 {
-	class AppEngine
+	public class AppEngine
 	{
 
 		//Singleton
 		private static AppEngine current;
+
+		private Timer timer;
+
+		private string pathSaveNewFilms = "test";
 
 		private List<string> ignoringFiles = new List<string>();
 
@@ -33,8 +44,32 @@ namespace VideoFileRenamer.Download
 
 		public delegate void progressMessage(int n, int count, string message);
 
+		public delegate void FindFilms();
+
 		public event statusMessage ChangedStatus;
 		public event progressMessage ProgressStatus;
+		public event FindFilms FindFilmsStarted;
+		public event FindFilms FindFilmsFinished;
+		public event FindFilms FindFilmsCanceled;
+
+
+		protected virtual void OnFindFilmsFinished()
+		{
+			FindFilms handler = FindFilmsFinished;
+			if (handler != null) handler();
+		}
+
+		protected virtual void OnFindFilmsCanceled()
+		{
+			FindFilms handler = FindFilmsCanceled;
+			if (handler != null) handler();
+		}
+
+		protected virtual void OnFindFilmsStarted()
+		{
+			FindFilms handler = FindFilmsStarted;
+			if (handler != null) handler();
+		}
 
 		protected virtual void OnProgressStatus(int n, int count, string message)
 		{
@@ -56,6 +91,14 @@ namespace VideoFileRenamer.Download
 			if (handler != null) handler(message);
 		}
 
+		async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			timer.Stop();
+			await FindNewVideosAsync();
+			await FindFilmsForAllFilesAsync();
+			timer.Start();
+		}
+
 		private const string pattern = "Pattern";
 		private const string dirs = "Dirs";
 
@@ -66,13 +109,13 @@ namespace VideoFileRenamer.Download
 
 		private AppEngine()
 		{
-			NewFilms = new Queue<ParsFilmList>();
+			Restore();
 			NewFiles = new Queue<FileVideoInfo>();
-			//var entity = new VideosEntities();
-			//entity.Films.Create();
+			timer = new Timer(10000);
+			timer.Elapsed += timer_Elapsed;
+			timer.Start();
 		}
 
-		
 		public static AppEngine Create()
 		{
 			if (current == null)
@@ -100,13 +143,13 @@ namespace VideoFileRenamer.Download
 					foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
+						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile) && !NewFilms.Any(x=>x.FileInfo.NameFile == infoFile.Name) && !NewFiles.Any(x=>x.NameFile == infoFile.Name))
 							NewFiles.Enqueue(new FileVideoInfo(infoFile));
 					}
 					foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile))
+						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile) && !NewFilms.Any(x => x.FileInfo.NameFile == infoFile.Name) )
 							NewFiles.Enqueue(new FileVideoInfo(infoFile));
 					}
 				}
@@ -163,6 +206,8 @@ namespace VideoFileRenamer.Download
 		
 		public void FindFilmsForAllFiles()
 		{
+			OnFindFilmsStarted();
+
 			Directory.CreateDirectory(@"cach\");
 
 			Parallel.ForEach(NewFiles, (file) =>
@@ -178,7 +223,21 @@ namespace VideoFileRenamer.Download
 						if (item.Image == null)
 							continue;
 						string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
-						client.DownloadFile(item.Image, imageName);
+						try
+						{
+							client.DownloadFile(item.Image, imageName);
+						}
+						catch (System.IO.IOException e)
+						{
+							OnChangedStatus("Not enought space for image");
+						}
+						catch (System.NotSupportedException e)
+						{
+						}
+						catch (Exception e)
+						{
+							
+						}
 						item.Image = imageName;
 					}
 					NewFilms.Enqueue(temp);
@@ -186,14 +245,19 @@ namespace VideoFileRenamer.Download
 				OnProgressStatus(NewFilms.Count, NewFiles.Count, "Found films for " + temp.FileInfo.NameFile);
 			});
 			NewFiles.Clear();
+
+			OnFindFilmsFinished();
 			ChangedStatus("Found films for all files");
 		}
 
 		public Task FindFilmsForAllFilesAsync()
 		{
-			var result = Task.Factory.StartNew(FindFilmsForAllFiles);
-			return result;
+			if (FindFilmsForAllFilesTask == null || FindFilmsForAllFilesTask.IsCompleted)
+				FindFilmsForAllFilesTask = Task.Factory.StartNew(FindFilmsForAllFiles, new CancellationToken() {});
+			return FindFilmsForAllFilesTask;
 		}
+
+		private Task FindFilmsForAllFilesTask;
 
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
@@ -238,9 +302,22 @@ namespace VideoFileRenamer.Download
 				builder.Replace("%G", file.Film.Genres.First().Name); //%G - Genres
 			}
 
-			builder.Append(Path.GetExtension(file.FileName)).Replace(":","");
+			builder.Append(Path.GetExtension(file.FileName)).Replace(":", "").Replace("?", "");
 			var newName = builder.ToString();
-			System.IO.File.Move(Path.Combine(file.Path,file.FileName), Path.Combine(file.Path,newName));
+			if (newName == file.FileName)
+				return newName;
+			string path = Path.Combine(file.Path, file.FileName);
+			try
+			{
+				if (System.IO.File.Exists(path))
+					System.IO.File.Move(path, Path.Combine(file.Path, newName));
+			}
+			catch (System.IO.IOException e)
+			{
+				OnChangedStatus(file.FileName + " haven't been renamed");
+				newName = file.FileName;
+			}
+			
 
 			return newName;
 		}
@@ -254,18 +331,26 @@ namespace VideoFileRenamer.Download
 			}
 		}
 
-		public ICollection<Film> FindFilm(string filter, UnitOfWork unitOfWork)
+		public ICollection<Film> FindFilm(string filter)
 		{
-			var query = unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false)
-				.Include(x=>x.Genres)
-				.Include(x=>x.Countries)
-				.Include(x=>x.Files)
-				.Include(x=>x.Actors)
-				.Include(x=>x.Director);
+			using (UnitOfWork unitOfWork = new UnitOfWork())
+			{
+				var query = unitOfWork.FilmRepository.dbSet.Where(x => x.Deleted == false)
+					.Include(x => x.Genres)
+					.Include(x => x.Countries)
+					.Include(x => x.Files)
+					.Include(x => x.Actors)
+					.Include(x => x.Director);
 				if (filter == "")
 					return query.ToList();
-				return query.Where(x=> (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
-			
+				return query.Where(x => (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
+			}
+		}
+
+		public Task<ICollection<Film>> FindFilmAsync(string filter)
+		{
+			var result = Task<ICollection<Film>>.Factory.StartNew(() => FindFilm(filter)	);
+			return result;
 		}
 
 		public void DeleteFile(int idFile, bool isRealFile)
@@ -308,6 +393,58 @@ namespace VideoFileRenamer.Download
 				unit.Save();
 			}
 			ChangedStatus(deletedCount + "films were deleted");
+		}
+
+		public void Backup()
+		{
+			BinaryFormatter serializer = new BinaryFormatter();
+			using (Stream write = new FileStream(pathSaveNewFilms, FileMode.Create))
+			{
+				try
+				{
+					serializer.Serialize(write, NewFilms);
+				}
+				catch (System.IO.IOException e)
+				{
+					OnChangedStatus("Not enough space on the disk");
+				}
+			}
+
+		}
+
+		public void Restore()
+		{
+			BinaryFormatter serializer = new BinaryFormatter();
+			if (System.IO.File.Exists(pathSaveNewFilms))
+				using (Stream read = new FileStream(pathSaveNewFilms, FileMode.Open))
+				{
+					try
+					{
+						NewFilms = (Queue<ParsFilmList>) serializer.Deserialize(read);
+						OnChangedStatus("Restored " + NewFilms.Count + " films");
+					}
+					catch (System.Runtime.Serialization.SerializationException e)
+					{
+						NewFilms = new Queue<ParsFilmList>();
+						OnChangedStatus("Can't deserialize NewFilms");
+					}
+				}
+		}
+
+		public void CleanCache()
+		{
+				Parallel.ForEach(Directory.EnumerateFiles("cach"), (file) =>
+				{
+				//	foreach (var file in Directory.EnumerateFiles("cach"))
+				//	{
+			using (UnitOfWork unit = new UnitOfWork())
+			{
+						if (!unit.FilmRepository.dbSet.Any(x => x.Image == file))
+							System.IO.File.Delete(file);
+			}
+				//	}
+				});
+
 		}
 	}
 }

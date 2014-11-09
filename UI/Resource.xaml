@@ -4,16 +4,31 @@
     <DataTemplate x:Uid="DataTemplate_1" x:Key="DataTemplate1">
         <Grid x:Uid="Grid_1">
             <Grid.RowDefinitions>
-                <RowDefinition x:Uid="RowDefinition_1" Height="Auto"/>
-                <RowDefinition x:Uid="RowDefinition_2" Height="Auto"/>
+                <RowDefinition x:Uid="RowDefinition_1" Height="*"/>
+                <RowDefinition x:Uid="RowDefinition_2" Height="*"/>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Uid="ColumnDefinition_1"/>
                 <ColumnDefinition x:Uid="ColumnDefinition_2"/>
             </Grid.ColumnDefinitions>
-            <Image x:Uid="Image_1" Grid.RowSpan="2" Source="{Binding Image, Converter={StaticResource StringToPath}}" MaxHeight="50" MaxWidth="50"/>
-            <Label x:Uid="Label_1" Grid.Column="1" Content="{Binding Name}" />
-            <Label x:Uid="Label_2" Grid.Column="1" Grid.Row="1" Content="{Binding Year}"/>
+            <Image x:Uid="Image_1" Grid.RowSpan="5" Source="{Binding Image, Converter={StaticResource StringToPath}}" MaxWidth="50"/>
+            <TextBlock x:Uid="Label_1" Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Top"  />
+            <TextBlock x:Uid="Label_1" Grid.Column="1" Grid.Row="1" Text="{Binding OriginalName}"  VerticalAlignment="Top"/>
+            <TextBlock x:Uid="Label_2" Grid.Column="1" Grid.Row="2" Text="{Binding Year}" VerticalAlignment="Top"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Uid="DataTemplate_1" x:Key="DataTemplate2">
+        <Grid x:Uid="Grid_1">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Uid="RowDefinition_1" Height="Auto"/>
+                <RowDefinition x:Uid="RowDefinition_2" Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Uid="ColumnDefinition_1"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Uid="Image_1"  Source="{Binding Image, Converter={StaticResource StringToPath}}" MaxWidth="150"/>
+            <TextBlock x:Uid="Label_1" Grid.Row="1"  Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Top"  />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

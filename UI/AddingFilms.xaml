@@ -31,6 +31,7 @@
             <RowDefinition x:Uid="RowDefinition_5" Height="Auto"/>
             <RowDefinition x:Uid="RowDefinition_6"/>
             <RowDefinition x:Uid="RowDefinition_7" Height="Auto"/>
+            <RowDefinition x:Uid="RowDefinition_7" Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid x:Uid="Grid_2">
             <Grid.ColumnDefinitions>
@@ -40,7 +41,14 @@
         <TextBox x:Uid="TextBox_1" Grid.Row="0" Text="{Binding FileInfo.NameFile}"/>
         <Button x:Uid="Button_1" Grid.Column="1" Content="Refresh"/>
         </Grid>
-        <ListBox x:Uid="SelectionFilmBox" x:Name="SelectionFilmBox" Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding }" SelectedIndex="0" MouseDoubleClick="SelectionFilmBox_MouseDoubleClick"/>
+        <ListBox x:Uid="SelectionFilmBox" x:Name="SelectionFilmBox" Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding }" SelectedIndex="0" MouseDoubleClick="SelectionFilmBox_MouseDoubleClick">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Select" Click="NextButton_Click"/>
+                    <MenuItem Header="Skip" Click="SkipButton_Click"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
         <Grid x:Uid="Grid_3" Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Uid="ColumnDefinition_6"/>

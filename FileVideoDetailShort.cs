@@ -1,6 +1,9 @@
-﻿namespace VideoFileRenamer.Download
+﻿using System;
+
+namespace VideoFileRenamer.Download
 {
-	class FileVideoDetailShort
+	[Serializable]
+	public class FileVideoDetailShort
 	{
 		private string name;
 		private string originalName;

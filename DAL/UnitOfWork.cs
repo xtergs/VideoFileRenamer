@@ -21,6 +21,7 @@ namespace VideoFileRenamer.DAL
 		public UnitOfWork()
 		{
 			context = new FilmContext(ConnectionString);
+			context.Database.CreateIfNotExists();
 		}
 
 		public void ClearDB()
@@ -110,7 +111,8 @@ namespace VideoFileRenamer.DAL
 
 			if (film.Files.FirstOrDefault(x => x == file) == null)
 				film.Files.Add(file);
-			context.Films.Add(film);
+			if (context.Films.Any())
+			//context.Films.Add(film);
 			Save();
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using VideoFileRenamer.Annotations;
@@ -22,6 +23,15 @@ namespace VideoFileRenamer.Download
 		Film SelectedItem { get; set;  }
 		public string Filter { get; set; }
 
+		Tasks TaskWindow {  get;  set; }
+
+		bool LastAdded { get; set; }
+
+		public AppEngine Engine
+		{
+			get { return AppEngine.Create(); }
+		}
+
 		public List<Genre> Genres
 		{
 			get
@@ -37,6 +47,9 @@ namespace VideoFileRenamer.Download
 		{
 			
 			InitializeComponent();
+			TaskWindow = new Tasks();
+			TaskWindow.Activate();
+			TaskWindow.Show();
 			var appEngine = AppEngine.Create();
 			appEngine.ChangedStatus += AppEngineOnChangedStatus;
 			appEngine.UpdatedData += AppEngineOnUpdatedData;
@@ -46,7 +59,7 @@ namespace VideoFileRenamer.Download
 
 		void appEngine_ProgressStatus(int n, int count, string message)
 		{
-			Dispatcher.Invoke(() =>
+			Dispatcher.InvokeAsync(() =>
 			{
 				InfoStatusBarItem.Content = n + " of " + count + " " + message;
 			});
@@ -54,25 +67,38 @@ namespace VideoFileRenamer.Download
 
 		private void AppEngineOnUpdatedData()
 		{
-			Dispatcher.Invoke(() => 
+			Dispatcher.InvokeAsync(() => 
 			{
 				RefreshListFilms();
 			});
 		}
 
-		private void RefreshListFilms()
+		private Task<ICollection<Film>> collectionTask;
+
+		private async void RefreshListFilms()
 		{
-			using (UnitOfWork entities = new UnitOfWork())
-			{
-				collectionFilms = new ObservableCollection<Film>(AppEngine.Create().FindFilm(Filter, entities));
-				ListFilms.ItemsSource = collectionFilms;
-				GenresComboBox.ItemsSource = Genres;
-			}
+			//if (collectionTask != null && collectionTask.Status == TaskStatus.Running)
+			//	collectionTask.Dispose();
+		
+				collectionTask = ( AppEngine.Create().FindFilmAsync(Filter));
+				collectionTask.ContinueWith((x) =>
+				{
+					Dispatcher.InvokeAsync(() =>
+					{
+						var d = x.Result;
+						if (LastAdded)
+							ListFilms.ItemsSource = d.OrderByDescending(w => w.Added);
+						else
+							ListFilms.ItemsSource = x.Result;
+						GenresComboBox.ItemsSource = Genres;
+					});
+				});
+				//collectionTask.Start();
 		}
 
 		private void AppEngineOnChangedStatus(string message)
 		{
-			Dispatcher.Invoke(() =>
+			Dispatcher.InvokeAsync(() =>
 			{
 				InfoStatusBarItem.Content = message;
 			});
@@ -86,9 +112,6 @@ namespace VideoFileRenamer.Download
 			var engine = AppEngine.Create();
 			await engine.FindNewVideosAsync();
 			await engine.FindFilmsForAllFilesAsync();
-			AddingFilms newWindow = new AddingFilms();
-			newWindow.Visibility = Visibility.Visible;
-			newWindow.Activate();
 			//	OutList.ItemsSource = listOfFilms;
 		}
 
@@ -178,7 +201,7 @@ namespace VideoFileRenamer.Download
 		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			Filter = ((TextBox) sender).Text;
-			RefreshListFilms();
+			Dispatcher.InvokeAsync(RefreshListFilms);
 		}
 
 		private void MenuItem_Click_2(object sender, RoutedEventArgs e)
@@ -198,7 +221,7 @@ namespace VideoFileRenamer.Download
 				if (GenresComboBox.SelectedIndex >= 0)
 				{
 					var genre = (Genre) GenresComboBox.SelectedItem;
-					list = list.Where(x => x.Genres.Any(y=>y.Name == genre.Name)).ToList();
+					list = list.Where(x => x.Genres.Any(y=>y.GenreID == genre.GenreID)).ToList();
 				}
 
 				int result;
@@ -206,6 +229,7 @@ namespace VideoFileRenamer.Download
 				{
 					list = list.Where(x => x.Year == result).ToList();
 				}
+				ListFilms.ItemsSource = list;
 			}
 		}
 
@@ -225,6 +249,68 @@ namespace VideoFileRenamer.Download
 		private void MenuItem_Click_3(object sender, RoutedEventArgs e)
 		{
 			ClearDB();
+			RefreshListFilms();
+		}
+
+		private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().Backup();
+		}
+
+		private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().Restore();
+		}
+
+		private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+		{
+			AddingFilms newWindow = new AddingFilms();
+			newWindow.Visibility = Visibility.Visible;
+			newWindow.Activate();
+		}
+
+		private void window_Closing(object sender, CancelEventArgs e)
+		{
+			TaskWindow.Close();
+			AppEngine.Create().Backup();
+		}
+
+		private void MenuItem_Click_7(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().CleanCache();
+		}
+
+		private void MenuItem_Click_8(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().NewFilms.Clear();
+			AppEngine.Create().Backup();
+		}
+
+		private void Button_Click_3(object sender, RoutedEventArgs e)
+		{
+			YearTextBox.Text = ((Button) sender).Content.ToString();
+			AditionFilter();
+		}
+
+		private void Menu_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			
+		}
+
+		private void MenuItem_Checked(object sender, RoutedEventArgs e)
+		{
+			LastAdded = true;
+			RefreshListFilms();
+		}
+
+		private void Button_Click_4(object sender, RoutedEventArgs e)
+		{
+			GenresComboBox.SelectedIndex = -1;
+		}
+
+		private void MenuItem_Unchecked(object sender, RoutedEventArgs e)
+		{
+			LastAdded = false;
 			RefreshListFilms();
 		}
 	}

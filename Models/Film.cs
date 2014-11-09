@@ -17,14 +17,6 @@ namespace VideoFileRenamer.Models
 	        Added = DateTime.UtcNow;
         }
 
-		public ~Film()
-		{
-			if (System.IO.File.Exists(Image))
-			{
-				System.IO.File.Delete(Image);
-			}
-		}
-
         public int FilmID { get; set; }
 
 		public DateTime Added { get; set; }

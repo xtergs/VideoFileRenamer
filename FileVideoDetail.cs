@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace VideoFileRenamer.Download
 {
-	class FileVideoDetail : FileVideoDetailShort
+	public class FileVideoDetail : FileVideoDetailShort
 	{
 		private int directorId = -1;
 		private List<string> countryList;

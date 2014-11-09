@@ -5,7 +5,8 @@ using System.Text;
 
 namespace VideoFileRenamer.Download
 {
-	class FileVideoInfo
+	[Serializable]
+	public class FileVideoInfo
 	{
 		public FileVideoInfo(FileInfo path)
 		{

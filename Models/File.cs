@@ -47,5 +47,41 @@ namespace VideoFileRenamer.Models
         public int? Film_FilmID { get; set; }
 
         public virtual Film Film { get; set; }
+
+		public string SizeString
+		{
+			get
+			{
+				double size = Size;
+				int prefi = 0;
+				while (size >= 1024)
+				{
+					size /= 1024;
+					prefi++;
+				}
+				string prefix = " B";
+				switch (prefi)
+				{
+					case 0:
+						prefix = " B";
+						break;
+					case 1:
+						prefix = " KB";
+						break;
+					case 2:
+						prefix = " MB";
+						break;
+					case 3:
+						prefix = " GB";
+						break;
+					case 4: prefix = " TB";
+						break;
+					case 5:
+						prefix = " PB";
+						break;
+				}
+				return size.ToString("F2") + prefix;
+			}
+		}
     }
 }

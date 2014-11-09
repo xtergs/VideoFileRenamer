@@ -21,31 +21,9 @@ namespace VideoFileRenamer.Download
 			client.DefaultRequestHeaders.Accept.Add( new MediaTypeWithQualityHeaderValue(@"text/html"));
 			client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
 			
-			//client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue());
 			Stream responseStream;
-			//do
-			//{
-				responseStream = await client.GetStreamAsync(link);
-				//responseStream.Wait();
-			//	if (responseStream.CanRead != true || responseStream.CanSeek != true)
-			//		Thread.Sleep(6000);
-			//} while (responseStream.CanRead != true || responseStream.CanSeek != true);
-			//client.Dispose();
+			responseStream = await client.GetStreamAsync(link);
 			return responseStream;
-			//return responseStream;
-			// создание запроса
-//			HttpWebRequest myHttpWebRequest =
-//				(HttpWebRequest)HttpWebRequest.Create(link);
-//			// Инициализация
-//			myHttpWebRequest.UserAgent = @"Mozila/4.0 (compatible; MSIE 6.0; 
-//							  Windows NT 5.1; SV1; MyIE2;";
-//			myHttpWebRequest.Accept = @"text/html";
-//			myHttpWebRequest.Headers.Add("Accept-Language", "ru");
-
-//			// Ответ
-//			HttpWebResponse myHttpWebResponse =
-//				(HttpWebResponse)myHttpWebRequest.GetResponse();
-//			return myHttpWebResponse;
 		}
 
 
@@ -60,11 +38,6 @@ namespace VideoFileRenamer.Download
 			{
 
 				var stream = Response(link);
-				//if (!(stream.CanRead && stream.CanSeek))
-				//{
-				//	AppEngine.Create().NewFiles.Enqueue(videoInfo);
-				//	return null;
-				//}
 				document.Load(stream.Result);
 			}
 			finally
@@ -139,7 +112,8 @@ namespace VideoFileRenamer.Download
 				returnDetail.Image = guid;
 				if (!Directory.Exists("cach"))
 					Directory.CreateDirectory("cach");
-				client.DownloadFile(node.Attributes["src"].Value.ToString(), guid);
+				if (node != null)
+					client.DownloadFile(node.Attributes["src"].Value.ToString(), guid);
 			}
 
 			//Director
