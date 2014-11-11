@@ -118,6 +118,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Queue.cs" />
     <Compile Include="UI\DeleteDialog.xaml.cs">
       <DependentUpon>DeleteDialog.xaml</DependentUpon>
     </Compile>

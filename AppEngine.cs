@@ -36,7 +36,16 @@ namespace VideoFileRenamer.Download
 
 		public Queue<FileVideoInfo> NewFiles { get; private set; }
 
-		public Queue<ParsFilmList> NewFilms { get; private set; }
+		public Queue<ParsFilmList> NewFilms
+		{
+			get
+			{
+				if (newFilms == null)
+					newFilms = new Queue<ParsFilmList>();
+				return newFilms;
+			}
+			private set { newFilms = value; }
+		}
 
 		public delegate void statusMessage(string message);
 
@@ -258,6 +267,7 @@ namespace VideoFileRenamer.Download
 		}
 
 		private Task FindFilmsForAllFilesTask;
+		private Queue<ParsFilmList> newFilms;
 
 		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
 		{
@@ -357,7 +367,6 @@ namespace VideoFileRenamer.Download
 		{
 			using (UnitOfWork entity = new UnitOfWork())
 			{
-
 				var file = entity.FileRepository.Get(x => x.FileID == idFile).First();
 				if (file.Film.Files.Count == 1)
 					file.Film.Deleted = true;
