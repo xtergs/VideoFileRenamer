@@ -170,7 +170,7 @@ namespace VideoFileRenamer.Download
 
 		public Task<Queue<FileVideoInfo>> FindNewVideosAsync()
 		{
-			var result = Task<Queue<FileVideoInfo>>.Factory.StartNew(() => FindNewVideos());
+			var result = Task<Queue<FileVideoInfo>>.Run(() => FindNewVideos());
 			return result;
 		}
 
@@ -351,7 +351,7 @@ namespace VideoFileRenamer.Download
 					.Include(x => x.Files)
 					.Include(x => x.Actors)
 					.Include(x => x.Director);
-				if (filter == "")
+				if (String.IsNullOrWhiteSpace(filter))
 					return query.ToList();
 				return query.Where(x => (x.Name.Contains(filter) || x.OriginalName.Contains(filter))).ToList();
 			}
@@ -359,7 +359,7 @@ namespace VideoFileRenamer.Download
 
 		public Task<ICollection<Film>> FindFilmAsync(string filter)
 		{
-			var result = Task<ICollection<Film>>.Factory.StartNew(() => FindFilm(filter)	);
+			var result = Task<ICollection<Film>>.Run(() => FindFilm(filter)	);
 			return result;
 		}
 

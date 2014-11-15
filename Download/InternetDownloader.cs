@@ -143,7 +143,7 @@ namespace VideoFileRenamer.Download
 
 		public Task<FileVideoDetail> FullInfoFilmAsync(string link, PlugDownload plugin)
 		{
-			var task = Task.Factory.StartNew(()=> FullInfoFilm(link, plugin));
+			var task = Task.Run(()=> FullInfoFilm(link, plugin));
 			return task;
 		}
 	}
