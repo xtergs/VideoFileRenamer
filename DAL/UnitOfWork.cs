@@ -12,7 +12,8 @@ namespace VideoFileRenamer.DAL
 		private GenericRepository<Film> filmsRepository;
 		private GenericRepository<Director> directoryRepository;
 		private FileRepository fileRepository;
-		private GenericRepository<Genre> genresRepository; 
+		private GenericRepository<Genre> genresRepository;
+		private GenericRepository<IgnorFile> ingoryFileRepository;
 
 		public static string ConnectionString { get; set; }
 
@@ -41,6 +42,16 @@ namespace VideoFileRenamer.DAL
 					genresRepository = new GenericRepository<Genre>(context);
 				}
 				return genresRepository;
+			}
+		}
+
+		public GenericRepository<IgnorFile> IngoringFileRepository
+		{
+			get
+			{
+				if (ingoryFileRepository == null)
+					ingoryFileRepository = new GenericRepository<IgnorFile>(context);
+				return ingoryFileRepository;
 			}
 		}
 
@@ -111,8 +122,8 @@ namespace VideoFileRenamer.DAL
 
 			if (film.Files.FirstOrDefault(x => x == file) == null)
 				film.Files.Add(file);
-			if (context.Films.Any())
-			//context.Films.Add(film);
+			if (!context.Films.Any())
+				context.Films.Add(film);
 			Save();
 		}
 
@@ -141,19 +152,11 @@ namespace VideoFileRenamer.DAL
 				context.Films.FirstOrDefault(x => x.Name == detail.Name && x.OriginalName == detail.OriginalName && x.Year == detail.Year);
 			if (film == null)
 			{
-				film = new Models.Film()
-				{
-					Countries = AddCountries(detail.CountryList),
-					Description = detail.Description,
-					Director = AddDirector(detail.Director),
-					Genres = AddGenres(detail.GenreList),
-					Image = detail.Image,
-					Link = detail.Link,
-					Name = detail.Name,
-					OriginalName = detail.OriginalName,
-					Year = detail.Year,
-					Rate = detail.Rate
-				};
+				film = new Film();
+				FilmExt.Update(film, detail);
+				film.Countries = AddCountries(detail.CountryList, false);
+				film.Genres = AddGenres(detail.GenreList, false);
+				film.Director = AddDirector(detail.Director);
 				context.Films.Add(film);
 			}
 			else

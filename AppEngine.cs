@@ -17,6 +17,7 @@ using VideoFileRenamer.Models;
 using VideoFileRenamer.Properties;
 using VideoFileRenamer.DAL;
 using System.Runtime.Serialization.Formatters;
+using VideoFileRenamer.Models;
 using File = VideoFileRenamer.Models.File;
 using Timer = System.Timers.Timer;
 
@@ -29,6 +30,8 @@ namespace VideoFileRenamer.Download
 		private static AppEngine current;
 
 		private Timer timer;
+
+		public static bool AutoFind { get; set; }
 
 		private string pathSaveNewFilms = "test";
 
@@ -121,8 +124,12 @@ namespace VideoFileRenamer.Download
 			Restore();
 			NewFiles = new Queue<FileVideoInfo>();
 			timer = new Timer(10000);
-			timer.Elapsed += timer_Elapsed;
-			timer.Start();
+			AutoFind = false;
+			if (AutoFind)
+			{
+				timer.Elapsed += timer_Elapsed;
+				timer.Start();
+			}
 		}
 
 		public static AppEngine Create()
@@ -454,6 +461,19 @@ namespace VideoFileRenamer.Download
 				//	}
 				});
 
+		}
+
+		public void UpdateAllInfo()
+		{
+			using (UnitOfWork unit = new UnitOfWork())
+			{
+				Parallel.ForEach(unit.FilmRepository.dbSet, (x) =>
+				{
+					InternetDownloader downloader = new InternetDownloader();
+
+					FilmExt.Update(x, downloader.FullInfoFilm(x.Link, new PlugDownload()));
+				});
+			}
 		}
 	}
 }

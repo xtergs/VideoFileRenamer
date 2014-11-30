@@ -313,5 +313,11 @@ namespace VideoFileRenamer.Download
 			LastAdded = false;
 			RefreshListFilms();
 		}
+
+		private void MenuItem_Click_9(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().UpdateAllInfo();
+		}
+
 	}
 }

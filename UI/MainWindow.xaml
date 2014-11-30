@@ -24,6 +24,8 @@
                 </Grid.RowDefinitions>
                 <Menu x:Uid="Menu_1" IsEnabledChanged="Menu_IsEnabledChanged">
                     <MenuItem x:Uid="MenuItem_1" Header="File">
+                        <MenuItem Header="Find new files" Click="Button_Click"></MenuItem>
+                        <MenuItem Header="Start Selecting films" Click="MenuItem_Click_6"></MenuItem>
                         <MenuItem x:Uid="MenuItem_2" Header="CleanDeletedFiles" Click="MenuItem_Click_2"/>
                         <MenuItem x:Uid="MenuItem_3" Header="Clear DB" Click="MenuItem_Click_3"></MenuItem>
                         <MenuItem Header="Rename all" Click="Button_Click_1"></MenuItem>
@@ -35,7 +37,7 @@
                     <MenuItem Header="Test features">
                         <MenuItem Header="Backup" Click="MenuItem_Click_4"></MenuItem>
                         <MenuItem Header="Restore" Click="MenuItem_Click_5" ></MenuItem>
-                        <MenuItem Header="Start Selecting films" Click="MenuItem_Click_6"></MenuItem>
+                        <MenuItem Header="RedownloadAll" Click="MenuItem_Click_9"></MenuItem>
                         <MenuItem Header="CleanCache" Click="MenuItem_Click_7"></MenuItem>
                         <MenuItem Header="Clean NewFilms" Click="MenuItem_Click_8"></MenuItem>
                     </MenuItem>

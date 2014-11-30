@@ -16,6 +16,7 @@ namespace VideoFileRenamer.DAL
 		public virtual DbSet<File> Files { get; set; }
 		public virtual DbSet<Film> Films { get; set; }
 		public virtual DbSet<Genre> Genres { get; set; }
+		public virtual DbSet<IgnorFile> IgnoringFiles { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{

@@ -26,11 +26,15 @@ namespace VideoFileRenamer.Download
 			return responseStream;
 		}
 
-
 		public List<FileVideoDetailShort> FindFilms(FileVideoInfo videoInfo)
 		{
+			return FindFilms(videoInfo.ToString());
+		}
+		
+		public List<FileVideoDetailShort> FindFilms(string query)
+		{
 
-			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + videoInfo.ToString();
+			string link = "http://www.kinopoisk.ru/index.php?kp_query=" + query;
 			//var myHttpWebResponse = Response(link);
 			HtmlDocument document = new HtmlDocument();
 			//var stream = myHttpWebResponse.GetResponseStream();
@@ -47,6 +51,8 @@ namespace VideoFileRenamer.Download
 
 			List<FileVideoDetailShort> list = new List<FileVideoDetailShort>();
 			var ss = document.DocumentNode.SelectNodes(@"//html//body//*//div[@class='search_results']//div//div[@class='info']");
+			if (ss == null)
+				return null;
 
 			//Парсинг html
 			for (int i = 0; i < ss.Count; i++)

@@ -20,6 +20,8 @@
 		private string time;
 		private string producerList = @"//*[@itemprop='producer']";
 
+		static string PathImage { get; set; }
+
 		public string Link
 		{
 			get { return link; }

@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
@@ -21,6 +23,8 @@ namespace VideoFileRenamer.UI
 		{
 			InitializeComponent();
 		}
+
+		private Queue<string> deleteImage; 
 
 		private int foundCount;
 		private int allCount;
@@ -51,6 +55,7 @@ namespace VideoFileRenamer.UI
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			deleteImage = new Queue<string>();
 			var engine = AppEngine.Create();
 			obs = new ObservableCollection<ParsFilmList>(engine.NewFilms);
 			if (engine.NewFilms.Count == 0)
@@ -87,9 +92,16 @@ namespace VideoFileRenamer.UI
 			Thread.Sleep(1000);
 			foreach (var item in temp)
 			{
-				if (File.Exists(item.Image)) ;
-					//File.Delete(item.Image);
+				deleteImage.Enqueue(item.Image);
+				//if (item.Image != null && File.Exists(item.Image)) ;
+				//	File.Delete(item.Image);
 			}
+		}
+
+		void RefindListFilms(string query)
+		{
+			var downloader = new InternetDownloader();
+			current = new ParsFilmList(current.FileInfo, downloader.FindFilms(query));
 		}
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)
@@ -121,6 +133,25 @@ namespace VideoFileRenamer.UI
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private void AddingWindow_Closed(object sender, System.EventArgs e)
+		{
+			foreach (var image in deleteImage)
+			{
+				if (File.Exists(image))
+					File.Delete(image);
+			}
+		}
+
+		private async void Button_Click(object sender, RoutedEventArgs e)
+		{
+			Cursor = Cursors.Wait;
+			var tmp = QuerySearch.Text;
+			await Task.Run(()=>
+				RefindListFilms(tmp));
+			Cursor = Cursors.Arrow;
+			MainGrid.DataContext = current;
 		}
 	}
 }
