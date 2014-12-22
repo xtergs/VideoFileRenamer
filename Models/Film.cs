@@ -11,7 +11,7 @@ namespace VideoFileRenamer.Models
         {
             Files = new HashSet<File>();
             Countries = new HashSet<Country>();
-            Actors = new HashSet<Actor>();
+            Actors = new HashSet<Person>();
             Genres = new HashSet<Genre>();
 	        Deleted = false;
 	        Added = DateTime.UtcNow;
@@ -39,13 +39,13 @@ namespace VideoFileRenamer.Models
 
         public int? Director_DirectorID { get; set; }
 
-        public virtual Director Director { get; set; }
+        public virtual Person Director { get; set; }
 
         public virtual ICollection<File> Files { get; set; }
 
         public virtual ICollection<Country> Countries { get; set; }
 
-        public virtual ICollection<Actor> Actors { get; set; }
+        public virtual HashSet<Person> Actors { get; set; }
 
         public virtual ICollection<Genre> Genres { get; set; }
     }

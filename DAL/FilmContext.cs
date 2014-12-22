@@ -10,9 +10,9 @@ namespace VideoFileRenamer.DAL
 		{
 			
 		}
-		public virtual DbSet<Actor> Actors { get; set; }
+		public virtual DbSet<Person> Persons { get; set; }
 		public virtual DbSet<Country> Countries { get; set; }
-		public virtual DbSet<Director> Directors { get; set; }
+		//public virtual DbSet<Models.Person> Directors { get; set; }
 		public virtual DbSet<File> Files { get; set; }
 		public virtual DbSet<Film> Films { get; set; }
 		public virtual DbSet<Genre> Genres { get; set; }
@@ -20,36 +20,36 @@ namespace VideoFileRenamer.DAL
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Actor>()
-				.Property(e => e.FistName)
-				.IsUnicode(false);
+			//modelBuilder.Entity<Actor>()
+			//	.Property(e => e.FirstName)
+			//	.IsUnicode(false);
 
-			modelBuilder.Entity<Actor>()
-				.Property(e => e.SecondName)
-				.IsUnicode(false);
+			//modelBuilder.Entity<Actor>()
+			//	.Property(e => e.SecondName)
+			//	.IsUnicode(false);
 
-			modelBuilder.Entity<Actor>()
-				.HasMany(e => e.Films)
-				.WithMany(e => e.Actors)
-				.Map(m => m.ToTable("FilmActor").MapLeftKey("Actors_IdActor"));
+			//modelBuilder.Entity<Actor>()
+			//	.HasMany(e => e.Films)
+			//	.WithMany(e => e.Actors)
+			//	.Map(m => m.ToTable("FilmActor").MapLeftKey("Actors_IdActor"));
 
 			modelBuilder.Entity<Country>()
 				.HasMany(e => e.Films)
 				.WithMany(e => e.Countries)
 				.Map(m => m.ToTable("Film_Country").MapLeftKey("Countries_IdCountry"));
 
-			modelBuilder.Entity<Director>()
-				.Property(e => e.FistName)
-				.IsUnicode(false);
+			//modelBuilder.Entity<Director>()
+			//	.Property(e => e.FistName)
+			//	.IsUnicode(false);
 
-			modelBuilder.Entity<Director>()
-				.Property(e => e.SecondName)
-				.IsUnicode(false);
+			//modelBuilder.Entity<Director>()
+			//	.Property(e => e.SecondName)
+			//	.IsUnicode(false);
 
-			modelBuilder.Entity<Director>()
-				.HasMany(e => e.Films)
-				.WithOptional(e => e.Director)
-				.HasForeignKey(e => e.Director_DirectorID);
+			//modelBuilder.Entity<Models.Person>()
+			//	.HasMany(e => e.Films)
+			//	.WithOptional(e => e.Director)
+			//	.HasForeignKey(e => e.Director_DirectorID);
 
 			modelBuilder.Entity<Film>()
 				.Property(e => e.Name)
@@ -68,6 +68,11 @@ namespace VideoFileRenamer.DAL
 				.HasMany(e => e.Genres)
 				.WithMany(e => e.Films)
 				.Map(m => m.ToTable("Genre_Film").MapLeftKey("Films_IdFilm").MapRightKey("Genres_IdGenre"));
+
+			modelBuilder.Entity<Film>()
+				.HasMany(e => e.Actors)
+				.WithMany(e => e.Films)
+				.Map(m => m.ToTable("Actors_Film").MapLeftKey("Films_IdFilm").MapRightKey("Actors_IdActor"));
 
 			modelBuilder.Entity<Genre>()
 				.Property(e => e.Name)

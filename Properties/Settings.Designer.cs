@@ -61,11 +61,23 @@ namespace VideoFileRenamer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAS-PC;initial catalog=Videos;Persist Security Info=True;User ID=NAS;" +
-            "Password=1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NAS-PC;initial catalog=Videos_test;MultipleActiveResultSets=true;Pers" +
+            "ist Security Info=True;User ID=NAS;Password=1")]
         public string VideosConnectionString {
             get {
                 return ((string)(this["VideosConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PathToImage {
+            get {
+                return ((string)(this["PathToImage"]));
+            }
+            set {
+                this["PathToImage"] = value;
             }
         }
     }

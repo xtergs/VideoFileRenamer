@@ -109,6 +109,8 @@ namespace VideoFileRenamer.UI
 			//dd.AddRange(dirsList.ToArray());
 			Properties.Settings.Default[engine.Dirs] = DirsList;
 			Properties.Settings.Default[engine.Pattern] = Pattern;
+			Properties.Settings.Default.PathToImage = pathToImage.Text;
+			PlugDownload.PathImage = pathToImage.Text;
 			Properties.Settings.Default.Save();
 		}
 
@@ -133,6 +135,16 @@ namespace VideoFileRenamer.UI
 			if (result == System.Windows.Forms.DialogResult.OK)
 			{
 				pathNew.Text = fbd.SelectedPath;
+			}
+		}
+
+		private void Button_Click_5(object sender, RoutedEventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			DialogResult result = fbd.ShowDialog();
+			if (result == System.Windows.Forms.DialogResult.OK)
+			{
+				pathToImage.Text = fbd.SelectedPath;
 			}
 		}
 	}

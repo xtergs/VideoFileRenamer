@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
+using VideoFileRenamer.Models;
 
 namespace VideoFileRenamer.Download
 {
@@ -114,7 +115,7 @@ namespace VideoFileRenamer.Download
 			node = document.DocumentNode.SelectSingleNode(plugin.Image);
 			using (WebClient client = new WebClient())
 			{
-				string guid = "cach\\" + Guid.NewGuid().ToString() + ".jpeg";
+				string guid = PlugDownload.PathImage + "cach\\" + Guid.NewGuid().ToString() + ".jpeg";
 				returnDetail.Image = guid;
 				if (!Directory.Exists("cach"))
 					Directory.CreateDirectory("cach");

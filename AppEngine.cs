@@ -122,6 +122,7 @@ namespace VideoFileRenamer.Download
 		private AppEngine()
 		{
 			Restore();
+			PlugDownload.PathImage = Settings.Default.PathToImage;
 			NewFiles = new Queue<FileVideoInfo>();
 			timer = new Timer(10000);
 			AutoFind = false;
@@ -473,6 +474,7 @@ namespace VideoFileRenamer.Download
 
 					FilmExt.Update(x, downloader.FullInfoFilm(x.Link, new PlugDownload()));
 				});
+				unit.Save();
 			}
 		}
 	}

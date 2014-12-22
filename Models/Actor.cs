@@ -2,7 +2,7 @@ namespace VideoFileRenamer.Models
 {
 	using System.Collections.Generic;
 
-	public class Actor
+	public class Actor:Person
     {
         public Actor()
         {
@@ -11,10 +11,6 @@ namespace VideoFileRenamer.Models
 
         public int ActorID { get; set; }
 
-        public string FistName { get; set; }
-
-        public string SecondName { get; set; }
-
-        public virtual ICollection<Film> Films { get; set; }
+        
     }
 }

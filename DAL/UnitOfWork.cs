@@ -210,14 +210,14 @@ namespace VideoFileRenamer.DAL
 			return countrs;
 		}
 
-		public Director AddDirector(Person director)
+		public Models.Person AddDirector(Models.Person director)
 		{
 			var dir =
-				context.Directors.FirstOrDefault(x => x.FistName == director.FirstName
-													   && x.SecondName == director.LastName);
+				context.Directors.FirstOrDefault(x => x.FirstName == director.FirstName
+													   && x.SecondName == director.SecondName);
 			if (dir == null)
 			{
-				dir = context.Directors.Add(new Director() { FistName = director.FirstName, SecondName = director.LastName, Link = "213" });
+				dir = context.Directors.Add(new Models.Person() {FirstName = director.FirstName, SecondName = director.SecondName, Link = "213" });
 				Save();
 			}
 			return dir;

@@ -3,9 +3,7 @@
 	class PlugDownload
 	{
 		private string originalLink = @"http://www.kinopoisk.ru/";
-		private string link = @"//html//body//*//div[@id='photoInfoTable']";
 
-		private string name = @"/div[@id='headerFilm']/h1";
 		private string originalName = @"/div[@id='headerFilm']/span";
 		private string year = @"/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[3]/table[1]/tr[1]/td[2]";
 		private string countryList = @"//*[@id='infoTable']/table/tr[2]/td[2]";
@@ -20,18 +18,16 @@
 		private string time;
 		private string producerList = @"//*[@itemprop='producer']";
 
-		static string PathImage { get; set; }
+		public static string PathImage { get; set; }
 
 		public string Link
 		{
-			get { return link; }
-			set { link = value; }
+			get { return @"//html//body//*//div[@id='photoInfoTable']"; }
 		}
 
 		public string Name
 		{
-			get { return name; }
-			set { name = value; }
+			get { return @"/div[@id='headerFilm']/h1"; }
 		}
 
 		public string OriginalName

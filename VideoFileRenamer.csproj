@@ -115,6 +115,7 @@
     <Compile Include="Models\FilmExt.cs" />
     <Compile Include="Models\Genre.cs" />
     <Compile Include="Models\IgnorFile.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Languages\ru-RU\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -148,7 +149,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Converters\GenreToString.cs" />
-    <Compile Include="Person.cs" />
     <Compile Include="Converters\StringToPath.cs" />
     <Compile Include="UI\AddingFilms.xaml.cs">
       <DependentUpon>AddingFilms.xaml</DependentUpon>

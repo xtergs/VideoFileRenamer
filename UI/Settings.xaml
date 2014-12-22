@@ -1,7 +1,7 @@
 ﻿<Window x:Uid="SettingsWindow" x:Name="SettingsWindow" x:Class="VideoFileRenamer.UI.Settings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings" Height="318.5" Width="303" WindowStyle="ToolWindow">
+        Title="Settings" Height="368.5" Width="473" WindowStyle="ToolWindow">
     <Grid x:Uid="Grid_1" Loaded="Grid_Loaded">
         <ListBox x:Uid="ListOfDirs" x:Name="ListOfDirs" HorizontalAlignment="Left" Height="100" Margin="0,29,0,0" VerticalAlignment="Top" Width="100" SelectedIndex="0" ItemsSource="{Binding DirsList, ElementName=SettingsWindow, Mode=TwoWay}"/>
         <TextBox x:Uid="pathNew" x:Name="pathNew" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
@@ -14,6 +14,8 @@
         <Button x:Uid="Button_4" Content="Save" HorizontalAlignment="Left" Margin="73,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
         <Button x:Uid="Button_5" Content="Close" HorizontalAlignment="Left" Margin="153,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
         <CheckBox x:Uid="CheckBox_1" Content="Delete real file" HorizontalAlignment="Left" Margin="196,144,0,0" VerticalAlignment="Top" IsChecked="{Binding IsDeleteFile, ElementName=SettingsWindow}"/>
+        <TextBox x:Uid="pathNew" x:Name="pathToImage" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="224,3,-49,0"/>
+        <Button x:Uid="Button_1" Content="..." HorizontalAlignment="Left" Margin="344,7,-124,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5"/>
 
     </Grid>
 </Window>
