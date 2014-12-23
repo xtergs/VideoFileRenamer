@@ -69,10 +69,21 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                        <ComboBox x:Uid="GenresComboBox" x:Name="GenresComboBox">
-                        </ComboBox>
+                            <ComboBox x:Uid="GenresComboBox" x:Name="GenresComboBox">
+                            </ComboBox>
                             <Button Grid.Column="1" Content="X" HorizontalAlignment="Right" Click="Button_Click_4"></Button>
                         </Grid>
+                        <TextBlock x:Uid="TextBlock_2" Text="Countries"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Uid="GenresComboBox" x:Name="CountriesComboBox">
+                            </ComboBox>
+                            <Button Grid.Column="1" Content="X" HorizontalAlignment="Right" Click="ClearCountries"></Button>
+                        </Grid>
+
 
 
                         <Button x:Uid="Button_3" Content="Filter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
@@ -162,7 +173,7 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
-                                <ListBox x:Uid="SomeList" Grid.Column="2" Grid.Row="7" Name="SomeList_3" Margin="0,0,0,0" ItemsSource="{Binding Countries}" >
+                                <ListBox x:Uid="SomeList" Grid.Column="2" Grid.Row="7" Name="SomeList_3" Margin="0,0,0,0" ItemsSource="{Binding Countries}" SelectionChanged="SomeList_3_SelectionChanged" >
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate x:Uid="ItemsPanelTemplate_1">
                                             <WrapPanel x:Uid="wrapPanel" x:Name="wrapPanel_2" Orientation="Horizontal"  />
@@ -171,7 +182,7 @@
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:Uid="DataTemplate_1">
                                             <StackPanel x:Uid="StackPanel_2" Orientation="Vertical" Margin="0,0,0,0">
-                                                <Button x:Uid="Button_5" Content="{Binding Name}" Margin="0,0,0,0"></Button>
+                                                <Button x:Uid="Button_5" Content="{Binding}" Margin="0,0,0,0" Click="Button_Click_5"></Button>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>

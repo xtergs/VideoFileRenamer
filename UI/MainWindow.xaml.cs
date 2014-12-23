@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -39,6 +40,17 @@ namespace VideoFileRenamer.Download
 				using (UnitOfWork unit = new UnitOfWork())
 				{
 					return unit.GenresRepository.dbSet.Distinct().ToList();
+				}
+			}
+		}
+
+		public List<Country> Countries
+		{
+			get
+			{
+				using (UnitOfWork unit = new UnitOfWork())
+				{
+					return unit.CountriesRepository.dbSet.Distinct().ToList();
 				}
 			}
 		}
@@ -90,7 +102,11 @@ namespace VideoFileRenamer.Download
 							ListFilms.ItemsSource = d.OrderByDescending(w => w.Added);
 						else
 							ListFilms.ItemsSource = x.Result;
+
+						//Adition filter
 						GenresComboBox.ItemsSource = Genres;
+						CountriesComboBox.ItemsSource = Countries;
+
 					});
 				});
 				//collectionTask.Start();
@@ -215,13 +231,19 @@ namespace VideoFileRenamer.Download
 			
 			using (UnitOfWork de = new UnitOfWork())
 			{
-				var query = de.FilmRepository.dbSet.Where(x => x.Deleted == false);
+				var query = de.FilmRepository.Get(x=>x.Deleted == false);
 				var list = query.ToList();
 
 				if (GenresComboBox.SelectedIndex >= 0)
 				{
 					var genre = (Genre) GenresComboBox.SelectedItem;
 					list = list.Where(x => x.Genres.Any(y=>y.GenreID == genre.GenreID)).ToList();
+				}
+
+				if (CountriesComboBox.SelectedIndex >= 0)
+				{
+					var country = (Country)CountriesComboBox.SelectedItem;
+					list = list.Where(x => x.Countries.Any(y => y.CountryID == country.CountryID)).ToList();
 				}
 
 				int result;
@@ -317,6 +339,25 @@ namespace VideoFileRenamer.Download
 		private void MenuItem_Click_9(object sender, RoutedEventArgs e)
 		{
 			AppEngine.Create().UpdateAllInfo();
+		}
+
+		private void ClearCountries(object sender, RoutedEventArgs e)
+		{
+			CountriesComboBox.SelectedIndex = -1;
+		}
+
+		private void SomeList_3_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
+
+		private void Button_Click_5(object sender, RoutedEventArgs e)
+		{
+			//var counry = ((Country) ((Button) sender).Content);
+			//var x = CountriesComboBox.Items.IndexOf(counry);
+			//CountriesComboBox.SelectedValue = counry;
+			//CountriesComboBox.SelectedItem = counry;
+			//CountriesComboBox.IsSynchronizedWithCurrentItem = true;
 		}
 
 	}

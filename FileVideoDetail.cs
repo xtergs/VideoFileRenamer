@@ -20,7 +20,7 @@ namespace VideoFileRenamer.Download
 			}
 		}
 
-		public int Rate { get; set; }
+		public double Rate { get; set; }
 
 		public SHA1 Sha { get; set; }
 

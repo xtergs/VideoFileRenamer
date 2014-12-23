@@ -5,7 +5,7 @@ using File = VideoFileRenamer.Models.File;
 
 namespace VideoFileRenamer.DAL
 {
-	class FileRepository : GenericRepository<File>
+	public class FileRepository : GenericRepository<File>
 	{
 
 
@@ -24,6 +24,22 @@ namespace VideoFileRenamer.DAL
 			return dbSet.Any(x => x.FileName == file.FileName && x.Size == file.Size);
 		}
 
+		public File Contain(File file)
+		{
+			return dbSet.AsParallel().SingleOrDefault(x =>x.FileName == file.FileName && x.Size == file.Size);
+		}
+
+		#region Overrides of GenericRepository<File>
+
+		public override File Add(File entity)
+		{
+			var ent = base.Add(entity);
+			ent.Deleted = false;
+			return ent;
+		}
+
+		#endregion
+
 		public bool IsContain(FileInfo file)
 		{
 			bool b = dbSet.Any(x => x.FileName == file.Name && x.Size == file.Length);
@@ -32,9 +48,10 @@ namespace VideoFileRenamer.DAL
 
 		public override void Delete(File entityToDelete)
 		{
-			if (entityToDelete.Film.Files.Count <= 1)
+			entityToDelete.Deleted = true;
+			if (entityToDelete.Film.Files.Count(x=>x.Deleted == false) <= 0)
 				entityToDelete.Film.Deleted = true;
-			base.Delete(entityToDelete);
+			//base.Delete(entityToDelete);
 		}
 	}
 }

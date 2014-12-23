@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -70,6 +71,8 @@ namespace VideoFileRenamer.UI
 
 		void ValidatePath()
 		{
+			if (String.IsNullOrWhiteSpace(pathNew.Text))
+				return;
 			if (!Directory.Exists(pathNew.Text))
 				Directory.CreateDirectory(pathNew.Text);
 		}

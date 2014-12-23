@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace VideoFileRenamer.DAL
 {
-	internal class GenericRepository<T> : IRepository<T> where T : class
+	public class GenericRepository<T> : IRepository<T> where T : class
 	{
 		internal FilmContext context;
 		internal DbSet<T> dbSet;
@@ -24,10 +24,14 @@ namespace VideoFileRenamer.DAL
 			return result;
 		}
 
-		public virtual void Add(T entity)
+		public virtual T Add(T entity)
 		{
 			if (!IsContain(entity))
-				dbSet.Add(entity);
+			{
+				return dbSet.Add(entity);
+				
+				}
+			return entity;
 		}
 
 		public virtual void Delete(object id)

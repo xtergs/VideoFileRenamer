@@ -10,9 +10,11 @@ namespace VideoFileRenamer.Models
 	{
 		public Person()
 		{
+			FirstName = "";
+			SecondName = "";
 			Films = new HashSet<Film>();
 		}
-		public Person(string FullName)
+		public Person(string FullName):this()
 		{
 			var strings = FullName.Split(' ');
 			FirstName = strings[0];
@@ -28,5 +30,13 @@ namespace VideoFileRenamer.Models
 
 		public virtual ICollection<Film> Films { get; set; }
 
+		#region Overrides of Object
+
+		public override string ToString()
+		{
+			return FirstName + SecondName;
+		}
+
+		#endregion
 	}
 }

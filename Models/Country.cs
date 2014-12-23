@@ -14,5 +14,14 @@ namespace VideoFileRenamer.Models
         public string Name { get; set; }
 
         public virtual ICollection<Film> Films { get; set; }
+
+		#region Overrides of Object
+
+		public override string ToString()
+		{
+			return Name;
+		}
+
+		#endregion
     }
 }

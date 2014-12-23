@@ -135,7 +135,7 @@ namespace VideoFileRenamer.Download
 			//Rate
 			node = document.DocumentNode.SelectSingleNode(plugin.Rating);
 			if (node != null)
-				returnDetail.Rate = (int)double.Parse(node.InnerText.Replace('.',','));
+				returnDetail.Rate = double.Parse(node.InnerText.Replace('.',','));
 
 			//Countres
 			node = document.DocumentNode.SelectSingleNode(plugin.CountryList);

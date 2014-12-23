@@ -15,6 +15,7 @@ namespace VideoFileRenamer.Models
 		    Path = info.FullName;
 			Created = info.CreationTimeUtc;
 			Modified = info.LastWriteTimeUtc;
+			Deleted = false;
 	    }
 
 	    public File()

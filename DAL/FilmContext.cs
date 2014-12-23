@@ -51,6 +51,10 @@ namespace VideoFileRenamer.DAL
 			//	.WithOptional(e => e.Director)
 			//	.HasForeignKey(e => e.Director_DirectorID);
 
+			modelBuilder.Entity<Person>()
+				.Property(e => e.FirstName)
+				.IsUnicode(false);
+
 			modelBuilder.Entity<Film>()
 				.Property(e => e.Name)
 				.IsUnicode(false);
@@ -72,7 +76,11 @@ namespace VideoFileRenamer.DAL
 			modelBuilder.Entity<Film>()
 				.HasMany(e => e.Actors)
 				.WithMany(e => e.Films)
-				.Map(m => m.ToTable("Actors_Film").MapLeftKey("Films_IdFilm").MapRightKey("Actors_IdActor"));
+				.Map(m => m.ToTable("Person_Film").MapLeftKey("Films_IdFilm").MapRightKey("Person_IdPerson"));
+
+			//modelBuilder.Entity<Person>()
+			//	.HasMany(e => e.Films)
+			//	.WithOptional(e => e.Director);
 
 			modelBuilder.Entity<Genre>()
 				.Property(e => e.Name)

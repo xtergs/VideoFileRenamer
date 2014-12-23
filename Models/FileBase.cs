@@ -20,6 +20,8 @@ namespace VideoFileRenamer.Models
 
         public string Path { get; set; }
 
+		public bool Deleted { get; set; }
+
 	    [NotMapped]
 	    public string FullPath
 	    {

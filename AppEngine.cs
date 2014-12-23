@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows.Documents.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -157,17 +158,25 @@ namespace VideoFileRenamer.Download
 				{
 					if (!Directory.Exists(path))
 						continue;
-					foreach (var file in Directory.EnumerateFiles(path, "*.mkv"))
+					var files = Directory.EnumerateFiles(path, "*.mkv").ToList();
+					files.AddRange(Directory.EnumerateFiles(path, "*.avi"));
+					foreach (var file in files)
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile) && !NewFilms.Any(x=>x.FileInfo.NameFile == infoFile.Name) && !NewFiles.Any(x=>x.NameFile == infoFile.Name))
-							NewFiles.Enqueue(new FileVideoInfo(infoFile));
-					}
-					foreach (var file in Directory.EnumerateFiles(path, "*.avi"))
-					{
-						FileInfo infoFile = new FileInfo(file);
-						if (!ignoringFiles.Contains(infoFile.Name) && !videosEntities.FileRepository.IsContain(infoFile) && !NewFilms.Any(x => x.FileInfo.NameFile == infoFile.Name) )
-							NewFiles.Enqueue(new FileVideoInfo(infoFile));
+						if (!ignoringFiles.Contains(infoFile.Name) && !NewFilms.Any(x => x.FileInfo.NameFile == infoFile.Name) &&
+						    !NewFiles.Any(x => x.NameFile == infoFile.Name))
+						{
+							var temp = videosEntities.FileRepository.Contain(new File(infoFile));
+							if (temp != null)
+							{
+								temp.Deleted = false;
+								temp.Film.Deleted = false;
+								videosEntities.Save();
+								OnUpdatedData();
+							}
+							else
+								NewFiles.Enqueue(new FileVideoInfo(infoFile));
+						}
 					}
 				}
 
@@ -297,6 +306,7 @@ namespace VideoFileRenamer.Download
 				foreach (var file in entity.FileRepository.GetAllData().Include(x=>x.Film.Genres))
 				{
 					var newName = Rename(file);
+					file.PrevFileName = file.FileName;
 					file.FileName = newName;
 				}
 				entity.Save();
@@ -328,7 +338,9 @@ namespace VideoFileRenamer.Download
 			try
 			{
 				if (System.IO.File.Exists(path))
+				{
 					System.IO.File.Move(path, Path.Combine(file.Path, newName));
+				}
 			}
 			catch (System.IO.IOException e)
 			{
@@ -371,13 +383,19 @@ namespace VideoFileRenamer.Download
 			return result;
 		}
 
+		public Task<ICollection<Film>> FindFilmAsync(string filter, CancellationToken token)
+		{
+			var result = Task<ICollection<Film>>.Run(() => FindFilm(filter), token);
+			return result;
+		}
+
 		public void DeleteFile(int idFile, bool isRealFile)
 		{
 			using (UnitOfWork entity = new UnitOfWork())
 			{
 				var file = entity.FileRepository.Get(x => x.FileID == idFile).First();
-				if (file.Film.Files.Count == 1)
-					file.Film.Deleted = true;
+				//if (file.Film.Files.Count == 1)
+				//	file.Film.Deleted = true;
 
 				if (isRealFile)
 					System.IO.File.Delete(Path.Combine(file.Path, file.FileName));

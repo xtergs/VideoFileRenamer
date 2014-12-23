@@ -31,13 +31,11 @@ namespace VideoFileRenamer.Models
 
         public string Description { get; set; }
 
-        public int? Rate { get; set; }
+        public double? Rate { get; set; }
 
         public string Link { get; set; }
 
         public bool Deleted { get; set; }
-
-        public int? Director_DirectorID { get; set; }
 
         public virtual Person Director { get; set; }
 

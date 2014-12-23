@@ -6,13 +6,14 @@ using VideoFileRenamer.Models;
 
 namespace VideoFileRenamer.DAL
 {
-	class UnitOfWork:IDisposable
+	public class UnitOfWork:IDisposable
 	{
 		private FilmContext context;
-		private GenericRepository<Film> filmsRepository;
-		private GenericRepository<Director> directoryRepository;
+		private FilmRepository filmsRepository;
+		private GenericRepository<Person> directoryRepository;
 		private FileRepository fileRepository;
 		private GenericRepository<Genre> genresRepository;
+		private GenericRepository<Country> countriesRepository;
 		private GenericRepository<IgnorFile> ingoryFileRepository;
 
 		public static string ConnectionString { get; set; }
@@ -45,6 +46,18 @@ namespace VideoFileRenamer.DAL
 			}
 		}
 
+		public GenericRepository<Country> CountriesRepository
+		{
+			get
+			{
+				if (this.countriesRepository == null)
+				{
+					countriesRepository = new GenericRepository<Country>(context);
+				}
+				return countriesRepository;
+			}
+		}
+
 		public GenericRepository<IgnorFile> IngoringFileRepository
 		{
 			get
@@ -55,13 +68,13 @@ namespace VideoFileRenamer.DAL
 			}
 		}
 
-		public GenericRepository<Film> FilmRepository
+		public FilmRepository FilmRepository
 		{
 			get
 			{
 				if (this.filmsRepository == null)
 				{
-					this.filmsRepository = new GenericRepository<Film>(context);
+					this.filmsRepository = new FilmRepository(context);
 				}
 				return filmsRepository;
 			}
@@ -79,13 +92,13 @@ namespace VideoFileRenamer.DAL
 			}
 		}
 
-		public GenericRepository<Director> DirectorRepository
+		public GenericRepository<Person> DirectorRepository
 		{
 			get
 			{
 				if (this.directoryRepository == null)
 				{
-					directoryRepository = new GenericRepository<Director>(context);
+					directoryRepository = new GenericRepository<Person>(context);
 				}
 				return directoryRepository;
 			}
@@ -139,10 +152,13 @@ namespace VideoFileRenamer.DAL
 					Path = info.Path,
 					Size = info.Size,
 					Created = info.Created,
-					Modified = info.Modified
+					Modified = info.Modified,
+					Deleted = false
 				};
 				context.Files.Add(file);
 			}
+			else
+				file.Deleted = false;
 			return file;
 		}
 
@@ -210,14 +226,14 @@ namespace VideoFileRenamer.DAL
 			return countrs;
 		}
 
-		public Models.Person AddDirector(Models.Person director)
+		public Person AddDirector(Person director)
 		{
 			var dir =
-				context.Directors.FirstOrDefault(x => x.FirstName == director.FirstName
+				context.Persons.FirstOrDefault(x => x.FirstName == director.FirstName
 													   && x.SecondName == director.SecondName);
 			if (dir == null)
 			{
-				dir = context.Directors.Add(new Models.Person() {FirstName = director.FirstName, SecondName = director.SecondName, Link = "213" });
+				dir = context.Persons.Add(new Models.Person() { FirstName = director.FirstName, SecondName = director.SecondName, Link = "213" });
 				Save();
 			}
 			return dir;
