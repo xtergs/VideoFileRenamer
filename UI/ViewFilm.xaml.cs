@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -11,18 +10,24 @@ using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using VideoFileRenamer.Annotations;
 using VideoFileRenamer.Download;
+using VideoFileRenamer.Models;
+using VideoFileRenamer.ViewModels;
+using File = System.IO.File;
 
 namespace VideoFileRenamer.UI
 {
 	/// <summary>
 	/// Interaction logic for AddingFilms.xaml
 	/// </summary>
-	public partial class AddingFilms : Window, INotifyPropertyChanged
+	public partial class ViewFilm : Window, INotifyPropertyChanged
 	{
-		public AddingFilms()
+		public ViewFilm(Film filme)
 		{
 			InitializeComponent();
-			DataContext = AppEngine.Create().AddNewFilmViewModel;
+			//var x = AppEngine.Create().ViewFilmViewModel;
+			var d = new ViewFilmViewModel(filme);
+			//x.Film = filme;
+			DataContext = d;
 		}
 
 		private Queue<string> deleteImage; 
@@ -48,7 +53,7 @@ namespace VideoFileRenamer.UI
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)
 		{
-			AppEngine.Create().AddNewFilmViewModel.SelectAsync.Execute();
+			((ViewFilmViewModel)DataContext).SelectAsync.Execute();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -62,11 +67,12 @@ namespace VideoFileRenamer.UI
 
 		private void AddingWindow_Closed(object sender, System.EventArgs e)
 		{
-			foreach (var image in deleteImage)
-			{
-				if (File.Exists(image))
-					File.Delete(image);
-			}
+			if (deleteImage != null)
+				foreach (var image in deleteImage)
+				{
+					if (File.Exists(image))
+						File.Delete(image);
+				}
 		}
 
 		//private async void Button_Click(object sender, RoutedEventArgs e)

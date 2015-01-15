@@ -4,10 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:VideoFileRenamer.ViewModels"
-        d:DataContext="{d:DesignInstance viewModels:AddNewFilmViewModel}"
+        d:DataContext="{d:DesignInstance viewModels:ViewFilmViewModel}"
         mc:Ignorable="d"
         xmlns:videoFileRenamer="clr-namespace:VideoFileRenamer"
-        x:Class="VideoFileRenamer.UI.AddingFilms"
+        x:Class="VideoFileRenamer.UI.ViewFilm"
         
       
         Title="AddingFilms" Height="300" Width="300" Loaded="Window_Loaded" Closed="AddingWindow_Closed">
@@ -62,8 +62,7 @@
                 <ColumnDefinition x:Uid="ColumnDefinition_6"/>
                 <ColumnDefinition x:Uid="ColumnDefinition_7"/>
             </Grid.ColumnDefinitions>
-        <Button x:Uid="NextButton" Grid.Row="0" x:Name="NextButton" Command="{Binding SelectAsync}" Content="Next"/>
-        <Button x:Uid="SkipButton" Grid.Row="0" Grid.Column="1" x:Name="SkipButton" Content="Skip" Command="{Binding Skip}"></Button>
+        <Button x:Uid="NextButton" Grid.Row="0" x:Name="NextButton" Command="{Binding SelectAsync}" Content="SelectAsync" Grid.ColumnSpan="2"/>
         </Grid>
         <StatusBar x:Uid="StatusBar_1" Grid.Row="3">
             <StatusBarItem x:Uid="StatusBarItem_1" Content="{Binding CountLast}"></StatusBarItem>

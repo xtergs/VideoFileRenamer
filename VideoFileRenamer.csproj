@@ -96,6 +96,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BackupData.cs" />
+    <Compile Include="DAL\ActionCommand.cs" />
+    <Compile Include="DAL\BusinessContext.cs" />
     <Compile Include="DAL\FileRepository.cs" />
     <Compile Include="DAL\FilmRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
@@ -113,7 +115,10 @@
     <Compile Include="Models\FilmExt.cs" />
     <Compile Include="Models\Genre.cs" />
     <Compile Include="Models\IgnorFile.cs" />
+    <Compile Include="Models\NewFile.cs" />
+    <Compile Include="Models\ParsFileFilms.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Languages\ru-RU\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -121,6 +126,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Queue.cs" />
+    <Compile Include="UI\ViewFilm.xaml.cs">
+      <DependentUpon>ViewFilm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\DeleteDialog.xaml.cs">
       <DependentUpon>DeleteDialog.xaml</DependentUpon>
     </Compile>
@@ -130,9 +138,18 @@
     <Compile Include="UI\Tasks.xaml.cs">
       <DependentUpon>Tasks.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel.cs" />
+    <Compile Include="ViewModels\AddNewFilmViewModel.cs" />
+    <Compile Include="ViewModels\FilmsViewModel.cs" />
+    <Compile Include="ViewModels\ViewFilmModelViewBase.cs" />
+    <Compile Include="ViewModels\ViewFilmViewModel.cs" />
     <Page Include="FilmInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ViewFilm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\AddingFilms.xaml">
       <SubType>Designer</SubType>
@@ -157,7 +174,7 @@
     </Compile>
     <Compile Include="AppEngine.cs" />
     <Compile Include="FileVideoDetail.cs" />
-    <Compile Include="FileVideoDetailShort.cs" />
+    <Compile Include="Models\FileVideoDetailShort.cs" />
     <Compile Include="FileVideoInfo.cs" />
     <Compile Include="Download\InternetDownloader.cs" />
     <Compile Include="ParsFilmList.cs" />
@@ -203,6 +220,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </Resource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\VideoFileRenamer.DAL.FilmContext.datasource" />
     <None Include="Properties\DataSources\VideoFileRenamer.DAL.UnitOfWork.datasource" />
     <None Include="Properties\DataSources\VideosEntities.datasource" />
     <None Include="Properties\Settings.settings">
@@ -236,6 +254,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Films.edmx.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MVVM\" />
+    <Folder Include="Views\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

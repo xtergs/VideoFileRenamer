@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Windows.Documents.Serialization;
 using VideoFileRenamer.Annotations;
+using VideoFileRenamer.Models;
 
 namespace VideoFileRenamer.Download
 {
 	[Serializable()]
 	public class ParsFilmList : List<FileVideoDetailShort>
 	{
-	    public ParsFilmList([NotNull] FileVideoInfo fileInfo,[NotNull] IEnumerable<FileVideoDetailShort> listFilms )
+	    public ParsFilmList([NotNull] FileBase fileInfo,[NotNull] IEnumerable<FileVideoDetailShort> listFilms )
 		{
 			FileInfo = fileInfo;
 			this.AddRange(listFilms);
 		}
 
-		public FileVideoInfo FileInfo { get; set; }
+		public FileBase FileInfo { get; set; }
 	}
 }

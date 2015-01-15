@@ -11,6 +11,7 @@ using VideoFileRenamer.Annotations;
 using VideoFileRenamer.DAL;
 using VideoFileRenamer.Models;
 using VideoFileRenamer.UI;
+using VideoFileRenamer.ViewModels;
 
 namespace VideoFileRenamer.Download
 {
@@ -33,32 +34,33 @@ namespace VideoFileRenamer.Download
 			get { return AppEngine.Create(); }
 		}
 
-		public List<Genre> Genres
-		{
-			get
-			{
-				using (UnitOfWork unit = new UnitOfWork())
-				{
-					return unit.GenresRepository.dbSet.Distinct().ToList();
-				}
-			}
-		}
+		//public List<Genre> Genres
+		//{
+		//	get
+		//	{
+		//		using (UnitOfWork unit = new UnitOfWork())
+		//		{
+		//			return unit.GenresRepository.dbSet.Distinct().ToList();
+		//		}
+		//	}
+		//}
 
-		public List<Country> Countries
-		{
-			get
-			{
-				using (UnitOfWork unit = new UnitOfWork())
-				{
-					return unit.CountriesRepository.dbSet.Distinct().ToList();
-				}
-			}
-		}
+		//public List<Country> Countries
+		//{
+		//	get
+		//	{
+		//		using (UnitOfWork unit = new UnitOfWork())
+		//		{
+		//			return unit.CountriesRepository.dbSet.Distinct().ToList();
+		//		}
+		//	}
+		//}
 
 		public MainWindow()
 		{
 			
 			InitializeComponent();
+			DataContext = AppEngine.Create().FilmsViewModel;
 			TaskWindow = new Tasks();
 			TaskWindow.Activate();
 			TaskWindow.Show();
@@ -92,23 +94,23 @@ namespace VideoFileRenamer.Download
 			//if (collectionTask != null && collectionTask.Status == TaskStatus.Running)
 			//	collectionTask.Dispose();
 		
-				collectionTask = ( AppEngine.Create().FindFilmAsync(Filter));
-				collectionTask.ContinueWith((x) =>
-				{
-					Dispatcher.InvokeAsync(() =>
-					{
-						var d = x.Result;
-						if (LastAdded)
-							ListFilms.ItemsSource = d.OrderByDescending(w => w.Added);
-						else
-							ListFilms.ItemsSource = x.Result;
+				//collectionTask = ( AppEngine.Create().FindFilmAsync(Filter));
+				//collectionTask.ContinueWith((x) =>
+				//{
+				//	Dispatcher.InvokeAsync(() =>
+				//	{
+				//		var d = x.Result;
+				//		if (LastAdded)
+				//			ListFilms.ItemsSource = d.OrderByDescending(w => w.Added);
+				//		else
+				//			ListFilms.ItemsSource = x.Result;
 
-						//Adition filter
-						GenresComboBox.ItemsSource = Genres;
-						CountriesComboBox.ItemsSource = Countries;
+				//		//Adition filter
+				//		GenresComboBox.ItemsSource = Genres;
+				//		CountriesComboBox.ItemsSource = Countries;
 
-					});
-				});
+				//	});
+				//});
 				//collectionTask.Start();
 		}
 
@@ -140,6 +142,9 @@ namespace VideoFileRenamer.Download
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			RefreshListFilms();
+			//System.Windows.Data.CollectionViewSource filmContextViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("filmContextViewSource")));
+			// Load data by setting the CollectionViewSource.Source property:
+			// filmContextViewSource.Source = [generic data source]
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -158,16 +163,16 @@ namespace VideoFileRenamer.Download
 
 		void DeleteFilm(int index, bool realFile)
 		{
-			AppEngine entity = AppEngine.Create();
-			var files = entity.GetFiles(((Film)ListFilms.SelectedItem).FilmID);
-			if (files.Count <= 0)
-				return;
-			if (files.Count > 1)
-			{
+			//AppEngine entity = AppEngine.Create();
+			//var files = entity.GetFiles(((Film)ListFilms.SelectedItem).FilmID);
+			//if (files.Count <= 0)
+			//	return;
+			//if (files.Count > 1)
+			//{
 
-			}
-			else
-				DeleteFile(files[0].FileID);
+			//}
+			//else
+			//	DeleteFile(files[0].FileID);
 		}
 
 		void DeleteFile(int idFile)
@@ -194,30 +199,30 @@ namespace VideoFileRenamer.Download
 
 		private void ListFilms_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
-			DeleteItem.Items.Clear();
+			//DeleteItem.Items.Clear();
 			DeleteItem.Header = "Delete";
 
-			var engine = AppEngine.Create();
-			var files = engine.GetFiles(((Film) ListFilms.SelectedItem).FilmID);
-			if (files == null)
-				return;
+			//var engine = AppEngine.Create();
+			//var files = engine.GetFiles(((Film) ListFilms.SelectedItem).FilmID);
+			//if (files == null)
+			//	return;
 			
-			foreach (var file in files)
-			{
-				var item = new MenuItem()
-				{
-					Header = file.FileName + " - " + file.Size.ToString(), Tag = file.FileID
+			//foreach (var file in files)
+			//{
+			//	var item = new MenuItem()
+			//	{
+			//		Header = file.FileName + " - " + file.Size.ToString(), Tag = file.FileID
 				
-				};
-				item.Click += MenuItem_Click_1;
-				DeleteItem.Items.Add(item);
-			}
+			//	};
+			//	item.Click += MenuItem_Click_1;
+			//	DeleteItem.Items.Add(item);
+			//}
 		}
 
 		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			Filter = ((TextBox) sender).Text;
-			Dispatcher.InvokeAsync(RefreshListFilms);
+			AppEngine.Create().FilmsViewModel.Filter = ((TextBox) sender).Text;
+			AppEngine.Create().FilmsViewModel.FilterCommand.Execute();
 		}
 
 		private void MenuItem_Click_2(object sender, RoutedEventArgs e)
@@ -231,27 +236,27 @@ namespace VideoFileRenamer.Download
 			
 			using (UnitOfWork de = new UnitOfWork())
 			{
-				var query = de.FilmRepository.Get(x=>x.Deleted == false);
-				var list = query.ToList();
+				//var query = de.FilmRepository.Get(x=>x.Deleted == false);
+				//var list = query.ToList();
 
-				if (GenresComboBox.SelectedIndex >= 0)
-				{
-					var genre = (Genre) GenresComboBox.SelectedItem;
-					list = list.Where(x => x.Genres.Any(y=>y.GenreID == genre.GenreID)).ToList();
-				}
+				//if (GenresComboBox.SelectedIndex >= 0)
+				//{
+				//	var genre = (Genre) GenresComboBox.SelectedItem;
+				//	list = list.Where(x => x.Genres.Any(y=>y.GenreID == genre.GenreID)).ToList();
+				//}
 
-				if (CountriesComboBox.SelectedIndex >= 0)
-				{
-					var country = (Country)CountriesComboBox.SelectedItem;
-					list = list.Where(x => x.Countries.Any(y => y.CountryID == country.CountryID)).ToList();
-				}
+				//if (CountriesComboBox.SelectedIndex >= 0)
+				//{
+				//	var country = (Country)CountriesComboBox.SelectedItem;
+				//	list = list.Where(x => x.Countries.Any(y => y.CountryID == country.CountryID)).ToList();
+				//}
 
-				int result;
-				if (int.TryParse(YearTextBox.Text, out result))
-				{
-					list = list.Where(x => x.Year == result).ToList();
-				}
-				ListFilms.ItemsSource = list;
+				//int result;
+				//if (int.TryParse(YearTextBox.Text, out result))
+				//{
+				//	list = list.Where(x => x.Year == result).ToList();
+				//}
+				//ListFilms.ItemsSource = list;
 			}
 		}
 
@@ -304,7 +309,7 @@ namespace VideoFileRenamer.Download
 
 		private void MenuItem_Click_8(object sender, RoutedEventArgs e)
 		{
-			AppEngine.Create().NewFilms.Clear();
+			//AppEngine.Create().NewFilms.Clear();
 			AppEngine.Create().Backup();
 		}
 
@@ -343,7 +348,7 @@ namespace VideoFileRenamer.Download
 
 		private void ClearCountries(object sender, RoutedEventArgs e)
 		{
-			CountriesComboBox.SelectedIndex = -1;
+			//CountriesComboBox.SelectedIndex = -1;
 		}
 
 		private void SomeList_3_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -358,6 +363,12 @@ namespace VideoFileRenamer.Download
 			//CountriesComboBox.SelectedValue = counry;
 			//CountriesComboBox.SelectedItem = counry;
 			//CountriesComboBox.IsSynchronizedWithCurrentItem = true;
+		}
+
+		private void MenuItem_Click_10(object sender, RoutedEventArgs e)
+		{
+			var view = new ViewFilm(((FilmsViewModel)DataContext).SelectedFilm);
+			view.Show();
 		}
 
 	}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data.Entity;
 using System.IO;
@@ -19,6 +20,7 @@ using VideoFileRenamer.Properties;
 using VideoFileRenamer.DAL;
 using System.Runtime.Serialization.Formatters;
 using VideoFileRenamer.Models;
+using VideoFileRenamer.ViewModels;
 using File = VideoFileRenamer.Models.File;
 using Timer = System.Timers.Timer;
 
@@ -36,20 +38,56 @@ namespace VideoFileRenamer.Download
 
 		private string pathSaveNewFilms = "test";
 
-		private List<string> ignoringFiles = new List<string>();
+		//private List<string> ignoringFiles = new List<string>();
 
-		public Queue<FileVideoInfo> NewFiles { get; private set; }
+		//public ObservableCollection<FileVideoInfo> NewFiles { get; private set; }
 
-		public Queue<ParsFilmList> NewFilms
+		public ObservableCollection<ParsFilmList> NewFilms
 		{
 			get
 			{
 				if (newFilms == null)
-					newFilms = new Queue<ParsFilmList>();
+					newFilms = new ObservableCollection<ParsFilmList>();
 				return newFilms;
 			}
-			private set { newFilms = value; }
+			private set
+			{
+				newFilms = value; 
+			}
 		}
+
+		public FilmsViewModel FilmsViewModel
+		{
+			get
+			{
+				if (filmsViewModel == null)
+					filmsViewModel = new FilmsViewModel();
+				return filmsViewModel;
+			}
+			set { filmsViewModel = value; }
+		}
+
+		public AddNewFilmViewModel AddNewFilmViewModel
+		{
+			get
+			{
+				if (addNewFilmViewModel == null)
+					addNewFilmViewModel = new AddNewFilmViewModel();
+				return addNewFilmViewModel;
+			}
+			set { addNewFilmViewModel = value; }
+		}
+
+		//public ViewFilmViewModel ViewFilmViewModel
+		//{
+		//	get
+		//	{
+		//		if (viewFilmViewModel == null)
+		//			viewFilmViewModel = new ViewFilmViewModel();
+		//		return viewFilmViewModel;
+		//	}
+		//	set { viewFilmViewModel = value; }
+		//}
 
 		public delegate void statusMessage(string message);
 
@@ -124,7 +162,7 @@ namespace VideoFileRenamer.Download
 		{
 			Restore();
 			PlugDownload.PathImage = Settings.Default.PathToImage;
-			NewFiles = new Queue<FileVideoInfo>();
+			//NewFiles = new ObservableCollection<FileVideoInfo>();
 			timer = new Timer(10000);
 			AutoFind = false;
 			if (AutoFind)
@@ -149,7 +187,7 @@ namespace VideoFileRenamer.Download
 
 		#region FindNewVideos
 		//Возвращает список новых фильмов и серий для сериалов
-		public Queue<FileVideoInfo> FindNewVideos()
+		public void FindNewVideos()
 		{
 			using (UnitOfWork videosEntities = new UnitOfWork())
 			{
@@ -163,8 +201,9 @@ namespace VideoFileRenamer.Download
 					foreach (var file in files)
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!ignoringFiles.Contains(infoFile.Name) && !NewFilms.Any(x => x.FileInfo.NameFile == infoFile.Name) &&
-						    !NewFiles.Any(x => x.NameFile == infoFile.Name))
+						if (!videosEntities.Context.IgnoringFiles.Any(x=>x.FileName == infoFile.Name)&& 
+							!NewFilms.Any(x => x.FileInfo.FileName == infoFile.Name) &&
+							!videosEntities.Context.NewFiles.Any(x => x.FileName == infoFile.Name))
 						{
 							var temp = videosEntities.FileRepository.Contain(new File(infoFile));
 							if (temp != null)
@@ -175,19 +214,19 @@ namespace VideoFileRenamer.Download
 								OnUpdatedData();
 							}
 							else
-								NewFiles.Enqueue(new FileVideoInfo(infoFile));
+								videosEntities.Context.NewFiles.Add(new NewFile(infoFile));
 						}
 					}
 				}
-
-				ChangedStatus("Find " + NewFiles.Count + " films");
-				return NewFiles;
+				videosEntities.Save();
+				//ChangedStatus("Find " + NewFiles.Count + " films");
+				//return NewFiles;
 			}
 		}
 
-		public Task<Queue<FileVideoInfo>> FindNewVideosAsync()
+		public Task FindNewVideosAsync()
 		{
-			var result = Task<Queue<FileVideoInfo>>.Run(() => FindNewVideos());
+			var result = Task.Run(() => FindNewVideos());
 			return result;
 		}
 
@@ -220,10 +259,10 @@ namespace VideoFileRenamer.Download
 		}
 
 		//Получает список фильмов подходящих для файла
-		private ParsFilmList FindFilmInternet(FileVideoInfo info)
+		private ParsFilmList FindFilmInternet(NewFile info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
-			var list = downloader.FindFilms(info);
+			var list = downloader.FindFilms(Path.GetFileNameWithoutExtension(info.FileName));
 			if (list == null)
 				return null;
 			return new ParsFilmList(info, list);
@@ -236,41 +275,48 @@ namespace VideoFileRenamer.Download
 
 			Directory.CreateDirectory(@"cach\");
 
-			Parallel.ForEach(NewFiles, (file) =>
+			using (var unit = new UnitOfWork())
 			{
-				//Исчет фильмы для файла и скачивает картинку
-				var temp = FindFilmInternet(file);
-				if (temp == null)
-					return;
-				using (WebClient client = new WebClient())
+#if DEBUG
+				var d = unit.Context.NewFiles;
+#endif
+				Parallel.ForEach(unit.Context.NewFiles, (file) =>
 				{
-					foreach (var item in temp)
+					//Исчет фильмы для файла и скачивает картинку
+					var temp = FindFilmInternet(file);
+					if (temp == null)
+						return;
+					using (WebClient client = new WebClient())
 					{
-						if (item.Image == null)
-							continue;
-						string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
-						try
+						foreach (var item in temp)
 						{
-							client.DownloadFile(item.Image, imageName);
+							if (item.Image == null)
+								continue;
+							string imageName = @"cach\" + Guid.NewGuid().ToString() + ".jpeg";
+							try
+							{
+								client.DownloadFile(item.Image, imageName);
+							}
+							catch (System.IO.IOException e)
+							{
+								OnChangedStatus("Not enought space for image");
+							}
+							catch (System.NotSupportedException e)
+							{
+							}
+							catch (Exception e)
+							{
+
+							}
+							item.Image = imageName;
 						}
-						catch (System.IO.IOException e)
-						{
-							OnChangedStatus("Not enought space for image");
-						}
-						catch (System.NotSupportedException e)
-						{
-						}
-						catch (Exception e)
-						{
-							
-						}
-						item.Image = imageName;
+						NewFilms.Add(temp);
 					}
-					NewFilms.Enqueue(temp);
-				}
-				OnProgressStatus(NewFilms.Count, NewFiles.Count, "Found films for " + temp.FileInfo.NameFile);
-			});
-			NewFiles.Clear();
+					OnProgressStatus(NewFilms.Count, unit.Context.NewFiles.Count(), "Found films for " + temp.FileInfo.FileName);
+				});
+				unit.Context.NewFiles.RemoveRange(unit.Context.NewFiles.Local);
+				unit.Save();
+			}
 
 			OnFindFilmsFinished();
 			ChangedStatus("Found films for all files");
@@ -284,15 +330,28 @@ namespace VideoFileRenamer.Download
 		}
 
 		private Task FindFilmsForAllFilesTask;
-		private Queue<ParsFilmList> newFilms;
+		private ObservableCollection<ParsFilmList> newFilms;
+		private FilmsViewModel filmsViewModel;
+		private AddNewFilmViewModel addNewFilmViewModel;
+		private ViewFilmViewModel viewFilmViewModel;
 
-		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
+		public void AddNewFilm(FileBase info, FileVideoDetail detail)
 		{
 			using (UnitOfWork entities = new UnitOfWork())
 			{
 				entities.AddNewFilm(info, detail);
 			}
-			ChangedStatus(detail.Name + " is added");
+			ChangedStatus(detail.Name + " has added");
+			UpdatedData();
+		}
+
+		public void UpdateFilm(Film film, FileVideoDetail detail)
+		{
+			using (UnitOfWork unit = new UnitOfWork())
+			{
+				unit.UpdateFilm(film, detail);
+			}
+			ChangedStatus(detail.Name + " has updated");
 			UpdatedData();
 		}
 
@@ -449,21 +508,21 @@ namespace VideoFileRenamer.Download
 
 		public void Restore()
 		{
-			BinaryFormatter serializer = new BinaryFormatter();
-			if (System.IO.File.Exists(pathSaveNewFilms))
-				using (Stream read = new FileStream(pathSaveNewFilms, FileMode.Open))
-				{
-					try
-					{
-						NewFilms = (Queue<ParsFilmList>) serializer.Deserialize(read);
-						OnChangedStatus("Restored " + NewFilms.Count + " films");
-					}
-					catch (System.Runtime.Serialization.SerializationException e)
-					{
-						NewFilms = new Queue<ParsFilmList>();
-						OnChangedStatus("Can't deserialize NewFilms");
-					}
-				}
+			//BinaryFormatter serializer = new BinaryFormatter();
+			//if (System.IO.File.Exists(pathSaveNewFilms))
+			//	using (Stream read = new FileStream(pathSaveNewFilms, FileMode.Open))
+			//	{
+			//		try
+			//		{
+			//			NewFilms = (ObservableCollection<ParsFilmList>)serializer.Deserialize(read);
+			//			OnChangedStatus("Restored " + NewFilms.Count + " films");
+			//		}
+			//		catch (System.Runtime.Serialization.SerializationException e)
+			//		{
+			//			NewFilms = new ObservableCollection<ParsFilmList>();
+			//			OnChangedStatus("Can't deserialize NewFilms");
+			//		}
+			//	}
 		}
 
 		public void CleanCache()

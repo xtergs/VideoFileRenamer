@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,26 +10,37 @@ namespace VideoFileRenamer.Models
 {
 	public class FileBase
 	{
+		public FileBase()
+		{
+		}
+
+		public FileBase(FileInfo info)
+		{
+			FileName = info.Name;
+			Size = info.Length;
+			Path = info.FullName;
+			Created = info.CreationTimeUtc;
+			Modified = info.LastWriteTimeUtc;
+		}
 
 
+		public string MD5 { get; set; }
 
-        public string MD5 { get; set; }
+		public string FileName { get; set; }
 
-        public string FileName { get; set; }
+		public long Size { get; set; }
 
-        public long Size { get; set; }
-
-        public string Path { get; set; }
+		public string Path { get; set; }
 
 		public bool Deleted { get; set; }
 
-	    [NotMapped]
-	    public string FullPath
-	    {
-		    get { return Path + System.IO.Path.DirectorySeparatorChar + FileName; }
-	    }
+		[NotMapped]
+		public string FullPath
+		{
+			get { return Path + System.IO.Path.DirectorySeparatorChar + FileName; }
+		}
 
-	    public DateTime Created { get; set; }
+		public DateTime Created { get; set; }
 
 		public DateTime Modified { get; set; }
 

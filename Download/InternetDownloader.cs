@@ -86,6 +86,8 @@ namespace VideoFileRenamer.Download
 			return list;
 		}
 
+		
+
 		public FileVideoDetail FullInfoFilm(string link, PlugDownload plugin)
 		{
 			FileVideoDetail returnDetail = new FileVideoDetail();

@@ -8,7 +8,7 @@ namespace VideoFileRenamer.DAL
 {
 	public class UnitOfWork:IDisposable
 	{
-		private FilmContext context;
+		public readonly FilmContext Context;
 		private FilmRepository filmsRepository;
 		private GenericRepository<Person> directoryRepository;
 		private FileRepository fileRepository;
@@ -22,15 +22,20 @@ namespace VideoFileRenamer.DAL
 
 		public UnitOfWork()
 		{
-			context = new FilmContext(ConnectionString);
-			context.Database.CreateIfNotExists();
+			Context = new FilmContext(ConnectionString);
+			Context.Database.CreateIfNotExists();
+		}
+
+		public void DeleteNewFile(int id)
+		{
+			Context.NewFiles.Remove(Context.NewFiles.First(x => x.NewFileID == id));
 		}
 
 		public void ClearDB()
 		{
-			if (context.Database.Exists())
-				context.Database.Delete();
-			context.Database.Create();
+			if (Context.Database.Exists())
+				Context.Database.Delete();
+			Context.Database.Create();
 		}
 
 
@@ -40,7 +45,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (this.genresRepository == null)
 				{
-					genresRepository = new GenericRepository<Genre>(context);
+					genresRepository = new GenericRepository<Genre>(Context);
 				}
 				return genresRepository;
 			}
@@ -52,7 +57,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (this.countriesRepository == null)
 				{
-					countriesRepository = new GenericRepository<Country>(context);
+					countriesRepository = new GenericRepository<Country>(Context);
 				}
 				return countriesRepository;
 			}
@@ -63,7 +68,7 @@ namespace VideoFileRenamer.DAL
 			get
 			{
 				if (ingoryFileRepository == null)
-					ingoryFileRepository = new GenericRepository<IgnorFile>(context);
+					ingoryFileRepository = new GenericRepository<IgnorFile>(Context);
 				return ingoryFileRepository;
 			}
 		}
@@ -74,7 +79,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (this.filmsRepository == null)
 				{
-					this.filmsRepository = new FilmRepository(context);
+					this.filmsRepository = new FilmRepository(Context);
 				}
 				return filmsRepository;
 			}
@@ -86,7 +91,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (this.fileRepository == null)
 				{
-					this.fileRepository = new FileRepository(context);
+					this.fileRepository = new FileRepository(Context);
 				}
 				return fileRepository;
 			}
@@ -98,7 +103,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (this.directoryRepository == null)
 				{
-					directoryRepository = new GenericRepository<Person>(context);
+					directoryRepository = new GenericRepository<Person>(Context);
 				}
 				return directoryRepository;
 			}
@@ -106,7 +111,7 @@ namespace VideoFileRenamer.DAL
 
 		public void Save()
 		{
-			context.SaveChanges();
+			Context.SaveChanges();
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -115,7 +120,7 @@ namespace VideoFileRenamer.DAL
 			{
 				if (disposing)
 				{
-					context.Dispose();
+					Context.Dispose();
 				}
 			}
 			disposed = true;
@@ -127,7 +132,17 @@ namespace VideoFileRenamer.DAL
 			GC.SuppressFinalize(this);
 		}
 
-		public void AddNewFilm(FileVideoInfo info, FileVideoDetail detail)
+		public void UpdateFilm(Film film, FileVideoDetail detail)
+		{
+			FilmExt.Update(film, detail);
+			film.Countries = AddCountries(detail.CountryList, false);
+			film.Genres = AddGenres(detail.GenreList, false);
+			film.Director = AddDirector(detail.Director);
+			Save();
+		}
+
+
+		public void AddNewFilm(FileBase info, FileVideoDetail detail)
 		{
 
 			var film = AddFilm(detail);
@@ -135,37 +150,39 @@ namespace VideoFileRenamer.DAL
 
 			if (film.Files.FirstOrDefault(x => x == file) == null)
 				film.Files.Add(file);
-			if (!context.Films.Any())
-				context.Films.Add(film);
+			if (!Context.Films.Any())
+				Context.Films.Add(film);
 			Save();
 		}
 
-		private File AddFile(FileVideoInfo info)
+		private File AddFile(FileBase info)
 		{
-			var file = context.Files.FirstOrDefault(x => x.FileName == info.NameFile && x.Size == info.Size);
+			var file = Context.Files.FirstOrDefault(x => x.FileName == info.FileName && x.Size == info.Size);
 			if (file == null)
 			{
 				file = new File()
 				{
-					FileName = info.NameFile,
-					MD5 = info.Md5,
+					FileName = info.FileName,
+					MD5 = info.MD5,
 					Path = info.Path,
 					Size = info.Size,
 					Created = info.Created,
 					Modified = info.Modified,
 					Deleted = false
 				};
-				context.Files.Add(file);
+				Context.Files.Add(file);
 			}
 			else
+			{
 				file.Deleted = false;
+			}
 			return file;
 		}
 
 		Film AddFilm(FileVideoDetail detail)
 		{
 			var film =
-				context.Films.FirstOrDefault(x => x.Name == detail.Name && x.OriginalName == detail.OriginalName && x.Year == detail.Year);
+				Context.Films.FirstOrDefault(x => x.Name == detail.Name && x.OriginalName == detail.OriginalName && x.Year == detail.Year);
 			if (film == null)
 			{
 				film = new Film();
@@ -173,11 +190,12 @@ namespace VideoFileRenamer.DAL
 				film.Countries = AddCountries(detail.CountryList, false);
 				film.Genres = AddGenres(detail.GenreList, false);
 				film.Director = AddDirector(detail.Director);
-				context.Films.Add(film);
+				Context.Films.Add(film);
 			}
 			else
 			{
 				film.Deleted = false;
+				film.Seend = false;
 			}
 			return film;
 		}
@@ -188,13 +206,13 @@ namespace VideoFileRenamer.DAL
 			foreach (var gnre in genreList)
 			{
 				var genre = gnre.Trim();
-				if (context.Genres.Any(gnr => gnr.Name == genre))
+				if (Context.Genres.Any(gnr => gnr.Name == genre))
 				{
-					genres.Add(context.Genres.First(gnr => gnr.Name == genre));
+					genres.Add(Context.Genres.First(gnr => gnr.Name == genre));
 				}
 				else
 				{
-					genres.Add(context.Genres.Add(new Genre() { Name = genre }));
+					genres.Add(Context.Genres.Add(new Genre() { Name = genre }));
 				}
 			}
 			if (save)
@@ -210,7 +228,7 @@ namespace VideoFileRenamer.DAL
 			{
 				list[i] = list[i].Trim('\n', ' ');
 				var temp = list[i];
-				var dd = context.Countries.FirstOrDefault(country => country.Name == temp);
+				var dd = Context.Countries.FirstOrDefault(country => country.Name == temp);
 				if (dd != null)
 				{
 					countrs.Add(dd);
@@ -218,7 +236,7 @@ namespace VideoFileRenamer.DAL
 				else
 				{
 					var country = new Country() { Name = list[i] };
-					countrs.Add(context.Countries.Add(country));
+					countrs.Add(Context.Countries.Add(country));
 				}
 			}
 			if (save)
@@ -229,11 +247,11 @@ namespace VideoFileRenamer.DAL
 		public Person AddDirector(Person director)
 		{
 			var dir =
-				context.Persons.FirstOrDefault(x => x.FirstName == director.FirstName
+				Context.Persons.FirstOrDefault(x => x.FirstName == director.FirstName
 													   && x.SecondName == director.SecondName);
 			if (dir == null)
 			{
-				dir = context.Persons.Add(new Models.Person() { FirstName = director.FirstName, SecondName = director.SecondName, Link = "213" });
+				dir = Context.Persons.Add(new Models.Person() { FirstName = director.FirstName, SecondName = director.SecondName, Link = "213" });
 				Save();
 			}
 			return dir;
