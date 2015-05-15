@@ -201,20 +201,36 @@ namespace VideoFileRenamer.Download
 					foreach (var file in files)
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!videosEntities.Context.IgnoringFiles.Any(x=>x.FileName == infoFile.Name)&& 
-							!NewFilms.Any(x => x.FileInfo.FileName == infoFile.Name) &&
-							!videosEntities.Context.NewFiles.Any(x => x.FileName == infoFile.Name))
+						if (!videosEntities.Context.IgnoringFiles.Any(x => x.FileName == infoFile.Name) &&
+						    !NewFilms.Any(x => x.FileInfo.FileName == infoFile.Name) &&
+						    !videosEntities.Context.NewFiles.Any(x => x.FileName == infoFile.Name))
 						{
-							var temp = videosEntities.FileRepository.Contain(new File(infoFile));
+							File temp = null;
+							if (videosEntities.Context.Files.Any(x => x.PrevFileName == infoFile.Name))
+								temp =
+									videosEntities.FileRepository.GetAllData().AsParallel().FirstOrDefault(x => x.PrevFileName == infoFile.Name);
 							if (temp != null)
 							{
 								temp.Deleted = false;
 								temp.Film.Deleted = false;
 								videosEntities.Save();
 								OnUpdatedData();
+								continue;
 							}
 							else
-								videosEntities.Context.NewFiles.Add(new NewFile(infoFile));
+							{
+								temp = videosEntities.FileRepository.Contain(new File(infoFile));
+								if (temp != null)
+								{
+									temp.Deleted = false;
+									temp.Film.Deleted = false;
+									videosEntities.Save();
+									OnUpdatedData();
+									continue;
+								}
+
+							}
+							videosEntities.Context.NewFiles.Add(new NewFile(infoFile));
 						}
 					}
 				}
@@ -262,7 +278,7 @@ namespace VideoFileRenamer.Download
 		private ParsFilmList FindFilmInternet(NewFile info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
-			var list = downloader.FindFilms(Path.GetFileNameWithoutExtension(info.FileName));
+			var list = downloader.FindFilms(Path.GetFileNameWithoutExtension(info.SearchName));
 			if (list == null)
 				return null;
 			return new ParsFilmList(info, list);

@@ -15,7 +15,7 @@ namespace VideoFileRenamer.ViewModels
 	{
 		private readonly FilmContext context;
 
-		public AddNewFilmViewModel(string connectionString = "default")
+		public AddNewFilmViewModel(string connectionString = "FilmContext")
 		{
 			if (NewFiles.Count <= 0)
 			{

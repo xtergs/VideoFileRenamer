@@ -62,6 +62,7 @@ namespace VideoFileRenamer.UI
 
 		private void AddingWindow_Closed(object sender, System.EventArgs e)
 		{
+			if (deleteImage != null)
 			foreach (var image in deleteImage)
 			{
 				if (File.Exists(image))

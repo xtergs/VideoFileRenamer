@@ -10,6 +10,7 @@ namespace VideoFileRenamer.Models
 {
 	public class FileBase
 	{
+		private static string[] qualities = new[] { "web-dlrip", "hdrip", "bdrip" };
 		public FileBase()
 		{
 		}
@@ -21,6 +22,26 @@ namespace VideoFileRenamer.Models
 			Path = info.FullName;
 			Created = info.CreationTimeUtc;
 			Modified = info.LastWriteTimeUtc;
+			Quality = GetQuality(FileName.ToLowerInvariant());
+		}
+
+		static int GetQuality(string fileName)
+		{
+			for (int i = 0; i < qualities.Length; i++)
+				if (fileName.Contains(qualities[i]))
+					return i;
+			return -1;
+		}
+
+		public string SearchName
+		{
+			get
+			{
+				StringBuilder builder = new StringBuilder(FileName.ToLowerInvariant());
+				builder.Replace('.', ' ');
+					builder.Replace(qualities[Quality], "");
+				return builder.ToString();
+			}
 		}
 
 
@@ -33,6 +54,8 @@ namespace VideoFileRenamer.Models
 		public string Path { get; set; }
 
 		public bool Deleted { get; set; }
+
+		public int Quality { get; set; }
 
 		[NotMapped]
 		public string FullPath

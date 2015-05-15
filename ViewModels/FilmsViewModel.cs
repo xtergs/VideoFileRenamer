@@ -10,7 +10,11 @@ namespace VideoFileRenamer.ViewModels
 	using VideoFileRenamer;
 	public class FilmsViewModel:ViewModel
 	{
-		
+#if DEBUG
+		private static string defString = "FilmContext";
+#else
+		private static string defString = "default";
+#endif
 
 		#region Properties
 
@@ -121,7 +125,7 @@ namespace VideoFileRenamer.ViewModels
 
 		#region constructors
 		public FilmsViewModel ()
-			: this("default")
+			: this(defString)
 		{
 			
 		}
