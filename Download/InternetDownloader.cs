@@ -43,7 +43,13 @@ namespace VideoFileRenamer.Download
 			{
 
 				var stream = Response(link);
+				if (stream.Status == TaskStatus.Faulted)
+					return new List<FileVideoDetailShort>();
 				document.Load(stream.Result);
+			}
+			catch (AggregateException e)
+			{
+				return new List<FileVideoDetailShort>();
 			}
 			finally
 			{

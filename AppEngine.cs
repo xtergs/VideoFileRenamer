@@ -186,6 +186,27 @@ namespace VideoFileRenamer.Download
 
 
 		#region FindNewVideos
+
+		
+
+		FileBase GetFile(UnitOfWork videosEntities, FileInfo infoFile)
+		{
+			string lowFileName = File.GetSearchName(infoFile.Name);
+			if (videosEntities.Context.IgnoringFiles.Any(x => x.SearchName.Contains(lowFileName)) ||
+				NewFilms.Any(x => x.FileInfo.SearchName.Contains(lowFileName)) ||
+				videosEntities.Context.NewFiles.Any(x => x.SearchName.Contains(lowFileName)))
+				return null;
+			File returnFile = null;
+			returnFile = videosEntities.Context.Files.FirstOrDefault(x => x.PrevFileName.Contains(lowFileName)
+			                                                              || x.FileName.Contains(lowFileName));
+			if (returnFile != null)
+			{
+				returnFile.Deleted = false;
+				returnFile.Film.Deleted = false;
+				return returnFile;
+			}
+			return	videosEntities.Context.NewFiles.Add(new NewFile(infoFile));	
+		}
 		//Возвращает список новых фильмов и серий для сериалов
 		public void FindNewVideos()
 		{
@@ -201,42 +222,11 @@ namespace VideoFileRenamer.Download
 					foreach (var file in files)
 					{
 						FileInfo infoFile = new FileInfo(file);
-						if (!videosEntities.Context.IgnoringFiles.Any(x => x.FileName == infoFile.Name) &&
-						    !NewFilms.Any(x => x.FileInfo.FileName == infoFile.Name) &&
-						    !videosEntities.Context.NewFiles.Any(x => x.FileName == infoFile.Name))
-						{
-							File temp = null;
-							if (videosEntities.Context.Files.Any(x => x.PrevFileName == infoFile.Name))
-								temp =
-									videosEntities.FileRepository.GetAllData().AsParallel().FirstOrDefault(x => x.PrevFileName == infoFile.Name);
-							if (temp != null)
-							{
-								temp.Deleted = false;
-								temp.Film.Deleted = false;
-								videosEntities.Save();
-								OnUpdatedData();
-								continue;
-							}
-							else
-							{
-								temp = videosEntities.FileRepository.Contain(new File(infoFile));
-								if (temp != null)
-								{
-									temp.Deleted = false;
-									temp.Film.Deleted = false;
-									videosEntities.Save();
-									OnUpdatedData();
-									continue;
-								}
-
-							}
-							videosEntities.Context.NewFiles.Add(new NewFile(infoFile));
-						}
+						GetFile(videosEntities, infoFile);
+						OnUpdatedData();
 					}
 				}
 				videosEntities.Save();
-				//ChangedStatus("Find " + NewFiles.Count + " films");
-				//return NewFiles;
 			}
 		}
 

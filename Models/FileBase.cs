@@ -23,7 +23,10 @@ namespace VideoFileRenamer.Models
 			Created = info.CreationTimeUtc;
 			Modified = info.LastWriteTimeUtc;
 			Quality = GetQuality(FileName.ToLowerInvariant());
+			SearchName = GetSearchName(FileName);
 		}
+
+
 
 		static int GetQuality(string fileName)
 		{
@@ -33,16 +36,16 @@ namespace VideoFileRenamer.Models
 			return -1;
 		}
 
-		public string SearchName
+		public static string GetSearchName(string str)
 		{
-			get
-			{
-				StringBuilder builder = new StringBuilder(FileName.ToLowerInvariant());
-				builder.Replace('.', ' ');
-					builder.Replace(qualities[Quality], "");
-				return builder.ToString();
-			}
+			StringBuilder builder = new StringBuilder(str.ToLowerInvariant());
+			builder.Replace('.', ' ');
+			for (int i = 0; i < qualities.Length; i++)
+				builder.Replace(qualities[i], "");
+			return builder.ToString();
 		}
+
+		public string SearchName { get; set; }
 
 
 		public string MD5 { get; set; }
