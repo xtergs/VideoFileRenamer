@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using VideoFileRenamer.Models;
 using File = VideoFileRenamer.Models.File;
 
 namespace VideoFileRenamer.DAL
@@ -21,12 +22,15 @@ namespace VideoFileRenamer.DAL
 
 		public override bool IsContain(File file)
 		{
-			return dbSet.Any(x => x.FileName == file.FileName && x.Size == file.Size);
+			if (Contain(file) != null)
+				return true;
+			return false;
+			
 		}
 
-		public File Contain(File file)
+		public FileBase Contain(FileBase file)
 		{
-			return dbSet.AsParallel().SingleOrDefault(x =>x.FileName == file.FileName && x.Size == file.Size);
+			return dbSet.AsParallel().SingleOrDefault(x =>x.SearchName == file.SearchName && x.Size == file.Size);
 		}
 
 		#region Overrides of GenericRepository<File>
@@ -42,8 +46,19 @@ namespace VideoFileRenamer.DAL
 
 		public bool IsContain(FileInfo file)
 		{
-			bool b = dbSet.Any(x => x.FileName == file.Name && x.Size == file.Length);
-			return b;
+			return IsContain(new File(file));
+		}
+
+		public File HaveSimilarName(File file)
+		{
+
+			return dbSet.AsParallel().FirstOrDefault(x => x.SearchName == file.SearchName ||
+														   x.PrevSerarchName == file.SearchName);
+		}
+
+		public File HaveSimilarName(FileInfo file)
+		{
+			return HaveSimilarName(new File(file));
 		}
 
 		public override void Delete(File entityToDelete)

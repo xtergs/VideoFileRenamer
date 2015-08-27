@@ -13,46 +13,54 @@ namespace VideoFileRenamer.ViewModels
 {
 	public class AddNewFilmViewModel : ViewFilmModelViewBase
 	{
-		private readonly FilmContext context;
+		private readonly NewFilmsManager newFilmsManager;
 
-		public AddNewFilmViewModel(string connectionString = "FilmContext")
+		public AddNewFilmViewModel(NewFilmsManager newFilmsManagerp)
 		{
-			if (NewFiles.Count <= 0)
+			if (newFilmsManagerp == null)
+				throw new ArgumentNullException();
+
+			this.newFilmsManager = newFilmsManagerp;
+			if (newFilmsManagerp.LeftNewFilms <= 0)
 			{
 				Close.Execute();
 				return;
 			}
-			context = new FilmContext(connectionString);
+
+
 			SelectedFilmIndex = -1;
-			CurrentItem = NewFiles[0];
+			CurrentItem =newFilmsManager.BorrowParFilmList();
 		}
 
 		public int CountLast
 		{
-			get { return context.NewFiles.Count(); }
+			get
+			{
+				if (newFilmsManager == null)
+					return -1;
+				return newFilmsManager.LeftNewFilms;
+			}
 		}
 
-		public ObservableCollection<ParsFilmList> NewFiles
-		{
-			get { return AppEngine.Create().NewFilms; }
-		}
+		//public ObservableCollection<ParsFilmList> NewFiles
+		//{
+		//	get { return AppEngine.Create().NewFilms; }
+		//}
 
 		async public void Select()
 		{
 			
-				InternetDownloader downloader = new InternetDownloader();
 				int tempSelectedindex = SelectedFilmIndex;
 				var tempCurItem = CurrentItem;
 				SelectedFilmIndex = -1;
-				NewFiles.RemoveAt(0);
-			if (NewFiles.Count != 0)
-			{
 				
-				CurrentItem = NewFiles[0];
+			if (newFilmsManager.LeftNewFilms != 0)
+			{
+
+				CurrentItem = newFilmsManager.BorrowParFilmList();
+				AppEngine.Create().AddNewFilmAsync(tempCurItem.FileInfo, tempCurItem[tempSelectedindex].Link);
 			}
-				var detail = await downloader.FullInfoFilmAsync(tempCurItem[tempSelectedindex].Link, new PlugDownload());
-				AppEngine.Create().AddNewFilm(tempCurItem.FileInfo, detail);
-			if (NewFiles.Count == 0)
+			else
 				Close.Execute();
 		}
 
@@ -71,13 +79,11 @@ namespace VideoFileRenamer.ViewModels
 				return new ActionCommand(x =>
 				{
 					SelectedFilmIndex = -1;
-					NewFiles.RemoveAt(0);
-					if (NewFiles.Count > 0)
-						CurrentItem = NewFiles[0];
-					else
-					{
+					var oldCurrentItem = CurrentItem;
+					CurrentItem = newFilmsManager.BorrowParFilmList();
+					newFilmsManager.RetriveBorrowwedPar(oldCurrentItem);
+					if (CurrentItem == null)
 						Close.Execute();
-					}
 				});
 			}
 		}
@@ -87,7 +93,18 @@ namespace VideoFileRenamer.ViewModels
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return new ActionCommand(x =>
+				{
+					SelectedFilmIndex = -1;
+					
+					//CurrentItem = newFilmsManager.BorrowParFilmList();
+					newFilmsManager.CompliteBorrowPar(CurrentItem);
+					if (File.Exists(CurrentItem.FileInfo.FullPath))
+						File.Delete(CurrentItem.FileInfo.FullPath);
+					CurrentItem = newFilmsManager.BorrowParFilmList();
+					if (CurrentItem == null)
+						Close.Execute();
+				});
 			}
 		}
 

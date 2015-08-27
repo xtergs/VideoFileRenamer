@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -60,7 +62,8 @@ namespace VideoFileRenamer.Download
 		{
 			
 			InitializeComponent();
-			DataContext = AppEngine.Create().FilmsViewModel;
+			DataContext = new FilmsViewModel();
+			//DataContext = AppEngine.Create().FilmsViewModel;
 			TaskWindow = new Tasks();
 			TaskWindow.Activate();
 			TaskWindow.Show();
@@ -91,27 +94,28 @@ namespace VideoFileRenamer.Download
 
 		private async void RefreshListFilms()
 		{
-			//if (collectionTask != null && collectionTask.Status == TaskStatus.Running)
-			//	collectionTask.Dispose();
-		
-				//collectionTask = ( AppEngine.Create().FindFilmAsync(Filter));
-				//collectionTask.ContinueWith((x) =>
-				//{
-				//	Dispatcher.InvokeAsync(() =>
-				//	{
-				//		var d = x.Result;
-				//		if (LastAdded)
-				//			ListFilms.ItemsSource = d.OrderByDescending(w => w.Added);
-				//		else
-				//			ListFilms.ItemsSource = x.Result;
+			OnPropertyChanged("Films");
+			if (collectionTask != null && collectionTask.Status == TaskStatus.Running) ;
+				//collectionTask.Dispose();
 
-				//		//Adition filter
-				//		GenresComboBox.ItemsSource = Genres;
-				//		CountriesComboBox.ItemsSource = Countries;
+			collectionTask = (AppEngine.Create().FindFilmAsync(Filter));
+			collectionTask.ContinueWith((x) =>
+			{
+				Dispatcher.InvokeAsync(() =>
+				{
+					var d = x.Result;
+					if (LastAdded)
+						listView.ItemsSource = d.OrderByDescending(w => w.Added);
+					else
+						listView.ItemsSource = x.Result;
 
-				//	});
-				//});
-				//collectionTask.Start();
+					//Adition filter
+					//GenresComboBox.ItemsSource = AppEngine.Create().;
+					//countriesComboBox.ItemsSource = Countries;
+
+				});
+			});
+			//collectionTask.Start();
 		}
 
 		private void AppEngineOnChangedStatus(string message)
@@ -124,12 +128,27 @@ namespace VideoFileRenamer.Download
 		}
 
 		//private string path = @"D:\Films";
-
+		private CancellationTokenSource tokens = new CancellationTokenSource();
+		private bool run = false;
 		private async void Button_Click(object sender, RoutedEventArgs e)
 		{
-			var engine = AppEngine.Create();
-			await engine.FindNewVideosAsync();
-			await engine.FindFilmsForAllFilesAsync();
+			//if (run)
+			//	return;
+			//try
+			//{
+			//	run = true;
+				var engine = AppEngine.Create().StartSearchNewFilesAsync();
+			//	await engine.FindNewVideosAsync(tokens.Token);
+			//	await engine.FindFilmsForAllFilesAsync(tokens.Token);
+			//}
+			//catch (Exception ee)
+			//{
+			//	throw;
+			//}
+			//finally
+			//{
+			//	run = false;
+			//}
 			//	OutList.ItemsSource = listOfFilms;
 		}
 
@@ -199,30 +218,25 @@ namespace VideoFileRenamer.Download
 
 		private void ListFilms_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
-			//DeleteItem.Items.Clear();
+			DeleteItem.Items.Clear();
 			DeleteItem.Header = "Delete";
 
-			//var engine = AppEngine.Create();
-			//var files = engine.GetFiles(((Film) ListFilms.SelectedItem).FilmID);
-			//if (files == null)
-			//	return;
-			
-			//foreach (var file in files)
-			//{
-			//	var item = new MenuItem()
-			//	{
-			//		Header = file.FileName + " - " + file.Size.ToString(), Tag = file.FileID
-				
-			//	};
-			//	item.Click += MenuItem_Click_1;
-			//	DeleteItem.Items.Add(item);
-			//}
-		}
+			var engine = AppEngine.Create();
+			var files = engine.GetFiles(((Film)listView.SelectedItem).FilmID);
+			if (files == null)
+				return;
 
-		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			AppEngine.Create().FilmsViewModel.Filter = ((TextBox) sender).Text;
-			AppEngine.Create().FilmsViewModel.FilterCommand.Execute();
+			foreach (var file in files)
+			{
+				var item = new MenuItem()
+				{
+					Header = file.FileName + " - " + file.Size.ToString(),
+					Tag = file.FileID
+
+				};
+				item.Click += MenuItem_Click_1;
+				DeleteItem.Items.Add(item);
+			}
 		}
 
 		private void MenuItem_Click_2(object sender, RoutedEventArgs e)
@@ -291,7 +305,7 @@ namespace VideoFileRenamer.Download
 
 		private void MenuItem_Click_6(object sender, RoutedEventArgs e)
 		{
-			AddingFilms newWindow = new AddingFilms();
+			AddingFilms newWindow = new AddingFilms(AppEngine.Create().NewFilmManager);
 			newWindow.Visibility = Visibility.Visible;
 			newWindow.Activate();
 		}
@@ -313,11 +327,11 @@ namespace VideoFileRenamer.Download
 			AppEngine.Create().Backup();
 		}
 
-		private void Button_Click_3(object sender, RoutedEventArgs e)
-		{
-			YearTextBox.Text = ((Button) sender).Content.ToString();
-			AditionFilter();
-		}
+		//private void Button_Click_3(object sender, RoutedEventArgs e)
+		//{
+		//	YearTextBox.Text = ((Button) sender).Content.ToString();
+		//	AditionFilter();
+		//}
 
 		private void Menu_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
@@ -343,7 +357,7 @@ namespace VideoFileRenamer.Download
 
 		private void MenuItem_Click_9(object sender, RoutedEventArgs e)
 		{
-			AppEngine.Create().UpdateAllInfo();
+			AppEngine.Create().UpdateAllInfoAsync();
 		}
 
 		private void ClearCountries(object sender, RoutedEventArgs e)
@@ -371,5 +385,19 @@ namespace VideoFileRenamer.Download
 			view.Show();
 		}
 
+		private void DeleteItem_OnClick(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			AppEngineOnUpdatedData();
+		}
+
+		private void StopSearchFilmsButtonClick(object sender, RoutedEventArgs e)
+		{
+			AppEngine.Create().StopSearchNewFiles();
+		}
 	}
 }

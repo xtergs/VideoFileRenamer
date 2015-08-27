@@ -42,12 +42,17 @@
             <RowDefinition x:Uid="RowDefinition_7" Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid x:Uid="Grid_2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Uid="ColumnDefinition_4"/>
                 <ColumnDefinition x:Uid="ColumnDefinition_5" Width="Auto"/>
             </Grid.ColumnDefinitions>
-        <TextBox x:Name="QuerySearch" x:Uid="TextBox_1" Grid.Row="0" Text="{Binding  Query}"/>
-        <Button x:Uid="Button_1" Grid.Column="1" Content="Refresh" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Width="44" Command="{Binding RefreshAsync}"/>
+            <TextBlock Grid.ColumnSpan="2" Text="{Binding CurrentItem.FileInfo.FullPath}"></TextBlock>
+        <TextBox x:Name="QuerySearch" x:Uid="TextBox_1" Grid.Row="1" Text="{Binding  Query}"/>
+        <Button Grid.Row="1" x:Uid="Button_1" Grid.Column="1" Content="Refresh" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Width="44" Command="{Binding RefreshAsync}"/>
         </Grid>
         <ListBox x:Uid="SelectAsyncionFilmBox" x:Name="SelectionFilmBox"  Grid.Row="1" HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" ItemTemplate="{DynamicResource AddNewFilms}" ItemsSource="{Binding CurrentItem}" SelectedIndex="{Binding SelectedFilmIndex}" MouseDoubleClick="NextButton_Click">
             <ListBox.ContextMenu>

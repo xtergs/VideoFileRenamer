@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web.UI.WebControls;
 using VideoFileRenamer.Download;
 using VideoFileRenamer.Models;
+using File = VideoFileRenamer.Models.File;
 
 namespace VideoFileRenamer.DAL
 {
@@ -155,28 +158,32 @@ namespace VideoFileRenamer.DAL
 			Save();
 		}
 
+		public void AddNewFile(int idFilm, FileBase file)
+		{
+			var film = FilmRepository.Get(x => x.FilmID == idFilm);
+			if (film == null)
+				return;
+			File fl = AddFile(file);
+			film.First().Files.Add(fl);
+			Save();
+		}
+
+
+
 		private File AddFile(FileBase info)
 		{
-			var file = Context.Files.FirstOrDefault(x => x.FileName == info.FileName && x.Size == info.Size);
+
+			var file = FileRepository.Contain(info);
 			if (file == null)
 			{
-				file = new File()
-				{
-					FileName = info.FileName,
-					MD5 = info.MD5,
-					Path = info.Path,
-					Size = info.Size,
-					Created = info.Created,
-					Modified = info.Modified,
-					Deleted = false
-				};
-				Context.Files.Add(file);
+				file = new File(new FileInfo(info.FullPath));
+				Context.Files.Add((File)file);
 			}
 			else
 			{
 				file.Deleted = false;
 			}
-			return file;
+			return (File)file;
 		}
 
 		Film AddFilm(FileVideoDetail detail)

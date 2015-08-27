@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>a:\Build\Debug\</OutputPath>
+    <OutputPath>Build\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,6 +67,10 @@
       <HintPath>packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MediaInfoDotNet, Version=0.7.4694.29125, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\MediaInfoNet.0.3\lib\MediaInfoDotNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -84,6 +88,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -108,14 +113,19 @@
     <Compile Include="DAL\FilmRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\IRepository.cs" />
+    <Compile Include="DAL\NewFilmsManager.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="Download\KinopoiskParser.cs" />
     <Compile Include="Download\PersonDownload.cs" />
+    <Compile Include="Extender\MediaInfoExt.cs" />
+    <Compile Include="FileManager.cs" />
     <Compile Include="FilmInfo.xaml.cs">
       <DependentUpon>FilmInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Country.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileBase.cs" />
+    <Compile Include="Models\FileBaseFactory.cs" />
     <Compile Include="Models\Film.cs" />
     <Compile Include="DAL\FilmContext.cs" />
     <Compile Include="Models\FilmExt.cs" />
@@ -124,6 +134,7 @@
     <Compile Include="Models\NewFile.cs" />
     <Compile Include="Models\ParsFileFilms.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\RegexMatchs.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Languages\ru-RU\Resources.Designer.cs">

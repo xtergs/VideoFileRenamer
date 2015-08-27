@@ -44,6 +44,7 @@ namespace VideoFileRenamer.ViewModels
 					InternetDownloader downloader = new InternetDownloader();
 
 					var detail = downloader.FullInfoFilm(CurrentItem[SelectedFilmIndex].Link, new PlugDownload());
+					if (detail != null)
 					AppEngine.Create().UpdateFilm(Film, detail);
 					Close.Execute();
 				});

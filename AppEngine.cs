@@ -2,31 +2,30 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
-using System.Windows.Documents.Serialization;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Timers;
+using MediaInfoDotNet;
 using VideoFileRenamer.Annotations;
+using VideoFileRenamer.DAL;
+using VideoFileRenamer.Extender;
 using VideoFileRenamer.Models;
 using VideoFileRenamer.Properties;
-using VideoFileRenamer.DAL;
-using System.Runtime.Serialization.Formatters;
-using VideoFileRenamer.Models;
 using VideoFileRenamer.ViewModels;
 using File = VideoFileRenamer.Models.File;
 using Timer = System.Timers.Timer;
 
 namespace VideoFileRenamer.Download
 {
-	public class AppEngine
+	public class AppEngine: INotifyPropertyChanged
 	{
 
 		//Singleton
@@ -42,59 +41,11 @@ namespace VideoFileRenamer.Download
 
 		//public ObservableCollection<FileVideoInfo> NewFiles { get; private set; }
 
-		public ObservableCollection<ParsFilmList> NewFilms
-		{
-			get
-			{
-				if (newFilms == null)
-					newFilms = new ObservableCollection<ParsFilmList>();
-				return newFilms;
-			}
-			private set
-			{
-				newFilms = value; 
-			}
-		}
-
-		public FilmsViewModel FilmsViewModel
-		{
-			get
-			{
-				if (filmsViewModel == null)
-					filmsViewModel = new FilmsViewModel();
-				return filmsViewModel;
-			}
-			set { filmsViewModel = value; }
-		}
-
-		public AddNewFilmViewModel AddNewFilmViewModel
-		{
-			get
-			{
-				if (addNewFilmViewModel == null)
-					addNewFilmViewModel = new AddNewFilmViewModel();
-				return addNewFilmViewModel;
-			}
-			set { addNewFilmViewModel = value; }
-		}
-
-		//public ViewFilmViewModel ViewFilmViewModel
-		//{
-		//	get
-		//	{
-		//		if (viewFilmViewModel == null)
-		//			viewFilmViewModel = new ViewFilmViewModel();
-		//		return viewFilmViewModel;
-		//	}
-		//	set { viewFilmViewModel = value; }
-		//}
+		readonly NewFilmsManager newFilmManager = new NewFilmsManager();
 
 		public delegate void statusMessage(string message);
-
 		public delegate void updatedData();
-
 		public delegate void progressMessage(int n, int count, string message);
-
 		public delegate void FindFilms();
 
 		public event statusMessage ChangedStatus;
@@ -132,6 +83,7 @@ namespace VideoFileRenamer.Download
 
 		protected virtual void OnUpdatedData()
 		{
+			OnPropertyChanged("Films");
 			updatedData handler = UpdatedData;
 			if (handler != null) handler();
 		}
@@ -142,12 +94,11 @@ namespace VideoFileRenamer.Download
 			if (handler != null) handler(message);
 		}
 
-		async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		async void timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			timer.Stop();
-			await FindNewVideosAsync();
-			await FindFilmsForAllFilesAsync();
-			timer.Start();
+			await StartSearchNewFilesAsync();
+			//timer.Start();
 		}
 
 		private const string pattern = "Pattern";
@@ -155,6 +106,11 @@ namespace VideoFileRenamer.Download
 
 		public string Pattern { get { return pattern; } }
 		public string Dirs { get { return dirs; } }
+
+		public NewFilmsManager NewFilmManager
+		{
+			get { return newFilmManager; }
+		}
 
 		#region Constructors
 
@@ -177,43 +133,85 @@ namespace VideoFileRenamer.Download
 			if (current == null)
 			{
 				current = new AppEngine();
-				UnitOfWork.ConnectionString = Settings.Default.VideosConnectionString;
+				UnitOfWork.ConnectionString = "FilmContext";
 			}
 			return current;
 		}
 
 		#endregion
 
+		private CancellationTokenSource tokens = new CancellationTokenSource();
+		private bool run = false;
+		public async Task StartSearchNewFilesAsync()
+		{
+			timer.Stop();
+			if (run)
+				return;
+			try
+			{
+				tokens = new CancellationTokenSource();
+				run = true;
+				await FindNewVideosAsync(tokens.Token);
+				await FindFilmsForAllFilesAsync(tokens.Token);
+			}
+			catch (Exception ee)
+			{
+				OnChangedStatus("Exception: StartSearchNewFilesAsync " + ee.Message);
+				throw;
+			}
+			finally
+			{
+				run = false;
+				tokens = null;
+				timer.Start();
+			}
+		}
+
+		public void StopSearchNewFiles()
+		{
+			if (tokens != null)
+				tokens.Cancel();
+		}
 
 		#region FindNewVideos
 
 		
-
 		FileBase GetFile(UnitOfWork videosEntities, FileInfo infoFile)
 		{
-			string lowFileName = File.GetSearchName(infoFile.Name);
-			if (videosEntities.Context.IgnoringFiles.Any(x => x.SearchName.Contains(lowFileName)) ||
-				NewFilms.Any(x => x.FileInfo.SearchName.Contains(lowFileName)) ||
-				videosEntities.Context.NewFiles.Any(x => x.SearchName.Contains(lowFileName)))
+			File lowFileName = new File(infoFile);
+			if (videosEntities.Context.IgnoringFiles.Any(x => x.SearchName.Contains(lowFileName.SearchName)) ||
+			 NewFilmManager.Contain(x => x.FileInfo.SearchName.Contains(lowFileName.SearchName)) ||
+				videosEntities.Context.NewFiles.Any(x => x.SearchName.Contains(lowFileName.SearchName)))
 				return null;
 			File returnFile = null;
-			returnFile = videosEntities.Context.Files.FirstOrDefault(x => x.PrevFileName.Contains(lowFileName)
-			                                                              || x.FileName.Contains(lowFileName));
+			returnFile = videosEntities.FileRepository.HaveSimilarName(lowFileName);
 			if (returnFile != null)
 			{
-				returnFile.Deleted = false;
-				returnFile.Film.Deleted = false;
-				return returnFile;
+				MediaFile fill = new MediaFile(infoFile.FullName);
+				MediaFile ll = new MediaFile(returnFile.FullPath);
+				if (!fill.Equal(ll))
+				{
+					File fl = new File(new FileInfo(lowFileName.FullPath));
+					videosEntities.AddNewFile(returnFile.Film.FilmID, fl);
+					return fl;
+				}
+				else
+				{
+					returnFile.Deleted = false;
+					returnFile.Film.Deleted = false;
+					return returnFile;
+				}
+
 			}
-			return	videosEntities.Context.NewFiles.Add(new NewFile(infoFile));	
+			return videosEntities.Context.NewFiles.Add(new NewFile(infoFile));
 		}
-		//Возвращает список новых фильмов и серий для сериалов
-		public void FindNewVideos()
+
+		void FindNewFiles(IEnumerable<string> directories)
 		{
 			using (UnitOfWork videosEntities = new UnitOfWork())
 			{
-				var paths = (StringCollection) Settings.Default[Dirs];
-				foreach (var path in paths)
+
+				foreach (var path in directories)
 				{
 					if (!Directory.Exists(path))
 						continue;
@@ -229,10 +227,21 @@ namespace VideoFileRenamer.Download
 				videosEntities.Save();
 			}
 		}
+		//Возвращает список новых фильмов и серий для сериалов
+		public void FindNewVideos()
+		{
+			FindNewFiles(((StringCollection) Settings.Default[Dirs]).Cast<string>());
+		}
 
 		public Task FindNewVideosAsync()
 		{
 			var result = Task.Run(() => FindNewVideos());
+			return result;
+		}
+
+		public Task FindNewVideosAsync(CancellationToken token)
+		{
+			var result = Task.Run(() => FindNewVideos(), token);
 			return result;
 		}
 
@@ -268,14 +277,15 @@ namespace VideoFileRenamer.Download
 		private ParsFilmList FindFilmInternet(NewFile info)
 		{
 			InternetDownloader downloader = new InternetDownloader();
-			var list = downloader.FindFilms(Path.GetFileNameWithoutExtension(info.SearchName));
+			var list = downloader.FindFilms(info.SearchName);
 			if (list == null)
 				return null;
 			return new ParsFilmList(info, list);
 		}
 
+
 		
-		public void FindFilmsForAllFiles()
+		public void FindFilmsForAllFiles(CancellationToken ctoken)
 		{
 			OnFindFilmsStarted();
 
@@ -286,8 +296,16 @@ namespace VideoFileRenamer.Download
 #if DEBUG
 				var d = unit.Context.NewFiles;
 #endif
-				Parallel.ForEach(unit.Context.NewFiles, (file) =>
+				List<NewFile> listToRemove = new List<NewFile>();
+				foreach (var file in unit.Context.NewFiles)
+				
+				//Parallel.ForEach(unit.Context.NewFiles, (file) =>
 				{
+					if (!System.IO.File.Exists(file.FullPath))
+					{
+						listToRemove.Add(file);
+						continue;
+					}
 					//Исчет фильмы для файла и скачивает картинку
 					var temp = FindFilmInternet(file);
 					if (temp == null)
@@ -303,11 +321,11 @@ namespace VideoFileRenamer.Download
 							{
 								client.DownloadFile(item.Image, imageName);
 							}
-							catch (System.IO.IOException e)
+							catch (IOException e)
 							{
 								OnChangedStatus("Not enought space for image");
 							}
-							catch (System.NotSupportedException e)
+							catch (NotSupportedException e)
 							{
 							}
 							catch (Exception e)
@@ -316,11 +334,17 @@ namespace VideoFileRenamer.Download
 							}
 							item.Image = imageName;
 						}
-						NewFilms.Add(temp);
+					 NewFilmManager.Add(temp);
 					}
-					OnProgressStatus(NewFilms.Count, unit.Context.NewFiles.Count(), "Found films for " + temp.FileInfo.FileName);
-				});
-				unit.Context.NewFiles.RemoveRange(unit.Context.NewFiles.Local);
+					listToRemove.Add(file);
+					OnProgressStatus(NewFilmManager.LeftNewFilms, unit.Context.NewFiles.Count(), "Found films for " + temp.FileInfo.FileName);
+					if (ctoken.IsCancellationRequested)
+					{
+						ChangedStatus("Search films of file has been cancelled");
+						break;
+					}
+				};
+				unit.Context.NewFiles.RemoveRange(listToRemove);
 				unit.Save();
 			}
 
@@ -328,10 +352,17 @@ namespace VideoFileRenamer.Download
 			ChangedStatus("Found films for all files");
 		}
 
-		public Task FindFilmsForAllFilesAsync()
+		//public Task FindFilmsForAllFilesAsync()
+		//{
+		//	if (FindFilmsForAllFilesTask == null || FindFilmsForAllFilesTask.IsCompleted)
+		//		FindFilmsForAllFilesTask = Task.Factory.StartNew(FindFilmsForAllFiles, new CancellationToken() {});
+		//	return FindFilmsForAllFilesTask;
+		//}
+
+		public Task FindFilmsForAllFilesAsync(CancellationToken token)
 		{
 			if (FindFilmsForAllFilesTask == null || FindFilmsForAllFilesTask.IsCompleted)
-				FindFilmsForAllFilesTask = Task.Factory.StartNew(FindFilmsForAllFiles, new CancellationToken() {});
+				FindFilmsForAllFilesTask = Task.Run(()=>FindFilmsForAllFiles(token), token);
 			return FindFilmsForAllFilesTask;
 		}
 
@@ -343,12 +374,38 @@ namespace VideoFileRenamer.Download
 
 		public void AddNewFilm(FileBase info, FileVideoDetail detail)
 		{
+			if (!NewFilmManager.CompliteBorrowPar(info))
+			{
+				OnChangedStatus(detail.Name + " has expired!");
+				return;
+			}
 			using (UnitOfWork entities = new UnitOfWork())
 			{
 				entities.AddNewFilm(info, detail);
 			}
-			ChangedStatus(detail.Name + " has added");
-			UpdatedData();
+			OnChangedStatus(detail.Name + " has added");
+			OnUpdatedData();
+		}
+
+		public void AddNewFilm(FileBase info, string linkFullData)
+		{
+			InternetDownloader download = new InternetDownloader();
+			try
+			{
+				var detail = download.FullInfoFilm(linkFullData, new PlugDownload());
+				AddNewFilm(info, detail);
+			}
+			catch (Exception e)
+			{
+				//TODO get Logger
+				throw;
+			}
+		}
+
+		public Task AddNewFilmAsync(FileBase info, string linkFullData)
+		{
+			//Action act = () => AddNewFilm(info, linkFullData);
+			return Task.Run(()=> AddNewFilm(info, linkFullData));
 		}
 
 		public void UpdateFilm(Film film, FileVideoDetail detail)
@@ -357,8 +414,8 @@ namespace VideoFileRenamer.Download
 			{
 				unit.UpdateFilm(film, detail);
 			}
-			ChangedStatus(detail.Name + " has updated");
-			UpdatedData();
+			OnChangedStatus(detail.Name + " has updated");
+			OnUpdatedData();
 		}
 
 		public void RenameAllFiles()
@@ -371,7 +428,7 @@ namespace VideoFileRenamer.Download
 				foreach (var file in entity.FileRepository.GetAllData().Include(x=>x.Film.Genres))
 				{
 					var newName = Rename(file);
-					file.PrevFileName = file.FileName;
+					//file.PrevFileName = file.FileName;
 					file.FileName = newName;
 				}
 				entity.Save();
@@ -390,6 +447,8 @@ namespace VideoFileRenamer.Download
 			builder.Replace("%T", file.Film.Name);				//%T - name
 			builder.Replace("%O", file.Film.OriginalName);		//%O - original name
 			builder.Replace("%Y", file.Film.Year.ToString());	//%Y - Year
+			builder.Replace("%AQ", file.AutiodQuality);			//%AQ - autioQuality
+			builder.Replace("%VQ", file.Quality);				//%VQ - vidioQuality
 			if (file.Film.Genres.FirstOrDefault() != null)
 			{
 				builder.Replace("%G", file.Film.Genres.First().Name); //%G - Genres
@@ -402,12 +461,15 @@ namespace VideoFileRenamer.Download
 			string path = Path.Combine(file.Path, file.FileName);
 			try
 			{
+				string newFullPath = Path.Combine(file.Path, newName);
+				if (System.IO.File.Exists(newFullPath))
+					newFullPath = Path.Combine(file.Path, Path.GetFileNameWithoutExtension(newName) + "_2" + Path.GetExtension(newName));
 				if (System.IO.File.Exists(path))
 				{
-					System.IO.File.Move(path, Path.Combine(file.Path, newName));
+					System.IO.File.Move(path, newFullPath);
 				}
 			}
-			catch (System.IO.IOException e)
+			catch (IOException e)
 			{
 				OnChangedStatus(file.FileName + " haven't been renamed");
 				newName = file.FileName;
@@ -502,9 +564,10 @@ namespace VideoFileRenamer.Download
 			{
 				try
 				{
-					serializer.Serialize(write, NewFilms);
+					//TODO develop a backup mechanizm of newFilmManager
+					//serializer.Serialize(write, NewFilms);
 				}
-				catch (System.IO.IOException e)
+				catch (IOException e)
 				{
 					OnChangedStatus("Not enough space on the disk");
 				}
@@ -514,6 +577,7 @@ namespace VideoFileRenamer.Download
 
 		public void Restore()
 		{
+			//TODO develop a restore mechanizm of newFilmManager
 			//BinaryFormatter serializer = new BinaryFormatter();
 			//if (System.IO.File.Exists(pathSaveNewFilms))
 			//	using (Stream read = new FileStream(pathSaveNewFilms, FileMode.Open))
@@ -547,18 +611,49 @@ namespace VideoFileRenamer.Download
 
 		}
 
-		public void UpdateAllInfo()
+		protected void UpdateAllInfo()
 		{
+			OnChangedStatus("Update of all films started");
 			using (UnitOfWork unit = new UnitOfWork())
 			{
+				int complitedCound = 0;
+				int allCount = unit.FilmRepository.dbSet.Count();
 				Parallel.ForEach(unit.FilmRepository.dbSet, (x) =>
 				{
 					InternetDownloader downloader = new InternetDownloader();
 
-					FilmExt.Update(x, downloader.FullInfoFilm(x.Link, new PlugDownload()));
+					var temp = downloader.FullInfoFilm(x.Link, new PlugDownload());
+					if (temp != null)
+					{
+						FilmExt.Update(x, temp);
+						Interlocked.Increment(ref complitedCound);
+						OnProgressStatus(complitedCound, allCount, "Updated " + temp.Name);
+					}
+					else
+					{
+						Interlocked.Increment(ref complitedCound);
+						OnProgressStatus(complitedCound, allCount, "Not updated " + temp.Name);
+					}
 				});
 				unit.Save();
 			}
+			OnChangedStatus("Update of all films have ended");
+		}
+
+		public Task UpdateAllInfoAsync()
+		{
+			return Task.Run(()=>UpdateAllInfo());
+		}
+
+		
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			var handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

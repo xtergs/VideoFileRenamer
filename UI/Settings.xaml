@@ -3,19 +3,61 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Settings" Height="368.5" Width="473" WindowStyle="ToolWindow">
     <Grid x:Uid="Grid_1" Loaded="Grid_Loaded">
-        <ListBox x:Uid="ListOfDirs" x:Name="ListOfDirs" HorizontalAlignment="Left" Height="100" Margin="0,29,0,0" VerticalAlignment="Top" Width="100" SelectedIndex="0" ItemsSource="{Binding DirsList, ElementName=SettingsWindow, Mode=TwoWay}"/>
-        <TextBox x:Uid="pathNew" x:Name="pathNew" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Button x:Uid="Button_1" Content="..." HorizontalAlignment="Left" Margin="120,4,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_4"/>
-        <Button x:Uid="Button_2" Content="Add" HorizontalAlignment="Left" Margin="100,29,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Uid="Button_3" Content="Delete" HorizontalAlignment="Left" Margin="100,54,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-        <TextBox x:Uid="TextBox_1" HorizontalAlignment="Left" Height="22" Margin="54,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Pattern, ElementName=SettingsWindow, Mode=TwoWay}"/>
-        <TextBlock x:Uid="TextBlock_1" HorizontalAlignment="Left" Margin="54,156,0,0" TextWrapping="Wrap" Text="Pattern" VerticalAlignment="Top"/>
-        <TextBlock x:Uid="TextBlock_2" HorizontalAlignment="Left" Margin="54,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="67" Width="132"><Run x:Uid="Run_1" Text="%T - Name"/><LineBreak x:Uid="LineBreak_1"/><Run x:Uid="Run_2" Text="%O - Original name"/><LineBreak x:Uid="LineBreak_2"/><Run x:Uid="Run_3" Text="%G - Genries"/><LineBreak x:Uid="LineBreak_3"/><Run x:Uid="Run_4" Text="%Y - Year"/></TextBlock>
-        <Button x:Uid="Button_4" Content="Save" HorizontalAlignment="Left" Margin="73,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
-        <Button x:Uid="Button_5" Content="Close" HorizontalAlignment="Left" Margin="153,271,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
-        <CheckBox x:Uid="CheckBox_1" Content="Delete real file" HorizontalAlignment="Left" Margin="196,144,0,0" VerticalAlignment="Top" IsChecked="{Binding IsDeleteFile, ElementName=SettingsWindow}"/>
-        <TextBox x:Uid="pathNew" x:Name="pathToImage" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="224,3,-49,0"/>
-        <Button x:Uid="Button_1" Content="..." HorizontalAlignment="Left" Margin="344,7,-124,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+        <ListBox Grid.Row="1" x:Uid="ListOfDirs" x:Name="ListOfDirs" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" SelectedIndex="0" ItemsSource="{Binding DirsList, ElementName=SettingsWindow, Mode=TwoWay}"/>
+            <WrapPanel>
+        <TextBox  x:Uid="pathNew" x:Name="pathNew" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button x:Uid="Button_1" Content="..." HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="Button_Click_4"/>
+            </WrapPanel>
+            <WrapPanel Grid.Row="2">
+        <Button x:Uid="Button_2" Content="Добавть" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Uid="Button_3" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+            </WrapPanel>
+        </Grid>
+        <StackPanel Grid.Column="1" Margin="5">
+        <TextBox x:Uid="TextBox_1" HorizontalAlignment="Stretch" Height="22"  TextWrapping="Wrap" VerticalAlignment="Top"  Text="{Binding Pattern, ElementName=SettingsWindow, Mode=TwoWay}"/>
+        <TextBlock x:Uid="TextBlock_1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Шаблон" VerticalAlignment="Top"/>
+        <TextBlock x:Uid="TextBlock_2" HorizontalAlignment="Left"  TextWrapping="Wrap" VerticalAlignment="Top" Height="65" Width="284">
+            <Run x:Uid="Run_1" Text="%T - Название"/>
+            <LineBreak x:Uid="LineBreak_1"/>
+            <Run x:Uid="Run_2" Text="%O - Оригинальное название"/>
+            <LineBreak x:Uid="LineBreak_2"/>
+            <Run x:Uid="Run_3" Text="%G - Жанры"/>
+            <LineBreak x:Uid="LineBreak_3"/>
+            <Run x:Uid="Run_4" Text="%Y - Год"/>
+            <LineBreak x:Uid="LineBreak_3"/>
+            <Run x:Uid="Run54" Text="%AQ - Качество звука"/>
+            <LineBreak x:Uid="LineBreak_3"/>
+            <Run x:Uid="Run54" Text="%VQ - Качество видео"/>
+        </TextBlock>
+        </StackPanel>
+        <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="5">
+        <Button x:Uid="Button_4" Content="Сохранить" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
+        <Button x:Uid="Button_5" Content="Закрыть" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="Button_Click_3"/>
+        </WrapPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <TextBlock Text="Путь к изображениям"></TextBlock>
+        <WrapPanel >
+        <TextBox x:Uid="pathNew" x:Name="pathToImage" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" />
+        <Button x:Uid="Button_1" Content="..." HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="Button_Click_5"/>
+        </WrapPanel>
+        <CheckBox x:Uid="CheckBox_1" Content="Delete real file" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" IsChecked="{Binding IsDeleteFile, ElementName=SettingsWindow}"/>
+        </StackPanel>
 
     </Grid>
 </Window>

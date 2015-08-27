@@ -11,11 +11,12 @@ namespace VideoFileRenamer.Models
 		public File(FileInfo info)
 			:base(info)
 		{
-			
 			Deleted = false;
+			PrevFileName = info.Name;
+			PrevSerarchName = GetSearchName(PrevFileName);
 		}
 
-		public File()
+		protected File()
 		{
 			
 		}
@@ -24,7 +25,8 @@ namespace VideoFileRenamer.Models
 
 		public string Quality { get; set; }
 
-		public string PrevFileName { get; set; }
+		public string PrevFileName { get; private set; }
+		public string PrevSerarchName { get; private set; }
 
 		public int? Film_FilmID { get; set; }
 

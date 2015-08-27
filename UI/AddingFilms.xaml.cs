@@ -10,7 +10,9 @@ using System.Windows;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using VideoFileRenamer.Annotations;
+using VideoFileRenamer.DAL;
 using VideoFileRenamer.Download;
+using VideoFileRenamer.ViewModels;
 
 namespace VideoFileRenamer.UI
 {
@@ -19,10 +21,13 @@ namespace VideoFileRenamer.UI
 	/// </summary>
 	public partial class AddingFilms : Window, INotifyPropertyChanged
 	{
-		public AddingFilms()
+		private AddNewFilmViewModel addNewFilmViewModel;
+		public AddingFilms(NewFilmsManager manager)
 		{
 			InitializeComponent();
-			DataContext = AppEngine.Create().AddNewFilmViewModel;
+			addNewFilmViewModel = new AddNewFilmViewModel(manager);
+			addNewFilmViewModel.RequestClose += (sender, args) => this.Close();
+			DataContext = addNewFilmViewModel;
 		}
 
 		private Queue<string> deleteImage; 
@@ -37,7 +42,7 @@ namespace VideoFileRenamer.UI
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-
+			
 		}
 
 		//void RefindListFilms(string query)
@@ -48,7 +53,7 @@ namespace VideoFileRenamer.UI
 
 		private void NextButton_Click(object sender, RoutedEventArgs e)
 		{
-			AppEngine.Create().AddNewFilmViewModel.SelectAsync.Execute();
+			addNewFilmViewModel.SelectAsync.Execute();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

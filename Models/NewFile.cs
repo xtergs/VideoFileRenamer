@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace VideoFileRenamer.Models
 {
+	[Serializable]
 	public class NewFile : FileBase
 	{
 
-		public NewFile()
-			:base()
+		protected NewFile()
+			
 		{
 		}
 

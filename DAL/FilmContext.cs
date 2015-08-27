@@ -55,15 +55,15 @@ namespace VideoFileRenamer.DAL
 
 			modelBuilder.Entity<Person>()
 				.Property(e => e.FirstName)
-				.IsUnicode(false);
+				.IsUnicode(true);
 
 			modelBuilder.Entity<Film>()
 				.Property(e => e.Name)
-				.IsUnicode(false);
+				.IsUnicode(true);
 
 			modelBuilder.Entity<Film>()
 				.Property(e => e.OriginalName)
-				.IsUnicode(false);
+				.IsUnicode(true);
 
 			modelBuilder.Entity<Film>()
 				.HasMany(e => e.Files)
@@ -86,7 +86,7 @@ namespace VideoFileRenamer.DAL
 
 			modelBuilder.Entity<Genre>()
 				.Property(e => e.Name)
-				.IsUnicode(false);
+				.IsUnicode(true);
 		}
 	}
 }

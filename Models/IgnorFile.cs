@@ -14,6 +14,7 @@ namespace VideoFileRenamer.Models
 	public class IgnorFile : FileBase
 	{
 		public IgnorFile(FileInfo info)
+			:base(info)
 		{
 			FileName = info.Name;
 			Size = info.Length;
@@ -22,7 +23,7 @@ namespace VideoFileRenamer.Models
 			Modified = info.LastWriteTimeUtc;
 		}
 
-		public IgnorFile()
+		protected IgnorFile()
 		{
 			
 		}

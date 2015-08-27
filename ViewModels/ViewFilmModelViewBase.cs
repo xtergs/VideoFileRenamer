@@ -20,14 +20,15 @@ namespace VideoFileRenamer.ViewModels
 		public ViewFilmModelViewBase(string connectionString = "default")
 		{
 			context = new FilmContext(connectionString);
+			
 		}
 
 		public string Query
 		{
 			get
 			{
-				if (String.IsNullOrWhiteSpace(query))
-					Query = Path.GetFileNameWithoutExtension(CurrentItem.FileInfo.FileName);
+				if (String.IsNullOrWhiteSpace(query) && CurrentItem != null)
+					Query = CurrentItem.FileInfo.SearchName;
 				return query;
 			}
 
@@ -40,11 +41,43 @@ namespace VideoFileRenamer.ViewModels
 
 		public ParsFilmList CurrentItem
 		{
-			get { return currentItem; }
+			get
+			{
+				if (currentItem == null && AppEngine.Create().NewFilmManager != null &&
+				    AppEngine.Create().NewFilmManager.LeftNewFilms > 0)
+				{
+					var tempGet = AppEngine.Create().NewFilmManager.BorrowParFilmList();
+					CurrentItem = new ParsFilmList(tempGet.FileInfo,
+					tempGet.OrderByDescending(x =>
+					{
+						int weight = 0;
+						if (Query.Contains(x.Year.ToString()))
+							weight++;
+						if (!string.IsNullOrWhiteSpace(x.Name) && Query.ToLowerInvariant().Contains(x.Name.ToLowerInvariant()))
+							weight++;
+						if (!string.IsNullOrWhiteSpace(x.OriginalName) &&
+						    Query.ToLowerInvariant().Contains(x.OriginalName.ToLowerInvariant()))
+							weight++;
+						return weight;
+					}).ToList())
+					;
+				}
+				return currentItem;
+			}
 			set
 			{
-				currentItem = value;
-				Query = Path.GetFileNameWithoutExtension(currentItem.FileInfo.FileName);
+				Query = value.FileInfo.SearchName;
+				currentItem = new ParsFilmList(value.FileInfo, value.OrderByDescending(x =>
+				{
+					int weight = 0;
+					if (Query.Contains(x.Year.ToString()))
+						weight++;
+					if (!string.IsNullOrWhiteSpace(x.Name) && Query.ToLowerInvariant().Contains(x.Name.ToLowerInvariant()))
+						weight++;
+					if (!string.IsNullOrWhiteSpace(x.OriginalName) && Query.ToLowerInvariant().Contains(x.OriginalName.ToLowerInvariant()))
+						weight++;
+					return weight;
+				}).ToList());
 				NotifyPropertyChanged();
 				NotifyPropertyChanged("Query");
 			}
